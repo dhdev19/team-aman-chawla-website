@@ -93,4 +93,11 @@ export const uploadApi = {
   },
 };
 
+/**
+ * Email Subscription API endpoints
+ */
+export const emailSubscriptionApi = {
+  subscribe: (email: string) => apiPost("/api/email-subscription", { email }),
+};
+
 export { ApiError };

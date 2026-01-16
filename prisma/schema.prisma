@@ -152,3 +152,15 @@ model Blog {
   @@index([createdAt])
   @@map("blogs")
 }
+
+// Email Subscription Model
+model EmailSubscription {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+  @@index([createdAt])
+  @@map("email_subscriptions")
+}

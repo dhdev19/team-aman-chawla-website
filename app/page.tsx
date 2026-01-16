@@ -9,6 +9,7 @@ import { AboutSection } from "@/components/sections/about-section";
 import { TestimonialsSection } from "@/components/sections/testimonials-section";
 import { WhyChooseUs } from "@/components/sections/why-choose-us";
 import { ContactSection } from "@/components/sections/contact-section";
+import { WhatsAppEmailSection } from "@/components/sections/whatsapp-email-section";
 import { OrganizationSchema } from "@/components/seo/schema-org";
 
 export const metadata: Metadata = defaultMetadata;
@@ -33,6 +34,7 @@ export default function HomePage() {
         <AboutSection />
         <TestimonialsSection />
         <WhyChooseUs />
+        <WhatsAppEmailSection />
         <ContactSection />
       </main>
       <Footer />
