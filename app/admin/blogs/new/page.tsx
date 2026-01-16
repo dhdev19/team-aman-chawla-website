@@ -1,0 +1,294 @@
+"use client";
+
+import * as React from "react";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { blogSchema, type BlogFormData } from "@/lib/validations/blog";
+import { blogApi, uploadApi } from "@/lib/api-client";
+import { generateSlug } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Card } from "@/components/ui/card";
+
+export default function AddBlogPage() {
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [autoSlug, setAutoSlug] = React.useState("");
+  const [uploadedImage, setUploadedImage] = React.useState<string | null>(null);
+  const [isUploading, setIsUploading] = React.useState(false);
+  const imageInputRef = React.useRef<HTMLInputElement>(null);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+    setValue,
+  } = useForm<BlogFormData>({
+    resolver: zodResolver(blogSchema),
+    defaultValues: {
+      published: false,
+    },
+  });
+
+  const title = watch("title");
+
+  // Auto-generate slug when title changes
+  React.useEffect(() => {
+    if (title) {
+      const slug = generateSlug(title);
+      setAutoSlug(slug);
+      setValue("slug", slug);
+    }
+  }, [title, setValue]);
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif"];
+    if (!allowedTypes.includes(file.type)) {
+      alert("Invalid file type. Please upload an image file (JPEG, PNG, WebP, or GIF).");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+      alert("File size exceeds 5MB limit. Please choose a smaller image.");
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      const response = await uploadApi.uploadImage(file);
+      if (response.success && response.data) {
+        const imageUrl = response.data.url;
+        setUploadedImage(imageUrl);
+        setValue("image", imageUrl);
+      } else {
+        alert(response.error || "Failed to upload image");
+      }
+    } catch (error: any) {
+      alert(error.message || "Failed to upload image. Please try again.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setUploadedImage(null);
+    setValue("image", null);
+    if (imageInputRef.current) {
+      imageInputRef.current.value = "";
+    }
+  };
+
+  const onSubmit = async (data: BlogFormData) => {
+    setIsSubmitting(true);
+
+    try {
+      const response = await blogApi.create({
+        ...data,
+        image: uploadedImage || data.image || null,
+      });
+
+      if (response.success) {
+        router.push("/admin/blogs");
+      } else {
+        alert(response.error || "Failed to create blog post");
+        setIsSubmitting(false);
+      }
+    } catch (error: any) {
+      alert(error.message || "Failed to create blog post. Please try again.");
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-neutral-900 mb-2">
+          Add New Blog Post
+        </h1>
+        <p className="text-neutral-600">Create a new blog post</p>
+      </div>
+
+      <Card>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          {/* Basic Information */}
+          <div>
+            <h2 className="text-xl font-semibold text-neutral-900 mb-4">
+              Blog Information
+            </h2>
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Title *
+                </label>
+                <Input
+                  {...register("title")}
+                  className={errors.title ? "border-red-500" : ""}
+                  placeholder="Enter blog post title"
+                />
+                {errors.title && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.title.message}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Slug *
+                </label>
+                <Input
+                  {...register("slug")}
+                  className={errors.slug ? "border-red-500" : ""}
+                  placeholder="url-friendly-slug"
+                />
+                {autoSlug && (
+                  <p className="mt-1 text-xs text-neutral-500">
+                    Auto-generated: {autoSlug}
+                  </p>
+                )}
+                {errors.slug && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.slug.message}
+                  </p>
+                )}
+                <p className="mt-1 text-xs text-neutral-500">
+                  URL-friendly slug (lowercase, hyphens only)
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Excerpt
+                </label>
+                <Textarea
+                  rows={3}
+                  {...register("excerpt")}
+                  className={errors.excerpt ? "border-red-500" : ""}
+                  placeholder="Brief description of the blog post"
+                />
+                {errors.excerpt && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.excerpt.message}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Featured Image
+                </label>
+                <label htmlFor="featured-image-upload" className="sr-only">
+                  Upload featured image
+                </label>
+                <input
+                  ref={imageInputRef}
+                  type="file"
+                  accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                  id="featured-image-upload"
+                  disabled={isUploading}
+                  aria-label="Upload featured image"
+                />
+                <div className="space-y-3">
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={() => imageInputRef.current?.click()}
+                      disabled={isUploading}
+                    >
+                      {isUploading ? "Uploading..." : "Upload Image"}
+                    </Button>
+                    {uploadedImage && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={handleRemoveImage}
+                        className="text-red-600 hover:text-red-700"
+                      >
+                        Remove
+                      </Button>
+                    )}
+                  </div>
+                  {uploadedImage && (
+                    <div className="relative h-48 w-full max-w-md rounded overflow-hidden bg-neutral-200 border border-neutral-300">
+                      <img
+                        src={uploadedImage}
+                        alt="Featured image"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+                </div>
+                {errors.image && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.image.message}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Content *
+                </label>
+                <Textarea
+                  rows={15}
+                  {...register("content")}
+                  className={errors.content ? "border-red-500" : ""}
+                  placeholder="Write your blog post content here..."
+                />
+                {errors.content && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.content.message}
+                  </p>
+                )}
+                <p className="mt-1 text-xs text-neutral-500">
+                  Minimum 100 characters required
+                </p>
+              </div>
+
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="published"
+                  {...register("published")}
+                  className="h-4 w-4 text-primary-700 focus:ring-primary-500 border-neutral-300 rounded"
+                />
+                <label
+                  htmlFor="published"
+                  className="ml-2 block text-sm text-neutral-700"
+                >
+                  Publish immediately
+                </label>
+              </div>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex items-center justify-end gap-4 pt-6 border-t border-neutral-200">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => router.back()}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" variant="primary" disabled={isSubmitting}>
+              {isSubmitting ? "Creating..." : "Create Blog Post"}
+            </Button>
+          </div>
+        </form>
+      </Card>
+    </div>
+  );
+}

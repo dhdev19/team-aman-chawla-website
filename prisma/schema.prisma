@@ -1,0 +1,154 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Enums
+enum PropertyType {
+  RESIDENTIAL
+  PLOT
+  COMMERCIAL
+  OFFICES
+}
+
+enum PropertyStatus {
+  AVAILABLE
+  SOLD
+  RESERVED
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+// User Model (for admin authentication)
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  role      UserRole @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+  @@map("users")
+}
+
+// Property Model
+model Property {
+  id               String         @id @default(cuid())
+  name             String
+  type             PropertyType
+  builder          String
+  builderReraNumber String?
+  description      String?
+  price            Float?
+  location         String?
+  status           PropertyStatus @default(AVAILABLE)
+  mainImage        String?
+  images           String[]       @default([])
+  amenities        String[]       @default([])
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  // Relations
+  enquiries Enquiry[]
+
+  @@index([type])
+  @@index([status])
+  @@index([builder])
+  @@index([createdAt])
+  @@map("properties")
+}
+
+// Video Model
+model Video {
+  id          String   @id @default(cuid())
+  title       String
+  videoLink   String
+  thumbnail   String?
+  description String?
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([order])
+  @@index([createdAt])
+  @@map("videos")
+}
+
+// Enquiry Model (Contact Form Submissions)
+model Enquiry {
+  id         String    @id @default(cuid())
+  name       String
+  email      String
+  phone      String?
+  message    String
+  type       String    @default("contact")
+  propertyId String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  // Relations
+  property Property? @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+
+  @@index([email])
+  @@index([type])
+  @@index([createdAt])
+  @@index([propertyId])
+  @@map("enquiries")
+}
+
+// TAC Registration Model
+model TACRegistration {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String
+  address   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+  @@index([createdAt])
+  @@map("tac_registrations")
+}
+
+// Page Statistics Model (for tracking navbar clicks)
+model PageStat {
+  id         String    @id @default(cuid())
+  pageName   String
+  clickCount Int       @default(0)
+  lastClicked DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@unique([pageName])
+  @@index([pageName])
+  @@map("page_stats")
+}
+
+// Blog Model
+model Blog {
+  id        String   @id @default(cuid())
+  title     String
+  slug      String   @unique
+  content   String   @db.Text
+  excerpt   String?
+  image     String?
+  published Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([slug])
+  @@index([published])
+  @@index([createdAt])
+  @@map("blogs")
+}
