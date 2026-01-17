@@ -1048,6 +1048,71 @@ html {
 }
 
 /* ============================================
+   OUR ASSOCIATIONS SECTION
+   ============================================ */
+
+.our-associations-sec {
+  position: relative;
+}
+
+.associations-swiper {
+  padding: 2rem 0;
+}
+
+.association-logo-wrapper {
+  transition: transform 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 120px;
+}
+
+.association-logo-wrapper.rotate-right {
+  transform: rotate(2deg);
+}
+
+.association-logo-wrapper.rotate-left {
+  transform: rotate(-2deg);
+}
+
+.association-logo-wrapper:hover {
+  transform: rotate(0deg) scale(1.1) !important;
+}
+
+.association-logo {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.association-logo:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.association-img {
+  max-width: 100%;
+  max-height: 80px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  filter: grayscale(100%);
+  opacity: 0.7;
+  transition: filter 0.3s ease, opacity 0.3s ease;
+}
+
+.association-logo:hover .association-img {
+  filter: grayscale(0%);
+  opacity: 1;
+}
+
+/* ============================================
    VIDEO SLIDER (Swiper)
    ============================================ */
 

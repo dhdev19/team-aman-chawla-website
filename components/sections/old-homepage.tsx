@@ -60,14 +60,15 @@ export function OldHomepage() {
           page: "1",
           limit: "6",
         });
-        if (propertiesResponse.success && propertiesResponse.data?.data) {
-          setFeaturedProperties(propertiesResponse.data.data);
+        if (propertiesResponse.success && propertiesResponse.data && typeof propertiesResponse.data === "object" && "data" in propertiesResponse.data) {
+          const data = propertiesResponse.data as { data: Property[] };
+          setFeaturedProperties(data.data);
         }
 
         // Fetch videos
         const videosResponse = await videoApi.getAll();
-        if (videosResponse.success && videosResponse.data) {
-          setVideos(videosResponse.data);
+        if (videosResponse.success && videosResponse.data && Array.isArray(videosResponse.data)) {
+          setVideos(videosResponse.data as Video[]);
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -280,7 +281,7 @@ export function OldHomepage() {
       {/* Social Media Fixed Bar */}
       <div className="social-fixed-bar" aria-label="Social media links">
         <ul>
-          {socialLinks.map(({ name, url, icon: Icon, className }) => (
+          {socialLinks.map(({ name, url, className }) => (
             <li key={name}>
               <a
                 href={url}
@@ -641,9 +642,17 @@ export function OldHomepage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {featuredProperties.map((property) => (
-                <PropertyCard key={property.id} property={property} />
-              ))}
+              {featuredProperties.map((property) => {
+              // Convert API property to PropertyCard expected format
+              const cardProperty = {
+                ...property,
+                type: property.type as any,
+                status: property.status as any,
+                createdAt: property.createdAt ? new Date(property.createdAt) : new Date(),
+                updatedAt: property.updatedAt ? new Date(property.updatedAt) : new Date(),
+              };
+              return <PropertyCard key={property.id} property={cardProperty} />;
+            })}
             </div>
           )}
 
@@ -863,6 +872,81 @@ export function OldHomepage() {
               <i className="fa-solid fa-external-link ml-2"></i>
             </a>
           </div>
+        </div>
+      </section>
+
+      {/* Our Associations Section */}
+      <section className="py-16 bg-gray-50 our-associations-sec">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Our Association
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto description-text">
+              Partnering with leading real estate developers
+            </p>
+          </div>
+
+          <Swiper
+            modules={[Autoplay, Navigation]}
+            autoplay={{
+              delay: 2500,
+              disableOnInteraction: false,
+              pauseOnMouseEnter: true,
+            }}
+            loop={true}
+            slidesPerView={2}
+            spaceBetween={30}
+            breakpoints={{
+              640: { slidesPerView: 3 },
+              768: { slidesPerView: 4 },
+              1024: { slidesPerView: 5 },
+              1280: { slidesPerView: 6 },
+            }}
+            className="associations-swiper"
+          >
+            {[
+              { name: "Eldeco", imgSrc: "/associations/builder-logo1.png" },
+              { name: "Shalimar", imgSrc: "/associations/builder-logo2.png" },
+              { name: "Omaxe", imgSrc: "/associations/builder-logo3.png" },
+              { name: "Rishita", imgSrc: "/associations/builder-logo4.png" },
+              { name: "ORO", imgSrc: "/associations/builder-logo5.png" },
+              { name: "Jashn Realty", imgSrc: "/associations/builder-logo6.png" },
+              {
+                name: "Agrasheel Aashrayam",
+                imgSrc: "/associations/builder-logo7.png",
+              },
+              { name: "Skyom City", imgSrc: "/associations/builder-logo8.png" },
+              { name: "Amrawati", imgSrc: "/associations/builder-logo9.png" },
+              { name: "Migsun", imgSrc: "/associations/builder-logo10.png" },
+              { name: "Emaar Group", imgSrc: "/associations/builder-logo11.png" },
+              { name: "BBD Group", imgSrc: "/associations/builder-logo12.png" },
+              { name: "Ansal API", imgSrc: "/associations/builder-logo13.png" },
+              { name: "DLF Group", imgSrc: "/associations/builder-logo14.png" },
+              { name: "Sobha Realty", imgSrc: "/associations/builder-logo15.png" },
+              { name: "Damac", imgSrc: "/associations/builder-logo16.png" },
+            ].map((assoc, index) => (
+              <SwiperSlide key={assoc.name}>
+                <div
+                  className={`association-logo-wrapper ${index % 2 === 0 ? "rotate-right" : "rotate-left"}`}
+                >
+                  <div className="association-logo">
+                    <img
+                      src={assoc.imgSrc}
+                      alt={assoc.name}
+                      className="association-img"
+                      onError={(e) => {
+                        // Fallback to placeholder if image not found
+                        e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='100'%3E%3Crect fill='%23e5e7eb' width='150' height='100'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%239ca3af' font-family='sans-serif' font-size='14'%3E" +
+                          encodeURIComponent(assoc.name) +
+                          "%3C/text%3E%3C/svg%3E";
+                      }}
+                    />
+                  </div>
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
         </div>
       </section>
 
