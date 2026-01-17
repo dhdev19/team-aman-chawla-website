@@ -1,0 +1,886 @@
+"use client";
+
+import React, { useState, useEffect, useRef } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { GoogleReviews } from "@/components/features/google-reviews";
+import { propertyApi, enquiryApi, videoApi } from "@/lib/api-client";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import { PropertyCard } from "@/components/features/property-card";
+
+interface Property {
+  id: string;
+  name: string;
+  slug: string | null;
+  type: string;
+  builder: string;
+  description: string | null;
+  price: number | null;
+  location: string | null;
+  status: string;
+  mainImage: string | null;
+  images: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface Video {
+  id: string;
+  title: string;
+  videoLink: string;
+  thumbnail: string | null;
+  description: string | null;
+  order: number;
+}
+
+export function OldHomepage() {
+  const [featuredProperties, setFeaturedProperties] = useState<Property[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [queryForm, setQueryForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+  });
+  const [isSubmittingQuery, setIsSubmittingQuery] = useState(false);
+  const [queryFeedback, setQueryFeedback] = useState<
+    "idle" | "success" | "error"
+  >("idle");
+  const [videos, setVideos] = useState<Video[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch featured properties
+        const propertiesResponse = await propertyApi.getAll({
+          page: "1",
+          limit: "6",
+        });
+        if (propertiesResponse.success && propertiesResponse.data?.data) {
+          setFeaturedProperties(propertiesResponse.data.data);
+        }
+
+        // Fetch videos
+        const videosResponse = await videoApi.getAll();
+        if (videosResponse.success && videosResponse.data) {
+          setVideos(videosResponse.data);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const stats = [
+    { icon: "fa-users", label: "Happy Clients", value: "500+" },
+    { icon: "fa-award", label: "Properties Sold", value: "1000+" },
+    { icon: "fa-shield", label: "Years Experience", value: "10+" },
+  ];
+
+  // Use videos from database, fallback to hardcoded IDs if none
+  const videoIds =
+    videos.length > 0
+      ? videos.map((v) => {
+          // Extract YouTube video ID from URL
+          const match = v.videoLink.match(
+            /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/
+          );
+          return match ? match[1] : null;
+        }).filter(Boolean) as string[]
+      : ["uHFX-d-zP0g", "J0ZNXWAaCgA", "Ytl7v7Lti3Q", "4K0kTyyx22s", "ag9bWnJIbIU"];
+
+  const socialLinks = [
+    {
+      name: "Facebook",
+      url: "https://www.facebook.com/teamamanchawla/",
+      className: "facebook",
+    },
+    {
+      name: "Instagram",
+      url: "https://www.instagram.com/team_aman_chawla",
+      className: "instagram",
+    },
+    {
+      name: "YouTube",
+      url: "https://www.youtube.com/@TeamAmanChawla",
+      className: "youtube",
+    },
+    {
+      name: "LinkedIn",
+      url: "https://www.linkedin.com/company/team-aman-chawla/",
+      className: "linkedin",
+    },
+  ];
+
+  const preHeroHighlights = [
+    {
+      image: "/projectimg-hero.jpg",
+      title: "Oro Group",
+      description: "UPRERAPRJ629194",
+    },
+    {
+      image: "/projectimg-hero2.jpg",
+      title: "Shalimar Corp",
+      description: "UPRERAPRJ460592/05/2024",
+    },
+    {
+      image: "/projectimg-hero3.jpg",
+      title: "Omaxe Group",
+      description: "UPRERAPRJ1350",
+    },
+    {
+      image: "/projectimg-hero4.jpg",
+      title: "Sahu Group",
+      description: "UPRERAPRJ391104/02/2024",
+    },
+    {
+      image: "/projectimg-hero5.jpg",
+      title: "Eldeco Group",
+      description: "UPRERAPRJ859279/04/2025",
+    },
+  ];
+
+  const preHeroFeaturePoints = [
+    "Dedicated Relationship Manager",
+    "Exclusive Offers & Special Deals",
+    "End-to-End Assistance",
+    "Expert Market Guidance",
+  ];
+
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setQueryForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    if (queryFeedback !== "idle") {
+      setQueryFeedback("idle");
+    }
+  };
+
+  const handleQuerySubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (isSubmittingQuery) {
+      return;
+    }
+
+    const trimmedName = queryForm.name.trim();
+    const trimmedEmail = queryForm.email.trim();
+    const trimmedPhone = queryForm.phone.trim();
+
+    if (!trimmedName || !trimmedEmail) {
+      setQueryFeedback("error");
+      return;
+    }
+
+    try {
+      setIsSubmittingQuery(true);
+      await enquiryApi.create({
+        name: trimmedName,
+        email: trimmedEmail,
+        phone: trimmedPhone || undefined,
+        message: "Homepage quick query form submission",
+        type: "contact",
+      });
+      setQueryFeedback("success");
+      setQueryForm({
+        name: "",
+        email: "",
+        phone: "",
+      });
+    } catch (error) {
+      console.error("Error submitting query form:", error);
+      setQueryFeedback("error");
+    } finally {
+      setIsSubmittingQuery(false);
+    }
+  };
+
+  const CountUp: React.FC<{
+    end: number;
+    durationMs?: number;
+    suffix?: string;
+  }> = ({ end, durationMs = 1500, suffix = "" }) => {
+    const [count, setCount] = useState(0);
+    const [started, setStarted] = useState(false);
+    const elRef = useRef<HTMLSpanElement | null>(null);
+
+    useEffect(() => {
+      const node = elRef.current;
+      if (!node) return;
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting && !started) {
+              setStarted(true);
+            }
+          });
+        },
+        { threshold: 0.3 }
+      );
+
+      observer.observe(node);
+      return () => {
+        observer.disconnect();
+      };
+    }, [started]);
+
+    useEffect(() => {
+      if (!started) return;
+
+      let start: number | null = null;
+      const startValue = 0;
+      const diff = end - startValue;
+      let rafId = 0;
+
+      const step = (timestamp: number) => {
+        if (start === null) start = timestamp;
+        const progress = Math.min((timestamp - start) / durationMs, 1);
+        const current = Math.floor(startValue + diff * progress);
+        setCount(current);
+        if (progress < 1) {
+          rafId = requestAnimationFrame(step);
+        }
+      };
+
+      rafId = requestAnimationFrame(step);
+      return () => cancelAnimationFrame(rafId);
+    }, [end, durationMs, started]);
+
+    return (
+      <span ref={elRef}>
+        {count}
+        {suffix}
+      </span>
+    );
+  };
+
+  return (
+    <div className="min-h-screen">
+      {/* WhatsApp Floating Button */}
+      <a
+        href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "919118388999"}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="whatsapp-floating-button"
+        aria-label="Chat on WhatsApp"
+      >
+        <i className="fa-brands fa-whatsapp" aria-hidden="true" />
+      </a>
+
+      {/* Social Media Fixed Bar */}
+      <div className="social-fixed-bar" aria-label="Social media links">
+        <ul>
+          {socialLinks.map(({ name, url, icon: Icon, className }) => (
+            <li key={name}>
+              <a
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={name}
+                title={name}
+                className={`social-icon ${className}`}
+              >
+                <i className={`fa-brands fa-${className === 'facebook' ? 'facebook' : className === 'instagram' ? 'instagram' : className === 'youtube' ? 'youtube' : 'linkedin'}`}></i>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Pre-Hero Section */}
+      <section className="pre-hero-section">
+        <div className="bnrimagewrapper">
+          <img src="/pre-hero-banner.jpg" alt="Property" className="" />
+        </div>
+        <div className="content">
+          <h3>
+            Homes & Investments That Fit{" "}
+            <span className="highlight-rotating-words">
+              <span className="highlight-rotating-word">You!</span>
+              <span className="highlight-rotating-word">Your Family!</span>
+              <span className="highlight-rotating-word">Your Friends!</span>
+              <span className="highlight-rotating-word">Your Lifestyle!</span>
+            </span>
+          </h3>
+          <p>
+            Explore prime city homes and high-growth investment options, curated
+            for long-term value.
+          </p>
+          <ul className="space-y-2 text-white list-none">
+            {preHeroFeaturePoints.map((point) => (
+              <li key={point} className="flex items-center gap-2">
+                <i
+                  className="fa-solid fa-circle text-white text-sm"
+                  aria-hidden="true"
+                />
+                <span>{point}</span>
+              </li>
+            ))}
+          </ul>
+
+          <h4 className="googlerev">
+            5.0
+            <i
+              className="fa-solid fa-star text-white text-sm"
+              aria-hidden="true"
+            />
+            <i
+              className="fa-solid fa-star text-white text-sm"
+              aria-hidden="true"
+            />
+            <i
+              className="fa-solid fa-star text-white text-sm"
+              aria-hidden="true"
+            />
+            <i
+              className="fa-solid fa-star text-white text-sm"
+              aria-hidden="true"
+            />
+            <i
+              className="fa-solid fa-star text-white text-sm"
+              aria-hidden="true"
+            />
+            Google reviews
+          </h4>
+        </div>
+      </section>
+
+      {/* Home Query Form Section */}
+      <section className="py-4 bg-white homequeryform">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-white shadow-xl rounded-2xl px-4 py-6 sm:px-6 sm:py-8 border border-gray-100">
+            <form
+              onSubmit={handleQuerySubmit}
+              className="flex flex-col gap-4 md:flex-row md:items-end md:gap-6"
+            >
+              <div className="flex-1">
+                <label htmlFor="query-name" className="sr-only">
+                  Name
+                </label>
+                <input
+                  id="query-name"
+                  name="name"
+                  type="text"
+                  autoComplete="name"
+                  value={queryForm.name}
+                  onChange={handleQueryChange}
+                  className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow"
+                  placeholder="Your Name"
+                  required
+                />
+              </div>
+              <div className="flex-1">
+                <label htmlFor="query-email" className="sr-only">
+                  Email
+                </label>
+                <input
+                  id="query-email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  value={queryForm.email}
+                  onChange={handleQueryChange}
+                  className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow"
+                  placeholder="Email Address"
+                  required
+                />
+              </div>
+              <div className="flex-1">
+                <label htmlFor="query-phone" className="sr-only">
+                  Phone Number
+                </label>
+                <input
+                  id="query-phone"
+                  name="phone"
+                  type="tel"
+                  autoComplete="tel"
+                  value={queryForm.phone}
+                  onChange={handleQueryChange}
+                  className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow"
+                  placeholder="Phone Number"
+                />
+              </div>
+              <div className="flex flex-col gap-2 md:w-auto">
+                <Button
+                  type="submit"
+                  size="lg"
+                  disabled={isSubmittingQuery}
+                  className="w-full md:w-auto"
+                >
+                  {isSubmittingQuery ? "Submitting..." : "Submit"}
+                  <i className="fa-solid fa-arrow-right ml-2"></i>
+                </Button>
+                {queryFeedback === "success" && (
+                  <span className="text-sm font-medium text-green-600">
+                    Thank you! We will get in touch shortly.
+                  </span>
+                )}
+                {queryFeedback === "error" && (
+                  <span className="text-sm font-medium text-red-600">
+                    Please check your details and try again.
+                  </span>
+                )}
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      {/* Video Section */}
+      <section className="py-8 bg-white video-sec">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="videoControl flex items-center justify-between">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+                  Latest Videos
+                </h2>
+                <p className="text-gray-600">
+                  Watch our latest property tours and insights
+                </p>
+              </div>
+            </div>
+
+            <div className="video-swiper-nav-wrapper">
+            <button
+              type="button"
+              className="video-swiper-nav video-swiper-nav-prev"
+              aria-label="Previous video"
+            >
+              <i className="fa-solid fa-chevron-left icon"></i>
+            </button>
+            <button
+              type="button"
+              className="video-swiper-nav video-swiper-nav-next"
+              aria-label="Next video"
+            >
+              <i className="fa-solid fa-chevron-right icon"></i>
+            </button>
+            </div>
+          </div>
+
+          <Swiper
+            modules={[Navigation, Pagination, Autoplay]}
+            spaceBetween={16}
+            slidesPerView={1}
+            navigation={{
+              prevEl: ".video-swiper-nav-prev",
+              nextEl: ".video-swiper-nav-next",
+            }}
+            pagination={{ clickable: true }}
+            autoplay={{
+              delay: 4000,
+              pauseOnMouseEnter: true,
+              disableOnInteraction: false,
+            }}
+            breakpoints={{
+              640: {
+                slidesPerView: 2,
+              },
+              1024: {
+                slidesPerView: 3,
+              },
+            }}
+            className="video-swiper"
+          >
+            {videoIds.map((id) => (
+              <SwiperSlide key={id}>
+                <div className="video-wrapper rounded-xl overflow-hidden shadow-md">
+                  <iframe
+                    src={`https://www.youtube.com/embed/${id}`}
+                    title={`YouTube video ${id}`}
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  ></iframe>
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
+      </section>
+
+      {/* Box Property Section */}
+      <section className="box-propetysec">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h3>Get Genuine Buyers for Your Property—Effortlessly</h3>
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="box-section">
+              <div className="iconbox">
+                <img src="/guidances-icon.png" alt="icon" />
+              </div>
+              <h4>Personalized & Honest Guidance</h4>
+              <p>
+                You'll receive transparent, buyer-friendly advice at every step.
+              </p>
+            </div>
+            <div className="box-section">
+              <div className="iconbox">
+                <img src="/trusted-clients.png" alt="icon" />
+              </div>
+              <h4>Trusted by Many Clients</h4>
+              <p>
+                A proven track record of successful bookings and satisfied clients
+                makes us a reliable partner in your journey.
+              </p>
+            </div>
+            <div className="box-section">
+              <div className="iconbox">
+                <img src="/investment.png" alt="icon" />
+              </div>
+              <h4>Investment-Focused Insights</h4>
+              <p>
+                You will Get expert breakdowns, project reviews, and strategic
+                investment recommendations.
+              </p>
+            </div>
+            <div className="box-section">
+              <div className="iconbox">
+                <img src="/seamless-process.png" alt="icon" />
+              </div>
+              <h4>Seamless, Stress-Free Process</h4>
+              <p>
+                Clarity, transparency, and genuine support — every step of the way.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Projects We Deal In Section */}
+      <section className="py-16 bg-white wedeal-sec">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            Projects we deal in
+          </h2>
+          <div className="lg:col-span-7 relative z-10 pre-hero-carousel">
+            <button
+              type="button"
+              className="pre-hero-nav pre-hero-nav-prev pre-hero-nav-secondary-prev"
+              aria-label="Previous developer highlight"
+            >
+              <i className="fa-solid fa-chevron-left icon"></i>
+            </button>
+            <button
+              type="button"
+              className="pre-hero-nav pre-hero-nav-next pre-hero-nav-secondary-next"
+              aria-label="Next developer highlight"
+            >
+              <i className="fa-solid fa-chevron-right icon"></i>
+            </button>
+            <Swiper
+              modules={[Autoplay, Navigation, Pagination]}
+              autoplay={{
+                delay: 3500,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true,
+              }}
+              loop
+              slidesPerView={1.25}
+              spaceBetween={16}
+              navigation={{
+                prevEl: ".pre-hero-nav-secondary-prev",
+                nextEl: ".pre-hero-nav-secondary-next",
+              }}
+              pagination={{ clickable: true }}
+              breakpoints={{
+                640: { slidesPerView: 2 },
+                1024: { slidesPerView: 3 },
+                1280: { slidesPerView: 4 },
+              }}
+              className="pre-hero-swiper"
+            >
+              {preHeroHighlights.map((highlight) => (
+                <SwiperSlide key={highlight.title}>
+                  <div className="pre-hero-card">
+                    <img
+                      src={highlight.image}
+                      alt={highlight.title}
+                      className="pre-hero-card-image"
+                    />
+                    <div className="pre-hero-card-overlay">
+                      <h3>{highlight.title}</h3>
+                      <h4>RERA: {highlight.description}</h4>
+                    </div>
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Properties */}
+      <section className="py-4 prpertysec">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-left mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Featured Properties
+            </h2>
+            <p className="text-xl text-gray-600 description-text">
+              Explore our handpicked selection of premium properties that offer
+              exceptional value and lifestyle.
+            </p>
+          </div>
+
+          {loading ? (
+            <div className="flex justify-center py-12">
+              <div className="w-8 h-8 border-2 border-primary-200 border-t-primary-600 rounded-full animate-spin" />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {featuredProperties.map((property) => (
+                <PropertyCard key={property.id} property={property} />
+              ))}
+            </div>
+          )}
+
+          <div className="text-center mt-12">
+            <Link href="/properties">
+              <Button size="lg">
+                View All Properties
+                <i className="fa-solid fa-arrow-right ml-2"></i>
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Explore by Category */}
+      <section className="py-16 propertycategorysec">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Explore by Category
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl description-text">
+              Browse properties by popular categories
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Apartments */}
+            <Link
+              href="/properties?type=RESIDENTIAL"
+              className="category-card"
+              style={{ backgroundImage: "url('/category-apartments.jpg')" }}
+            >
+              <div className="category-overlay">
+                <h3>Apartments</h3>
+                <span className="category-cta">Explore</span>
+              </div>
+            </Link>
+
+            {/* Villas */}
+            <Link
+              href="/properties?type=RESIDENTIAL"
+              className="category-card"
+              style={{ backgroundImage: "url('/category-villas.jpg')" }}
+            >
+              <div className="category-overlay">
+                <h3>Villas</h3>
+                <span className="category-cta">Explore</span>
+              </div>
+            </Link>
+
+            {/* Commercial */}
+            <Link
+              href="/properties?type=COMMERCIAL"
+              className="category-card"
+              style={{ backgroundImage: "url('/category-commercial.jpg')" }}
+            >
+              <div className="category-overlay">
+                <h3>Commercial</h3>
+                <span className="category-cta">Explore</span>
+              </div>
+            </Link>
+
+            {/* Plots */}
+            <Link
+              href="/properties?type=PLOT"
+              className="category-card"
+              style={{ backgroundImage: "url('/category-plots.jpg')" }}
+            >
+              <div className="category-overlay">
+                <h3>Plots</h3>
+                <span className="category-cta">Explore</span>
+              </div>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Why Choose Us */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {stats.map((stat, index) => {
+              const numeric =
+                parseInt((stat.value || "").toString().replace(/[^0-9]/g, "")) ||
+                0;
+              const suffix = (stat.value || "")
+                .toString()
+                .replace(/[0-9]/g, "");
+              return (
+                <div key={index} className="text-center">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-100 rounded-full mb-4">
+                    <i className={`fa-solid ${stat.icon} text-2xl text-primary-600`}></i>
+                  </div>
+                  <h3 className="text-3xl font-bold text-gray-900 mb-2">
+                    <CountUp end={numeric} suffix={suffix} />
+                  </h3>
+                  <p className="text-gray-600">{stat.label}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Query Form with Mobile Mockup */}
+      <section className="py-8 bg-white grey">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 querywrapper">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div className="formsec">
+              <h4 className="text-2xl font-semibold text-gray-900 mb-6">
+                We're here to Assist — Submit Your Query
+              </h4>
+              <form onSubmit={handleQuerySubmit} className="space-y-4">
+                <div>
+                  <label htmlFor="query-name-secondary" className="sr-only">
+                    Name
+                  </label>
+                  <input
+                    id="query-name-secondary"
+                    name="name"
+                    type="text"
+                    autoComplete="name"
+                    value={queryForm.name}
+                    onChange={handleQueryChange}
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow"
+                    placeholder="Your Name"
+                    required
+                  />
+                </div>
+                <div>
+                  <label htmlFor="query-email-secondary" className="sr-only">
+                    Email
+                  </label>
+                  <input
+                    id="query-email-secondary"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    value={queryForm.email}
+                    onChange={handleQueryChange}
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow"
+                    placeholder="Email Address"
+                    required
+                  />
+                </div>
+                <div>
+                  <label htmlFor="query-phone-secondary" className="sr-only">
+                    Phone Number
+                  </label>
+                  <input
+                    id="query-phone-secondary"
+                    name="phone"
+                    type="tel"
+                    autoComplete="tel"
+                    value={queryForm.phone}
+                    onChange={handleQueryChange}
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow"
+                    placeholder="Phone Number"
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  size="lg"
+                  disabled={isSubmittingQuery}
+                  className="w-full md:w-auto"
+                >
+                  {isSubmittingQuery ? "Submitting..." : "Submit"}
+                  <i className="fa-solid fa-arrow-right ml-2"></i>
+                </Button>
+                {queryFeedback === "success" && (
+                  <span className="block text-sm font-medium text-green-600">
+                    Thank you! We will get in touch shortly.
+                  </span>
+                )}
+                {queryFeedback === "error" && (
+                  <span className="block text-sm font-medium text-red-600">
+                    Please check your details and try again.
+                  </span>
+                )}
+              </form>
+            </div>
+            <div className="amanchawlascreen">
+              <img
+                src="/mobile-mockup.png"
+                alt="Property"
+                className="rounded-xl max-w-xs w-full"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Reviews Section */}
+      <section className="py-16 bg-white review-sec">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              What Our Clients Say
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto description-text">
+              Read what our satisfied clients have to say about their experience
+              with Team Aman Chawla
+            </p>
+          </div>
+
+          <GoogleReviews placeId="ChIJO7EGoAf8mzkR-RdoxxTbV90" maxReviews={3} />
+
+          <div className="text-center">
+            <a
+              href="https://www.google.com/search?sca_esv=a7a7f7107bf5a5bb&rlz=1C1CHBF_enIN972IN974&sxsrf=AE3TifNmfAfEgIEVznDyZ8Hsh0vWHm6kCA:1762409209181&si=AMgyJEtREmoPL4P1I5IDCfuA8gybfVI2d5Uj7QMwYCZHKDZ-E65QvRCDQDIF9L4cx39JzL0Y5M7hV99XtWQpHy4gzH1ARbd0AISUa3BH2s_fpfQszglPQK-qqfm1RuvlUwq3Mc5D46HfahsuXmrHNJyJE8cGBB2h7SXkGgN30Ti3EYOxqeKORISxobILk1dGku8Bq2SlLeESKvUrlCb-Iewiyggk8wxPKA%3D%3D&q=Team+Aman+Chawla+-+Best+Property+Advisor+in+Lucknow+%E0%B2%B5%E0%B2%BF%E0%B2%AE%E0%B2%B0%E0%B3%8D%E0%B2%B6%E0%B3%86%E0%B2%97%E0%B2%B3%E0%B3%81&sa=X&ved=2ahUKEwjxyvL27dyQAxXuzTgGHaphM7cQ0bkNegQIKhAE&biw=1536&bih=747&dpr=1.25"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200"
+            >
+              View All Google Reviews
+              <i className="fa-solid fa-external-link ml-2"></i>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Sell Property Section */}
+      <section className="sell-propetysec">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h3>Have a property to sell?</h3>
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <a href="#">
+            <img
+              src="/buy-property-banner.jpg"
+              alt="Property"
+              className="rounded-xl"
+            />
+          </a>
+        </div>
+      </section>
+    </div>
+  );
+}
