@@ -45,16 +45,26 @@ model User {
 model Property {
   id               String         @id @default(cuid())
   name             String
+  slug             String?        @unique
   type             PropertyType
   builder          String
   builderReraNumber String?
   description      String?
   price            Float?
   location         String?
+  locationAdvantages String[]     @default([])
   status           PropertyStatus @default(AVAILABLE)
   mainImage        String?
   images           String[]       @default([])
   amenities        String[]       @default([])
+  metaTitle        String?
+  metaKeywords     String?
+  metaDescription  String?
+  bankAccountName  String?
+  bankName         String?
+  bankAccountNumber String?
+  bankIfsc         String?
+  bankBranch       String?
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
 
@@ -64,6 +74,7 @@ model Property {
   @@index([type])
   @@index([status])
   @@index([builder])
+  @@index([slug])
   @@index([createdAt])
   @@map("properties")
 }

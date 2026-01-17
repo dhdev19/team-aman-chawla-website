@@ -6,6 +6,12 @@ import { PropertyType, PropertyStatus } from "@prisma/client";
  */
 export const propertySchema = z.object({
   name: z.string().min(1, "Property name is required").max(200, "Name is too long"),
+  slug: z
+    .string()
+    .max(200, "Slug is too long")
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug must be URL-friendly (lowercase, hyphens only)")
+    .optional()
+    .nullable(),
   type: z.nativeEnum(PropertyType, {
     errorMap: () => ({ message: "Invalid property type" }),
   }),
@@ -19,12 +25,21 @@ export const propertySchema = z.object({
     .nullable()
     .or(z.literal("").transform(() => null)),
   location: z.string().max(200, "Location is too long").optional().nullable(),
+  locationAdvantages: z.array(z.string()).default([]),
   status: z.nativeEnum(PropertyStatus, {
     errorMap: () => ({ message: "Invalid property status" }),
   }),
   mainImage: z.string().url("Invalid image URL").optional().nullable(),
   images: z.array(z.string().url("Invalid image URL")).default([]),
   amenities: z.array(z.string()).default([]),
+  metaTitle: z.string().max(200, "Meta title is too long").optional().nullable(),
+  metaKeywords: z.string().max(500, "Meta keywords is too long").optional().nullable(),
+  metaDescription: z.string().max(500, "Meta description is too long").optional().nullable(),
+  bankAccountName: z.string().max(200, "Bank account name is too long").optional().nullable(),
+  bankName: z.string().max(200, "Bank name is too long").optional().nullable(),
+  bankAccountNumber: z.string().max(50, "Account number is too long").optional().nullable(),
+  bankIfsc: z.string().max(20, "IFSC code is too long").optional().nullable(),
+  bankBranch: z.string().max(200, "Bank branch is too long").optional().nullable(),
 });
 
 export type PropertyFormData = z.infer<typeof propertySchema>;

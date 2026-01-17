@@ -13,16 +13,26 @@ export async function POST(request: NextRequest) {
     const property = await prisma.property.create({
       data: {
         name: validatedData.name,
+        slug: validatedData.slug,
         type: validatedData.type,
         builder: validatedData.builder,
         builderReraNumber: validatedData.builderReraNumber,
         description: validatedData.description,
         price: validatedData.price,
         location: validatedData.location,
+        locationAdvantages: validatedData.locationAdvantages,
         status: validatedData.status,
         mainImage: validatedData.mainImage,
         images: validatedData.images,
         amenities: validatedData.amenities,
+        metaTitle: validatedData.metaTitle,
+        metaKeywords: validatedData.metaKeywords,
+        metaDescription: validatedData.metaDescription,
+        bankAccountName: validatedData.bankAccountName,
+        bankName: validatedData.bankName,
+        bankAccountNumber: validatedData.bankAccountNumber,
+        bankIfsc: validatedData.bankIfsc,
+        bankBranch: validatedData.bankBranch,
       },
     });
 

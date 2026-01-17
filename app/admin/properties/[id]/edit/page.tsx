@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { propertySchema, type PropertyFormData } from "@/lib/validations/property";
 import { propertyApi, uploadApi } from "@/lib/api-client";
 import { PropertyType, PropertyStatus } from "@prisma/client";
+import { generateSlug } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,6 +44,9 @@ export default function EditPropertyPage() {
   const [isUploadingAdditional, setIsUploadingAdditional] = React.useState(false);
   const [amenities, setAmenities] = React.useState<string[]>([]);
   const [customAmenity, setCustomAmenity] = React.useState("");
+  const [locationAdvantages, setLocationAdvantages] = React.useState<string[]>([]);
+  const [newLocationAdvantage, setNewLocationAdvantage] = React.useState("");
+  const [autoSlug, setAutoSlug] = React.useState("");
   const mainImageInputRef = React.useRef<HTMLInputElement>(null);
   const additionalImagesInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -60,31 +64,59 @@ export default function EditPropertyPage() {
     formState: { errors },
     setValue,
     reset,
-  } = useForm<PropertyFormData>({
+    watch,
+  } = useForm({
     resolver: zodResolver(propertySchema),
   });
+
+  const propertyName = watch("name");
+
+  // Auto-generate slug when property name changes
+  React.useEffect(() => {
+    if (propertyName) {
+      const slug = generateSlug(propertyName);
+      setAutoSlug(slug);
+      // Only set slug if it's not already set
+      if (!watch("slug")) {
+        setValue("slug", slug);
+      }
+    }
+  }, [propertyName, setValue, watch]);
 
   React.useEffect(() => {
     if (data) {
       const propertyData = data as any;
+      const slug = propertyData.slug || "";
+      setAutoSlug(slug ? "" : generateSlug(propertyData.name || ""));
       reset({
         name: propertyData.name,
+        slug: slug,
         type: propertyData.type,
         builder: propertyData.builder,
         builderReraNumber: propertyData.builderReraNumber || "",
         description: propertyData.description || "",
         price: propertyData.price || null,
         location: propertyData.location || "",
+        locationAdvantages: propertyData.locationAdvantages || [],
         status: propertyData.status,
         mainImage: propertyData.mainImage || "",
         images: propertyData.images || [],
         amenities: propertyData.amenities || [],
+        metaTitle: propertyData.metaTitle || "",
+        metaKeywords: propertyData.metaKeywords || "",
+        metaDescription: propertyData.metaDescription || "",
+        bankAccountName: propertyData.bankAccountName || "",
+        bankName: propertyData.bankName || "",
+        bankAccountNumber: propertyData.bankAccountNumber || "",
+        bankIfsc: propertyData.bankIfsc || "",
+        bankBranch: propertyData.bankBranch || "",
       });
       setImages(propertyData.images || []);
       setMainImage(propertyData.mainImage || null);
       setAmenities(propertyData.amenities || []);
+      setLocationAdvantages(propertyData.locationAdvantages || []);
     }
-  }, [data, reset]);
+  }, [data, reset, setValue, watch]);
 
   const handleMainImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -191,7 +223,22 @@ export default function EditPropertyPage() {
     setValue("amenities", updatedAmenities);
   };
 
-  const onSubmit = async (formData: PropertyFormData) => {
+  const addLocationAdvantage = () => {
+    if (newLocationAdvantage.trim() && !locationAdvantages.includes(newLocationAdvantage.trim())) {
+      const updatedAdvantages = [...locationAdvantages, newLocationAdvantage.trim()];
+      setLocationAdvantages(updatedAdvantages);
+      setValue("locationAdvantages", updatedAdvantages);
+      setNewLocationAdvantage("");
+    }
+  };
+
+  const removeLocationAdvantage = (advantage: string) => {
+    const updatedAdvantages = locationAdvantages.filter((a) => a !== advantage);
+    setLocationAdvantages(updatedAdvantages);
+    setValue("locationAdvantages", updatedAdvantages);
+  };
+
+  const onSubmit = async (formData: any) => {
     setIsSubmitting(true);
 
     try {
@@ -199,6 +246,7 @@ export default function EditPropertyPage() {
         ...formData,
         images,
         amenities,
+        locationAdvantages: locationAdvantages || [],
         mainImage: mainImage || formData.mainImage || null,
       });
 
@@ -261,6 +309,30 @@ export default function EditPropertyPage() {
                     {errors.name.message}
                   </p>
                 )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Slug
+                </label>
+                <Input
+                  {...register("slug")}
+                  className={errors.slug ? "border-red-500" : ""}
+                  placeholder="url-friendly-slug"
+                />
+                {autoSlug && !watch("slug") && (
+                  <p className="mt-1 text-xs text-neutral-500">
+                    Auto-generated: {autoSlug}
+                  </p>
+                )}
+                {errors.slug && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.slug.message}
+                  </p>
+                )}
+                <p className="mt-1 text-xs text-neutral-500">
+                  URL-friendly slug (lowercase, hyphens only)
+                </p>
               </div>
 
               <div>
@@ -383,6 +455,67 @@ export default function EditPropertyPage() {
                 <p className="mt-1 text-sm text-red-600">
                   {errors.description.message}
                 </p>
+              )}
+            </div>
+
+            <div className="mt-6">
+              <label className="block text-sm font-medium text-neutral-700 mb-2">
+                Location Advantages
+              </label>
+              <div className="flex gap-2">
+                <Input
+                  value={newLocationAdvantage}
+                  onChange={(e) => setNewLocationAdvantage(e.target.value)}
+                  placeholder="Enter location advantage (e.g., Near Metro Station)"
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      addLocationAdvantage();
+                    }
+                  }}
+                />
+                <Button type="button" variant="secondary" onClick={addLocationAdvantage}>
+                  Add More
+                </Button>
+              </div>
+              {errors.locationAdvantages && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.locationAdvantages.message}
+                </p>
+              )}
+              {locationAdvantages.length > 0 && (
+                <div className="mt-3">
+                  <div className="flex flex-wrap gap-2">
+                    {locationAdvantages.map((advantage, index) => (
+                      <span
+                        key={index}
+                        className="inline-flex items-center gap-1 px-3 py-1 bg-primary-100 text-primary-800 rounded-full text-sm"
+                      >
+                        {advantage}
+                        <button
+                          type="button"
+                          onClick={() => removeLocationAdvantage(advantage)}
+                          className="text-primary-600 hover:text-primary-800"
+                          aria-label={`Remove ${advantage}`}
+                        >
+                          <svg
+                            className="w-3 h-3"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M6 18L18 6M6 6l12 12"
+                            />
+                          </svg>
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                </div>
               )}
             </div>
           </div>
@@ -599,6 +732,164 @@ export default function EditPropertyPage() {
                   </div>
                 </div>
               )}
+            </div>
+          </div>
+
+          {/* SEO Information */}
+          <div>
+            <h2 className="text-xl font-semibold text-neutral-900 mb-4">
+              SEO Information
+            </h2>
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Meta Title
+                </label>
+                <Input
+                  {...register("metaTitle")}
+                  className={errors.metaTitle ? "border-red-500" : ""}
+                  placeholder="Enter meta title for SEO"
+                  maxLength={200}
+                />
+                {errors.metaTitle && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.metaTitle.message}
+                  </p>
+                )}
+                <p className="mt-1 text-xs text-neutral-500">
+                  Recommended: 50-60 characters
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Meta Keywords
+                </label>
+                <Input
+                  {...register("metaKeywords")}
+                  className={errors.metaKeywords ? "border-red-500" : ""}
+                  placeholder="Enter meta keywords (comma-separated)"
+                  maxLength={500}
+                />
+                {errors.metaKeywords && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.metaKeywords.message}
+                  </p>
+                )}
+                <p className="mt-1 text-xs text-neutral-500">
+                  Separate keywords with commas
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Meta Description
+                </label>
+                <Textarea
+                  rows={3}
+                  {...register("metaDescription")}
+                  className={errors.metaDescription ? "border-red-500" : ""}
+                  placeholder="Enter meta description for SEO"
+                  maxLength={500}
+                />
+                {errors.metaDescription && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.metaDescription.message}
+                  </p>
+                )}
+                <p className="mt-1 text-xs text-neutral-500">
+                  Recommended: 150-160 characters
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Bank Details */}
+          <div>
+            <h2 className="text-xl font-semibold text-neutral-900 mb-4">
+              Bank Details
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Bank Account Name
+                </label>
+                <Input
+                  {...register("bankAccountName")}
+                  className={errors.bankAccountName ? "border-red-500" : ""}
+                  placeholder="Enter account holder name"
+                />
+                {errors.bankAccountName && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.bankAccountName.message}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Bank Name
+                </label>
+                <Input
+                  {...register("bankName")}
+                  className={errors.bankName ? "border-red-500" : ""}
+                  placeholder="Enter bank name"
+                />
+                {errors.bankName && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.bankName.message}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Account Number
+                </label>
+                <Input
+                  {...register("bankAccountNumber")}
+                  className={errors.bankAccountNumber ? "border-red-500" : ""}
+                  placeholder="Enter account number"
+                />
+                {errors.bankAccountNumber && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.bankAccountNumber.message}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  IFSC Code
+                </label>
+                <Input
+                  {...register("bankIfsc")}
+                  className={errors.bankIfsc ? "border-red-500" : ""}
+                  placeholder="Enter IFSC code"
+                  style={{ textTransform: "uppercase" }}
+                />
+                {errors.bankIfsc && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.bankIfsc.message}
+                  </p>
+                )}
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Bank Branch
+                </label>
+                <Input
+                  {...register("bankBranch")}
+                  className={errors.bankBranch ? "border-red-500" : ""}
+                  placeholder="Enter bank branch name and address"
+                />
+                {errors.bankBranch && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.bankBranch.message}
+                  </p>
+                )}
+              </div>
             </div>
           </div>
 
