@@ -70,6 +70,7 @@ export default function EditPropertyPage() {
   });
 
   const propertyName = watch("name");
+  const propertySlug = watch("slug") || autoSlug;
 
   // Auto-generate slug when property name changes
   React.useEffect(() => {
@@ -126,7 +127,11 @@ export default function EditPropertyPage() {
 
     setIsUploadingMain(true);
     try {
-      const response = await uploadApi.uploadImage(file);
+      const slug = propertySlug || autoSlug;
+      const response = await uploadApi.uploadImage(file, {
+        slug: slug || undefined,
+        imageType: "main",
+      });
       if (response.success && response.data) {
         const imageUrl = response.data.url;
         setMainImage(imageUrl);
@@ -147,9 +152,16 @@ export default function EditPropertyPage() {
 
     setIsUploadingAdditional(true);
     try {
-      const uploadPromises = Array.from(files).map(async (file) => {
+      const slug = propertySlug || autoSlug;
+      const startIndex = images.length + 1; // Start from the next index after existing images
+      
+      const uploadPromises = Array.from(files).map(async (file, fileIndex) => {
         if (!validateImageFile(file)) return null;
-        const response = await uploadApi.uploadImage(file);
+        const response = await uploadApi.uploadImage(file, {
+          slug: slug || undefined,
+          imageType: "slider",
+          index: startIndex + fileIndex,
+        });
         return response.success && response.data ? response.data.url : null;
       });
 

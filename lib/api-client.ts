@@ -86,9 +86,25 @@ export const statsApi = {
  * Upload API endpoints
  */
 export const uploadApi = {
-  uploadImage: (file: File) => {
+  uploadImage: (
+    file: File,
+    options?: {
+      slug?: string;
+      imageType?: "main" | "slider";
+      index?: number;
+    }
+  ) => {
     const formData = new FormData();
     formData.append("file", file);
+    if (options?.slug) {
+      formData.append("slug", options.slug);
+    }
+    if (options?.imageType) {
+      formData.append("imageType", options.imageType);
+    }
+    if (options?.index !== undefined) {
+      formData.append("index", options.index.toString());
+    }
     return apiUpload<{ url: string; fileName: string }>("/api/admin/upload", formData);
   },
 };

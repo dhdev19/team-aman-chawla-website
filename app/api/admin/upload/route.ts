@@ -10,6 +10,9 @@ export async function POST(request: NextRequest) {
 
     const formData = await request.formData();
     const file = formData.get("file") as File;
+    const slug = formData.get("slug") as string | null;
+    const imageType = formData.get("imageType") as string | null; // "main" or "slider"
+    const index = formData.get("index") as string | null; // For slider images: "1", "2", etc.
 
     if (!file) {
       return NextResponse.json(
@@ -51,11 +54,30 @@ export async function POST(request: NextRequest) {
       await mkdir(uploadsDir, { recursive: true });
     }
 
-    // Generate unique filename
-    const timestamp = Date.now();
-    const randomString = Math.random().toString(36).substring(2, 15);
-    const fileExtension = file.name.split(".").pop();
-    const fileName = `${timestamp}-${randomString}.${fileExtension}`;
+    // Generate filename based on slug and image type
+    const fileExtension = file.name.split(".").pop()?.toLowerCase() || "jpg";
+    let fileName: string;
+
+    if (slug && imageType) {
+      // Use slug-based naming
+      const sanitizedSlug = slug.toLowerCase().replace(/[^a-z0-9-]/g, "-");
+      if (imageType === "main") {
+        fileName = `${sanitizedSlug}-main.${fileExtension}`;
+      } else if (imageType === "slider" && index) {
+        fileName = `${sanitizedSlug}-${index}.${fileExtension}`;
+      } else {
+        // Fallback to timestamp-based naming if parameters are invalid
+        const timestamp = Date.now();
+        const randomString = Math.random().toString(36).substring(2, 15);
+        fileName = `${timestamp}-${randomString}.${fileExtension}`;
+      }
+    } else {
+      // Fallback to timestamp-based naming if slug/imageType not provided
+      const timestamp = Date.now();
+      const randomString = Math.random().toString(36).substring(2, 15);
+      fileName = `${timestamp}-${randomString}.${fileExtension}`;
+    }
+
     const filePath = join(uploadsDir, fileName);
 
     // Convert file to buffer and save
