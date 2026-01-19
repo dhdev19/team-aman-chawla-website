@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 interface Property {
   id: string;
   name: string;
+  slug: string | null;
   type: PropertyType;
   builder: string;
   description: string | null;
@@ -27,7 +28,7 @@ export interface PropertyCardProps {
 
 export function PropertyCard({ property, className }: PropertyCardProps) {
   return (
-    <Link href={`/properties/${property.id}`}>
+    <Link href={`/properties/${property.slug || property.id}`}>
       <Card
         variant="elevated"
         className={cn(

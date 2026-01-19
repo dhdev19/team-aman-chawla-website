@@ -5,13 +5,14 @@ import { propertySchema } from "@/lib/validations/property";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAdmin();
+    const { id } = await params;
 
     const property = await prisma.property.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!property) {
@@ -52,16 +53,17 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAdmin();
+    const { id } = await params;
 
     const body = await request.json();
     const validatedData = propertySchema.parse(body);
 
     const property = await prisma.property.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         name: validatedData.name,
         slug: validatedData.slug,
@@ -126,13 +128,14 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAdmin();
+    const { id } = await params;
 
     await prisma.property.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({

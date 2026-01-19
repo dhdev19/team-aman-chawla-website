@@ -8,17 +8,18 @@ import { Button } from "@/components/ui/button";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { generatePropertyMetadata } from "@/lib/metadata";
 import { PropertySchema } from "@/components/seo/schema-org";
+import { PropertyImageSlider } from "@/components/features/property-image-slider";
 import Image from "next/image";
 import Link from "next/link";
 
-async function getProperty(id: string) {
+async function getPropertyBySlug(slug: string) {
   try {
     const property = await prisma.property.findUnique({
-      where: { id },
+      where: { slug },
     });
     return property;
   } catch (error) {
-    console.error("Error fetching property:", error);
+    console.error("Error fetching property by slug:", error);
     return null;
   }
 }
@@ -44,8 +45,13 @@ async function getRelatedProperties(
   }
 }
 
-export async function generateMetadata({ params }: { params: { id: string } }) {
-  const property = await getProperty(params.id);
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const property = await getPropertyBySlug(slug);
   if (!property) {
     return {
       title: "Property Not Found",
@@ -57,9 +63,10 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
 export default async function PropertyDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const property = await getProperty(params.id);
+  const { slug } = await params;
+  const property = await getPropertyBySlug(slug);
 
   if (!property) {
     notFound();
@@ -72,7 +79,7 @@ export default async function PropertyDetailPage({
   );
 
   const baseUrl = process.env.NEXTAUTH_URL || "https://teamamanchawla.com";
-  const propertyUrl = `${baseUrl}/properties/${property.id}`;
+  const propertyUrl = `${baseUrl}/properties/${property.slug || property.id}`;
 
   return (
     <>
@@ -104,37 +111,12 @@ export default async function PropertyDetailPage({
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-8">
-              {/* Image Gallery */}
-              <div className="space-y-4">
-                {property.mainImage && (
-                  <div className="relative h-96 w-full rounded-lg overflow-hidden bg-neutral-200">
-                    <Image
-                      src={property.mainImage}
-                      alt={property.name}
-                      fill
-                      className="object-cover"
-                      priority
-                    />
-                  </div>
-                )}
-                {property.images && property.images.length > 0 && (
-                  <div className="grid grid-cols-4 gap-4">
-                    {property.images.slice(0, 4).map((image, index) => (
-                      <div
-                        key={index}
-                        className="relative h-24 w-full rounded-lg overflow-hidden bg-neutral-200"
-                      >
-                        <Image
-                          src={image}
-                          alt={`${property.name} - Image ${index + 1}`}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+              {/* Image Slider */}
+              <PropertyImageSlider
+                mainImage={property.mainImage}
+                images={property.images || []}
+                propertyName={property.name}
+              />
 
               {/* Property Details */}
               <Card>
@@ -167,13 +149,23 @@ export default async function PropertyDetailPage({
                   </div>
                 )}
 
-                <div className="grid grid-cols-2 gap-4 pt-6 border-t border-neutral-200">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-6 border-t border-neutral-200">
                   <div>
                     <p className="text-sm text-neutral-600 mb-1">Builder</p>
                     <p className="font-semibold text-neutral-900">
                       {property.builder}
                     </p>
                   </div>
+                  {property.builderReraNumber && (
+                    <div>
+                      <p className="text-sm text-neutral-600 mb-1">
+                        Builder RERA Number
+                      </p>
+                      <p className="font-semibold text-neutral-900">
+                        {property.builderReraNumber}
+                      </p>
+                    </div>
+                  )}
                   {property.location && (
                     <div>
                       <p className="text-sm text-neutral-600 mb-1">Location</p>
@@ -198,6 +190,99 @@ export default async function PropertyDetailPage({
                   </div>
                 </div>
               </Card>
+
+              {/* Location Advantages & Amenities */}
+              {(property.locationAdvantages?.length || property.amenities?.length) && (
+                <Card>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    {property.locationAdvantages &&
+                      property.locationAdvantages.length > 0 && (
+                        <div>
+                          <h2 className="text-xl font-semibold text-neutral-900 mb-3">
+                            Location Advantages
+                          </h2>
+                          <ul className="list-disc list-inside space-y-1 text-neutral-700">
+                            {property.locationAdvantages.map((advantage, index) => (
+                              <li key={index}>{advantage}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                    {property.amenities && property.amenities.length > 0 && (
+                      <div>
+                        <h2 className="text-xl font-semibold text-neutral-900 mb-3">
+                          Amenities
+                        </h2>
+                        <ul className="list-disc list-inside space-y-1 text-neutral-700">
+                          {property.amenities.map((amenity, index) => (
+                            <li key={index}>{amenity}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </Card>
+              )}
+
+              {/* Bank Details */}
+              {(property.bankAccountName ||
+                property.bankName ||
+                property.bankAccountNumber ||
+                property.bankIfsc ||
+                property.bankBranch) && (
+                <Card>
+                  <h2 className="text-xl font-semibold text-neutral-900 mb-4">
+                    Bank Details
+                  </h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {property.bankAccountName && (
+                      <div>
+                        <p className="text-sm text-neutral-600 mb-1">
+                          Account Name
+                        </p>
+                        <p className="font-semibold text-neutral-900">
+                          {property.bankAccountName}
+                        </p>
+                      </div>
+                    )}
+                    {property.bankName && (
+                      <div>
+                        <p className="text-sm text-neutral-600 mb-1">Bank Name</p>
+                        <p className="font-semibold text-neutral-900">
+                          {property.bankName}
+                        </p>
+                      </div>
+                    )}
+                    {property.bankAccountNumber && (
+                      <div>
+                        <p className="text-sm text-neutral-600 mb-1">
+                          Account Number
+                        </p>
+                        <p className="font-semibold text-neutral-900">
+                          {property.bankAccountNumber}
+                        </p>
+                      </div>
+                    )}
+                    {property.bankIfsc && (
+                      <div>
+                        <p className="text-sm text-neutral-600 mb-1">IFSC</p>
+                        <p className="font-semibold text-neutral-900">
+                          {property.bankIfsc}
+                        </p>
+                      </div>
+                    )}
+                    {property.bankBranch && (
+                      <div className="md:col-span-2">
+                        <p className="text-sm text-neutral-600 mb-1">Branch</p>
+                        <p className="font-semibold text-neutral-900">
+                          {property.bankBranch}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </Card>
+              )}
             </div>
 
             {/* Sidebar */}
@@ -227,7 +312,7 @@ export default async function PropertyDetailPage({
                     {relatedProperties.map((related) => (
                       <Link
                         key={related.id}
-                        href={`/properties/${related.id}`}
+                        href={`/properties/${related.slug || related.id}`}
                         className="block"
                       >
                         <div className="flex gap-4 hover:bg-neutral-50 p-2 rounded-lg transition-colors">
@@ -263,3 +348,4 @@ export default async function PropertyDetailPage({
     </>
   );
 }
+

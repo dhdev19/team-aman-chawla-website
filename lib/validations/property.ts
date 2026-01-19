@@ -2,6 +2,22 @@ import { z } from "zod";
 import { PropertyType, PropertyStatus } from "@prisma/client";
 
 /**
+ * Shared image URL schema that supports both absolute and app-relative URLs.
+ * This is needed because uploaded images are served from `/uploads/...`.
+ */
+const imageUrlSchema = z
+  .string()
+  .min(1, "Image URL is required")
+  .refine(
+    (value) =>
+      // Allow absolute URLs
+      /^https?:\/\//.test(value) ||
+      // And app-relative URLs like `/uploads/xyz.jpg`
+      value.startsWith("/"),
+    { message: "Invalid image URL" }
+  );
+
+/**
  * Property creation/update validation schema
  */
 export const propertySchema = z.object({
@@ -29,8 +45,9 @@ export const propertySchema = z.object({
   status: z.nativeEnum(PropertyStatus, {
     errorMap: () => ({ message: "Invalid property status" }),
   }),
-  mainImage: z.string().url("Invalid image URL").optional().nullable(),
-  images: z.array(z.string().url("Invalid image URL")).default([]),
+  // Allow relative URLs from the upload endpoint as well as absolute URLs
+  mainImage: imageUrlSchema.optional().nullable(),
+  images: z.array(imageUrlSchema).default([]),
   amenities: z.array(z.string()).default([]),
   metaTitle: z.string().max(200, "Meta title is too long").optional().nullable(),
   metaKeywords: z.string().max(500, "Meta keywords is too long").optional().nullable(),

@@ -230,7 +230,10 @@ export default function PropertyViewPage() {
               >
                 Delete Property
               </Button>
-              <Link href={`/properties/${property.id}`} className="block">
+              <Link
+                href={`/properties/${property.slug || property.id}`}
+                className="block"
+              >
                 <Button variant="ghost" className="w-full">
                   View Public Page
                 </Button>

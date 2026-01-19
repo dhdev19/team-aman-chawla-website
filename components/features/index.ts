@@ -2,6 +2,7 @@
  * Export all feature components
  */
 export * from "./property-card";
+export * from "./property-image-slider";
 export * from "./video-card";
 export * from "./testimonial-card";
 export * from "./search-bar";
