@@ -684,9 +684,17 @@ export function OldHomepage() {
             <Link
               href="/properties?type=RESIDENTIAL"
               className="category-card"
-              style={{ backgroundImage: "url('/category-apartments.png')" }}
             >
-              <div className="category-overlay">
+              <div className="category-image-wrapper">
+                <Image
+                  src="/category-apartments.jpeg"
+                  alt="Apartments"
+                  width={300}
+                  height={220}
+                  className="category-image"
+                />
+              </div>
+              <div className="category-content">
                 <h3>Apartments</h3>
                 <span className="category-cta">Explore</span>
               </div>
@@ -696,9 +704,17 @@ export function OldHomepage() {
             <Link
               href="/properties?type=RESIDENTIAL"
               className="category-card"
-              style={{ backgroundImage: "url('/category-villas.png')" }}
             >
-              <div className="category-overlay">
+              <div className="category-image-wrapper">
+                <Image
+                  src="/category-villas.png"
+                  alt="Villas"
+                  width={300}
+                  height={220}
+                  className="category-image"
+                />
+              </div>
+              <div className="category-content">
                 <h3>Villas</h3>
                 <span className="category-cta">Explore</span>
               </div>
@@ -708,9 +724,17 @@ export function OldHomepage() {
             <Link
               href="/properties?type=COMMERCIAL"
               className="category-card"
-              style={{ backgroundImage: "url('/category-commercial.jpg')" }}
             >
-              <div className="category-overlay">
+              <div className="category-image-wrapper">
+                <Image
+                  src="/category-commercial.jpg"
+                  alt="Commercial"
+                  width={300}
+                  height={220}
+                  className="category-image"
+                />
+              </div>
+              <div className="category-content">
                 <h3>Commercial</h3>
                 <span className="category-cta">Explore</span>
               </div>
@@ -720,9 +744,17 @@ export function OldHomepage() {
             <Link
               href="/properties?type=PLOT"
               className="category-card"
-              style={{ backgroundImage: "url('/category-plots.jpg')" }}
             >
-              <div className="category-overlay">
+              <div className="category-image-wrapper">
+                <Image
+                  src="/category-plots.jpg"
+                  alt="Plots"
+                  width={300}
+                  height={220}
+                  className="category-image"
+                />
+              </div>
+              <div className="category-content">
                 <h3>Plots</h3>
                 <span className="category-cta">Explore</span>
               </div>
