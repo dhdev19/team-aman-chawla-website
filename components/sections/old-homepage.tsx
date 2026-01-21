@@ -684,7 +684,7 @@ export function OldHomepage() {
             <Link
               href="/properties?type=RESIDENTIAL"
               className="category-card"
-              style={{ backgroundImage: "url('/category-apartments.jpg')" }}
+              style={{ backgroundImage: "url('/category-apartments.png')" }}
             >
               <div className="category-overlay">
                 <h3>Apartments</h3>
@@ -696,7 +696,7 @@ export function OldHomepage() {
             <Link
               href="/properties?type=RESIDENTIAL"
               className="category-card"
-              style={{ backgroundImage: "url('/category-villas.jpg')" }}
+              style={{ backgroundImage: "url('/category-villas.png')" }}
             >
               <div className="category-overlay">
                 <h3>Villas</h3>
@@ -732,7 +732,7 @@ export function OldHomepage() {
       </section>
 
       {/* Why Choose Us */}
-      <section className="py-16 bg-gray-50">
+      <section className="bg-gray-50 choose-us-counter-sec">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {stats.map((stat, index) => {

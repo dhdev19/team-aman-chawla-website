@@ -5,7 +5,7 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-neutral-900 text-neutral-300">
+    <footer className="bg-[#005ba1] text-neutral-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Company Info */}
@@ -93,9 +93,9 @@ export function Footer() {
           <div>
             <h4 className="text-white font-semibold mb-4">Contact</h4>
             <ul className="space-y-2 text-neutral-400">
-              <li>Email: info@teamamanchawla.com</li>
-              <li>Phone: +91 XXXXX XXXXX</li>
-              <li>Address: Your Address Here</li>
+              <li><a href="mailto:info@teamamanchawla.com">Email: info@teamamanchawla.com</a></li>
+              <li><a href="tel:+91 9118388999">Phone: +91 9118388999</a></li>
+              <li>Address: 503, 5th Floor, Eldeco Corporate Towers, Vibhuti Khand, Gomti Nagar, Lucknow, Uttar Pradesh 226010</li>
             </ul>
           </div>
         </div>
