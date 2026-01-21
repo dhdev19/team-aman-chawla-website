@@ -605,7 +605,7 @@ export function OldHomepage() {
         </div>
       </section>
 
-      {/* Projects We Deal In Section */}
+      {/* Projects We Deal In Section
       <section className="py-16 bg-white wedeal-sec">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
@@ -666,7 +666,7 @@ export function OldHomepage() {
             </Swiper>
           </div>
         </div>
-      </section>
+      </section> */}
 
 
       {/* Explore by Category */}
@@ -792,93 +792,6 @@ export function OldHomepage() {
         </div>
       </section>
 
-      {/* Query Form with Mobile Mockup */}
-      <section className="py-8 bg-white grey">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 querywrapper">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-            <div className="formsec">
-              <h4 className="text-2xl font-semibold text-gray-900 mb-6">
-                We're here to Assist — Submit Your Query
-              </h4>
-              <form onSubmit={handleQuerySubmit} className="space-y-4">
-                <div>
-                  <label htmlFor="query-name-secondary" className="sr-only">
-                    Name
-                  </label>
-                  <input
-                    id="query-name-secondary"
-                    name="name"
-                    type="text"
-                    autoComplete="name"
-                    value={queryForm.name}
-                    onChange={handleQueryChange}
-                    className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow"
-                    placeholder="Your Name"
-                    required
-                  />
-                </div>
-                <div>
-                  <label htmlFor="query-email-secondary" className="sr-only">
-                    Email
-                  </label>
-                  <input
-                    id="query-email-secondary"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    value={queryForm.email}
-                    onChange={handleQueryChange}
-                    className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow"
-                    placeholder="Email Address"
-                    required
-                  />
-                </div>
-                <div>
-                  <label htmlFor="query-phone-secondary" className="sr-only">
-                    Phone Number
-                  </label>
-                  <input
-                    id="query-phone-secondary"
-                    name="phone"
-                    type="tel"
-                    autoComplete="tel"
-                    value={queryForm.phone}
-                    onChange={handleQueryChange}
-                    className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow"
-                    placeholder="Phone Number"
-                  />
-                </div>
-                <Button
-                  type="submit"
-                  size="lg"
-                  disabled={isSubmittingQuery}
-                  className="w-full md:w-auto"
-                >
-                  {isSubmittingQuery ? "Submitting..." : "Submit"}
-                  <i className="fa-solid fa-arrow-right ml-2"></i>
-                </Button>
-                {queryFeedback === "success" && (
-                  <span className="block text-sm font-medium text-green-600">
-                    Thank you! We will get in touch shortly.
-                  </span>
-                )}
-                {queryFeedback === "error" && (
-                  <span className="block text-sm font-medium text-red-600">
-                    Please check your details and try again.
-                  </span>
-                )}
-              </form>
-            </div>
-            <div className="amanchawlascreen">
-              <img
-                src="/mobile-mockup.png"
-                alt="Property"
-                className="rounded-xl max-w-xs w-full"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Reviews Section */}
       <section className="py-16 bg-white review-sec">
@@ -995,6 +908,95 @@ export function OldHomepage() {
           </a>
         </div>
       </section>
+
+      {/* Query Form with Mobile Mockup */}
+      <section className="py-8 bg-white grey">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 querywrapper">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div className="formsec">
+              <h4 className="text-2xl font-semibold text-gray-900 mb-6">
+                We're here to Assist — Submit Your Query
+              </h4>
+              <form onSubmit={handleQuerySubmit} className="space-y-4">
+                <div>
+                  <label htmlFor="query-name-secondary" className="sr-only">
+                    Name
+                  </label>
+                  <input
+                    id="query-name-secondary"
+                    name="name"
+                    type="text"
+                    autoComplete="name"
+                    value={queryForm.name}
+                    onChange={handleQueryChange}
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow"
+                    placeholder="Your Name"
+                    required
+                  />
+                </div>
+                <div>
+                  <label htmlFor="query-email-secondary" className="sr-only">
+                    Email
+                  </label>
+                  <input
+                    id="query-email-secondary"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    value={queryForm.email}
+                    onChange={handleQueryChange}
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow"
+                    placeholder="Email Address"
+                    required
+                  />
+                </div>
+                <div>
+                  <label htmlFor="query-phone-secondary" className="sr-only">
+                    Phone Number
+                  </label>
+                  <input
+                    id="query-phone-secondary"
+                    name="phone"
+                    type="tel"
+                    autoComplete="tel"
+                    value={queryForm.phone}
+                    onChange={handleQueryChange}
+                    className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-shadow"
+                    placeholder="Phone Number"
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  size="lg"
+                  disabled={isSubmittingQuery}
+                  className="w-full md:w-auto"
+                >
+                  {isSubmittingQuery ? "Submitting..." : "Submit"}
+                  <i className="fa-solid fa-arrow-right ml-2"></i>
+                </Button>
+                {queryFeedback === "success" && (
+                  <span className="block text-sm font-medium text-green-600">
+                    Thank you! We will get in touch shortly.
+                  </span>
+                )}
+                {queryFeedback === "error" && (
+                  <span className="block text-sm font-medium text-red-600">
+                    Please check your details and try again.
+                  </span>
+                )}
+              </form>
+            </div>
+            <div className="amanchawlascreen">
+              <img
+                src="/mobile-mockup.png"
+                alt="Property"
+                className="rounded-xl max-w-xs w-full"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
     </div>
   );
 }

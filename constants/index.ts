@@ -27,11 +27,11 @@ export const NAVBAR_ITEMS = [
       { label: "Offices", href: "/properties?type=offices" },
     ],
   },
-  { label: "Refer", href: "/refer" },
-  { label: "Enquiry", href: "/enquiry" },
+  // { label: "Refer", href: "/refer" },
+  // { label: "Enquiry", href: "/enquiry" },
   { label: "Blogs", href: "/blogs" },
   { label: "Contact", href: "/contact" },
-  { label: "TAC Registration", href: "/tac-registration" },
+  // { label: "TAC Registration", href: "/tac-registration" },
 ] as const;
 
 /**

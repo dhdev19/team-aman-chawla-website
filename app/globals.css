@@ -1309,7 +1309,7 @@ h4.googlerev {
   text-align: left;
   color: #ffffff;
   line-height: 28px;
-  font-weight: 700;
+  /* font-weight: 700; */
   letter-spacing: 0.5px;
   font-family: "Montserrat", sans-serif;
 }
