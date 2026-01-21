@@ -303,7 +303,7 @@ export function OldHomepage() {
         <div className="bnrimagewrapper">
           <img src="/pre-hero-banner.jpg" alt="Property" className="" />
         </div>
-        <div className="content">
+        <div className="content font-montserrat">
           <h3>
             Homes & Investments That Fit{" "}
             <span className="highlight-rotating-words">
@@ -707,7 +707,7 @@ export function OldHomepage() {
             >
               <div className="category-image-wrapper">
                 <Image
-                  src="/category-villas.png"
+                  src="/category-villas.jpeg"
                   alt="Villas"
                   width={300}
                   height={220}
@@ -727,7 +727,7 @@ export function OldHomepage() {
             >
               <div className="category-image-wrapper">
                 <Image
-                  src="/category-commercial.jpg"
+                  src="/category-commercial.jpeg"
                   alt="Commercial"
                   width={300}
                   height={220}
@@ -747,7 +747,7 @@ export function OldHomepage() {
             >
               <div className="category-image-wrapper">
                 <Image
-                  src="/category-plots.jpg"
+                  src="/category-plots.jpeg"
                   alt="Plots"
                   width={300}
                   height={220}
@@ -944,10 +944,6 @@ export function OldHomepage() {
               { name: "Rishita", imgSrc: "/associations/builder-logo4.png" },
               { name: "ORO", imgSrc: "/associations/builder-logo5.png" },
               { name: "Jashn Realty", imgSrc: "/associations/builder-logo6.png" },
-              {
-                name: "Agrasheel Aashrayam",
-                imgSrc: "/associations/builder-logo7.png",
-              },
               { name: "Skyom City", imgSrc: "/associations/builder-logo8.png" },
               { name: "Amrawati", imgSrc: "/associations/builder-logo9.png" },
               { name: "Migsun", imgSrc: "/associations/builder-logo10.png" },

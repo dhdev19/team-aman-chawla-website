@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { NAVBAR_ITEMS } from "@/constants";
 import { cn } from "@/lib/utils";
 import { statsApi } from "@/lib/api-client";
+import Image from "next/image";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -27,12 +28,10 @@ export function Navbar() {
           {/* Logo */}
           <Link
             href="/"
-            className="flex items-center space-x-2"
+            className="flex items-center space-x-2 header-logo"
             onClick={() => handleNavClick("Home")}
           >
-            <span className="text-2xl font-bold text-primary-700">
-              Team Aman Chawla
-            </span>
+            <Image src="/aman-logo.png" alt="Team Aman Chawla" width={100} height={100} />
           </Link>
 
           {/* Desktop Menu */}
