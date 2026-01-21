@@ -482,6 +482,56 @@ export function OldHomepage() {
       </section>
 
 
+
+      {/* Box Property Section */}
+      <section className="box-propetysec">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h3>Get Genuine Buyers for Your Property—Effortlessly</h3>
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="box-section">
+              <div className="iconbox">
+                <img src="/guidances-icon.png" alt="icon" />
+              </div>
+              <h4>Personalized & Honest Guidance</h4>
+              <p>
+                You'll receive transparent, buyer-friendly advice at every step.
+              </p>
+            </div>
+            <div className="box-section">
+              <div className="iconbox">
+                <img src="/trusted-clients.png" alt="icon" />
+              </div>
+              <h4>Trusted by Many Clients</h4>
+              <p>
+                A proven track record of successful bookings and satisfied clients
+                makes us a reliable partner in your journey.
+              </p>
+            </div>
+            <div className="box-section">
+              <div className="iconbox">
+                <img src="/investment.png" alt="icon" />
+              </div>
+              <h4>Investment-Focused Insights</h4>
+              <p>
+                You will Get expert breakdowns, project reviews, and strategic
+                investment recommendations.
+              </p>
+            </div>
+            <div className="box-section">
+              <div className="iconbox">
+                <img src="/seamless-process.png" alt="icon" />
+              </div>
+              <h4>Seamless, Stress-Free Process</h4>
+              <p>
+                Clarity, transparency, and genuine support — every step of the way.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Video Section */}
       <section className="py-8 bg-white video-sec">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -553,55 +603,6 @@ export function OldHomepage() {
               </SwiperSlide>
             ))}
           </Swiper>
-        </div>
-      </section>
-
-      {/* Box Property Section */}
-      <section className="box-propetysec">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h3>Get Genuine Buyers for Your Property—Effortlessly</h3>
-        </div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="box-section">
-              <div className="iconbox">
-                <img src="/guidances-icon.png" alt="icon" />
-              </div>
-              <h4>Personalized & Honest Guidance</h4>
-              <p>
-                You'll receive transparent, buyer-friendly advice at every step.
-              </p>
-            </div>
-            <div className="box-section">
-              <div className="iconbox">
-                <img src="/trusted-clients.png" alt="icon" />
-              </div>
-              <h4>Trusted by Many Clients</h4>
-              <p>
-                A proven track record of successful bookings and satisfied clients
-                makes us a reliable partner in your journey.
-              </p>
-            </div>
-            <div className="box-section">
-              <div className="iconbox">
-                <img src="/investment.png" alt="icon" />
-              </div>
-              <h4>Investment-Focused Insights</h4>
-              <p>
-                You will Get expert breakdowns, project reviews, and strategic
-                investment recommendations.
-              </p>
-            </div>
-            <div className="box-section">
-              <div className="iconbox">
-                <img src="/seamless-process.png" alt="icon" />
-              </div>
-              <h4>Seamless, Stress-Free Process</h4>
-              <p>
-                Clarity, transparency, and genuine support — every step of the way.
-              </p>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -910,7 +911,7 @@ export function OldHomepage() {
       </section>
 
       {/* Query Form with Mobile Mockup */}
-      <section className="py-8 bg-white grey">
+      <section className="bg-white grey footer-contact">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 querywrapper">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
             <div className="formsec">
