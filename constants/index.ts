@@ -16,6 +16,7 @@ export type PropertyType = (typeof PROPERTY_TYPES)[keyof typeof PROPERTY_TYPES];
 export const NAVBAR_ITEMS = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
+  { label: "New Launch", href: "/new-launch" },
   {
     label: "Properties",
     href: "/properties",
@@ -39,6 +40,7 @@ export const NAVBAR_ITEMS = [
 export const ROUTES = {
   HOME: "/",
   ABOUT: "/about",
+  NEW_LAUNCH: "/new-launch",
   PROPERTIES: "/properties",
   REFER: "/refer",
   ENQUIRY: "/enquiry",

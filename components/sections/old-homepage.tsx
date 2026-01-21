@@ -12,6 +12,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { PropertyCard } from "@/components/features/property-card";
+import { ROUTES } from "@/constants";
 
 interface Property {
   id: string;
@@ -151,7 +152,7 @@ export function OldHomepage() {
 
   const preHeroFeaturePoints = [
     "Dedicated Relationship Manager",
-    "Exclusive Offers & Special Deals",
+    // "Exclusive Offers & Special Deals",
     "End-to-End Assistance",
     "Expert Market Guidance",
   ];
@@ -437,6 +438,50 @@ export function OldHomepage() {
         </div>
       </section>
 
+      {/* Featured Properties - New launch */}
+      <section className="py-4 prpertysec">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-left mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Newly Launched Properties
+            </h2>
+            <p className="text-xl text-gray-600 description-text">
+              Explore our new launch properties that are currently under construction and will be completed in the near future.
+            </p>
+          </div>
+
+          {loading ? (
+            <div className="flex justify-center py-12">
+              <div className="w-8 h-8 border-2 border-primary-200 border-t-primary-600 rounded-full animate-spin" />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {featuredProperties.map((property) => {
+              // Convert API property to PropertyCard expected format
+              const cardProperty = {
+                ...property,
+                type: property.type as any,
+                status: property.status as any,
+                createdAt: property.createdAt ? new Date(property.createdAt) : new Date(),
+                updatedAt: property.updatedAt ? new Date(property.updatedAt) : new Date(),
+              };
+              return <PropertyCard key={property.id} property={cardProperty} />;
+            })}
+            </div>
+          )}
+
+          <div className="text-center mt-12">
+            <Link href={ROUTES.NEW_LAUNCH}>
+              <Button size="lg">
+                View All New Launches
+                <i className="fa-solid fa-arrow-right ml-2"></i>
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+
       {/* Video Section */}
       <section className="py-8 bg-white video-sec">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -623,49 +668,6 @@ export function OldHomepage() {
         </div>
       </section>
 
-      {/* Featured Properties */}
-      <section className="py-4 prpertysec">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-left mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Featured Properties
-            </h2>
-            <p className="text-xl text-gray-600 description-text">
-              Explore our handpicked selection of premium properties that offer
-              exceptional value and lifestyle.
-            </p>
-          </div>
-
-          {loading ? (
-            <div className="flex justify-center py-12">
-              <div className="w-8 h-8 border-2 border-primary-200 border-t-primary-600 rounded-full animate-spin" />
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {featuredProperties.map((property) => {
-              // Convert API property to PropertyCard expected format
-              const cardProperty = {
-                ...property,
-                type: property.type as any,
-                status: property.status as any,
-                createdAt: property.createdAt ? new Date(property.createdAt) : new Date(),
-                updatedAt: property.updatedAt ? new Date(property.updatedAt) : new Date(),
-              };
-              return <PropertyCard key={property.id} property={cardProperty} />;
-            })}
-            </div>
-          )}
-
-          <div className="text-center mt-12">
-            <Link href="/properties">
-              <Button size="lg">
-                View All Properties
-                <i className="fa-solid fa-arrow-right ml-2"></i>
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
 
       {/* Explore by Category */}
       <section className="py-16 propertycategorysec">
