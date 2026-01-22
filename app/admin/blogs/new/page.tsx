@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 
 export default function AddBlogPage() {
   const router = useRouter();
@@ -241,19 +242,14 @@ export default function AddBlogPage() {
                 <label className="block text-sm font-medium text-neutral-700 mb-2">
                   Content *
                 </label>
-                <Textarea
-                  rows={15}
-                  {...register("content")}
-                  className={errors.content ? "border-red-500" : ""}
-                  placeholder="Write your blog post content here..."
+                <RichTextEditor
+                  value={watch("content") || ""}
+                  onChange={(value) => setValue("content", value)}
+                  placeholder="Write your blog post content here... You can use the toolbar to format text with headings, bold, italic, lists, and more."
+                  error={errors.content?.message}
                 />
-                {errors.content && (
-                  <p className="mt-1 text-sm text-red-600">
-                    {errors.content.message}
-                  </p>
-                )}
                 <p className="mt-1 text-xs text-neutral-500">
-                  Minimum 100 characters required
+                  Minimum 100 characters required. Use the toolbar above to format your content with HTML (headings, bold, italic, lists, etc.)
                 </p>
               </div>
 
