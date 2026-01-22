@@ -41,7 +41,7 @@ export default function BlogsPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen">
+      <main className="min-h-screen blogpage-class-css">
         <div className="bg-primary-700 text-white py-12">
           <Container>
             <FadeIn>
