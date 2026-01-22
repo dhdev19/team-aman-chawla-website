@@ -101,15 +101,17 @@ export default function BlogsPage() {
                         )}
                         {blog.type === "VIDEO" && blog.videoUrl && (
                           blog.videoThumbnail ? (
-                            <div className="relative h-48 w-full overflow-hidden bg-neutral-200">
+                            <div className="relative h-48 w-full overflow-hidden bg-neutral-200 group">
                               <Image
                                 src={blog.videoThumbnail}
                                 alt={blog.title}
                                 fill
                                 className="object-cover"
                               />
-                              <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 hover:bg-opacity-40 transition-all">
-                                <i className="fa-solid fa-play-circle text-white text-5xl drop-shadow-lg"></i>
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <div className="bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all rounded-full p-3">
+                                  <i className="fa-solid fa-play-circle text-white text-5xl drop-shadow-lg"></i>
+                                </div>
                               </div>
                               <div className="absolute bottom-2 right-2 bg-red-600 text-white px-2 py-1 rounded text-xs font-semibold">
                                 VIDEO
