@@ -1782,3 +1782,9 @@ h4.googlerev {
   text-transform: inherit;
 }
 
+.homepage-blogs-sec h2 {
+  font-size: 22px;
+}
+.homepage-blogs-sec a {
+  font-size: 13px;
+}
