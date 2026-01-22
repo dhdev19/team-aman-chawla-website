@@ -6,13 +6,14 @@ import { generateSlug } from "@/lib/utils";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAdmin();
+    const { id } = await params;
 
     const blog = await prisma.blog.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!blog) {
@@ -53,10 +54,11 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAdmin();
+    const { id } = await params;
 
     const body = await request.json();
     const validatedData = blogSchema.parse(body);
@@ -67,7 +69,7 @@ export async function PUT(
         where: { slug: validatedData.slug },
       });
 
-      if (existingBlog && existingBlog.id !== params.id) {
+      if (existingBlog && existingBlog.id !== id) {
         return NextResponse.json(
           {
             success: false,
@@ -79,7 +81,7 @@ export async function PUT(
     }
 
     const blog = await prisma.blog.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         title: validatedData.title,
         slug: validatedData.slug,
@@ -129,13 +131,14 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAdmin();
+    const { id } = await params;
 
     await prisma.blog.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({
