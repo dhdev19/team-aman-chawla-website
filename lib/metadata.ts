@@ -20,6 +20,11 @@ export const defaultMetadata: Metadata = {
     "Team Aman Chawla",
   ],
   authors: [{ name: "Team Aman Chawla" }],
+  icons: {
+    icon: "/favicon.jpg",
+    shortcut: "/favicon.jpg",
+    apple: "/favicon.jpg",
+  },
   openGraph: {
     type: "website",
     locale: "en_IN",
