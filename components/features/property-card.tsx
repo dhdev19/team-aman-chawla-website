@@ -54,14 +54,15 @@ export function PropertyCard({ property, className }: PropertyCardProps) {
           <div className="absolute top-2 right-2">
             <span
               className={cn(
-                "px-2 py-1 rounded-full text-xs font-semibold",
+                "px-2 py-1 rounded-full text-xs font-semibold capitalize",
                 property.status === "AVAILABLE" &&
                   "bg-green-500 text-white",
                 property.status === "SOLD" && "bg-red-500 text-white",
-                property.status === "RESERVED" && "bg-yellow-500 text-white"
+                property.status === "RESERVED" && "bg-yellow-500 text-white",
+                (property.status as string) === "NEW_LAUNCH" && "bg-blue-500 text-white"
               )}
             >
-              {property.status}
+              {property.status.replace("_", " ").toLowerCase()}
             </span>
           </div>
         </div>
