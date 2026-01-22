@@ -82,7 +82,7 @@ export default async function BlogDetailPage({
         url={blogUrl}
       />
       <Navbar />
-      <main className="min-h-screen blogpage-class-css">
+      <main className="min-h-screen">
         <Container className="py-12">
           {/* Breadcrumb */}
           <nav className="mb-8 text-sm text-neutral-600">

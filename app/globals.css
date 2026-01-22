@@ -96,32 +96,6 @@ a {
   text-transform: uppercase;
 }
 
-/* Override global styles for blog pages */
-.blogpage-class-css button {
-  text-transform: none;
-}
-
-.blogpage-class-css a {
-  text-transform: none;
-}
-
-/* Ensure blog content prose styles are not affected by global uppercase */
-.blogpage-class-css .prose h1,
-.blogpage-class-css .prose h2,
-.blogpage-class-css .prose h3,
-.blogpage-class-css .prose h4,
-.blogpage-class-css .prose h5,
-.blogpage-class-css .prose h6,
-.blogpage-class-css .prose p,
-.blogpage-class-css .prose a,
-.blogpage-class-css .prose strong,
-.blogpage-class-css .prose em,
-.blogpage-class-css .prose ul,
-.blogpage-class-css .prose ol,
-.blogpage-class-css .prose li {
-  text-transform: none;
-}
-
 .whatsapp-floating-button {
   position: fixed;
   right: 1.5rem;
