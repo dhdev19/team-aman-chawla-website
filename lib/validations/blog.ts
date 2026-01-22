@@ -1,6 +1,23 @@
 import { z } from "zod";
 
 /**
+ * Shared image URL schema that supports both absolute and app-relative URLs.
+ * This is needed because uploaded images are served from `/uploads/...`.
+ */
+const imageUrlSchema = z
+  .string()
+  .refine(
+    (value) =>
+      // Allow absolute URLs
+      /^https?:\/\//.test(value) ||
+      // And app-relative URLs like `/uploads/xyz.jpg`
+      value.startsWith("/"),
+    { message: "Invalid image URL" }
+  )
+  .optional()
+  .nullable();
+
+/**
  * Blog creation/update validation schema
  */
 export const blogSchema = z.object({
@@ -12,7 +29,7 @@ export const blogSchema = z.object({
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug must be URL-friendly (lowercase, hyphens only)"),
   content: z.string().min(100, "Content must be at least 100 characters"),
   excerpt: z.string().max(500, "Excerpt is too long").optional().nullable(),
-  image: z.string().url("Invalid image URL").optional().nullable(),
+  image: imageUrlSchema,
   published: z.boolean().default(false),
 });
 
