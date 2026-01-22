@@ -9,6 +9,7 @@ import { formatCurrency, formatDate } from "@/lib/utils";
 import { generatePropertyMetadata } from "@/lib/metadata";
 import { PropertySchema } from "@/components/seo/schema-org";
 import { PropertyImageSlider } from "@/components/features/property-image-slider";
+import { PropertyStatus } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -34,9 +35,12 @@ async function getRelatedProperties(
       where: {
         id: { not: currentId },
         type: type as any,
-        status: "AVAILABLE",
+        status: {
+          in: [PropertyStatus.AVAILABLE, "NEW_LAUNCH" as PropertyStatus, PropertyStatus.RESERVED],
+        },
       },
       take: limit,
+      orderBy: { createdAt: "desc" },
     });
     return properties;
   } catch (error) {
@@ -128,15 +132,19 @@ export default async function PropertyDetailPage({
                     {property.type.replace("_", " ").toLowerCase()}
                   </span>
                   <span
-                    className={`px-3 py-1 rounded-full text-sm font-medium ${
-                      property.status === "AVAILABLE"
+                    className={`px-3 py-1 rounded-full text-sm font-medium capitalize ${
+                      property.status === PropertyStatus.AVAILABLE
                         ? "bg-green-100 text-green-700"
-                        : property.status === "SOLD"
+                        : property.status === PropertyStatus.SOLD
                         ? "bg-red-100 text-red-700"
-                        : "bg-yellow-100 text-yellow-700"
+                        : property.status === PropertyStatus.RESERVED
+                        ? "bg-yellow-100 text-yellow-700"
+                        : (property.status as string) === "NEW_LAUNCH"
+                        ? "bg-blue-100 text-blue-700"
+                        : "bg-gray-100 text-gray-700"
                     }`}
                   >
-                    {property.status}
+                    {property.status.replace("_", " ").toLowerCase()}
                   </span>
                 </div>
 
