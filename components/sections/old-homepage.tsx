@@ -977,11 +977,7 @@ export function OldHomepage() {
                               fill
                               className="object-cover"
                             />
-                            <div className="absolute inset-0 flex items-center justify-center">
-                              <div className="bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all rounded-full p-3">
-                                
-                              </div>
-                            </div>
+                            
                             <div className="absolute bottom-2 right-2 bg-red-600 text-white px-2 py-1 rounded text-xs font-semibold">
                               VIDEO
                             </div>
