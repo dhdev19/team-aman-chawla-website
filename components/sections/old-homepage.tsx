@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { GoogleReviews } from "@/components/features/google-reviews";
 import { propertyApi, enquiryApi, videoApi, blogApi } from "@/lib/api-client";
+import { getYouTubeThumbnail } from "@/lib/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
@@ -968,16 +969,35 @@ export function OldHomepage() {
                           />
                         </div>
                       )}
-                      {blog.type === "VIDEO" && blog.videoUrl && (
-                        <div className="relative h-48 w-full overflow-hidden bg-neutral-200">
-                          <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                            <i className="fa-solid fa-play-circle text-white text-6xl"></i>
+                      {blog.type === "VIDEO" && blog.videoUrl && (() => {
+                        // Use uploaded thumbnail if available, otherwise use YouTube thumbnail
+                        const thumbnailUrl = blog.videoThumbnail || getYouTubeThumbnail(blog.videoUrl);
+                        return thumbnailUrl ? (
+                          <div className="relative h-48 w-full overflow-hidden bg-neutral-200">
+                            <Image
+                              src={thumbnailUrl}
+                              alt={blog.title}
+                              fill
+                              className="object-cover"
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 hover:bg-opacity-40 transition-all">
+                              <i className="fa-solid fa-play-circle text-white text-5xl drop-shadow-lg"></i>
+                            </div>
+                            <div className="absolute bottom-2 right-2 bg-red-600 text-white px-2 py-1 rounded text-xs font-semibold">
+                              VIDEO
+                            </div>
                           </div>
-                          <div className="absolute bottom-2 right-2 bg-red-600 text-white px-2 py-1 rounded text-xs font-semibold">
-                            VIDEO
+                        ) : (
+                          <div className="relative h-48 w-full overflow-hidden bg-neutral-200">
+                            <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                              <i className="fa-solid fa-play-circle text-white text-6xl"></i>
+                            </div>
+                            <div className="absolute bottom-2 right-2 bg-red-600 text-white px-2 py-1 rounded text-xs font-semibold">
+                              VIDEO
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        );
+                      })()}
                       <div className="p-6">
                         <div className="text-sm text-neutral-500 mb-2">
                           {new Date(blog.createdAt).toLocaleDateString("en-US", {

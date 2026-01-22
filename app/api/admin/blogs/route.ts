@@ -38,6 +38,7 @@ export async function POST(request: NextRequest) {
         excerpt: validatedData.excerpt,
         image: validatedData.image,
         videoUrl: validatedData.videoUrl,
+        videoThumbnail: validatedData.videoThumbnail,
         published: validatedData.published,
       },
     });

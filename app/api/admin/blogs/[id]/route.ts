@@ -90,6 +90,7 @@ export async function PUT(
         excerpt: validatedData.excerpt,
         image: validatedData.image,
         videoUrl: validatedData.videoUrl,
+        videoThumbnail: validatedData.videoThumbnail,
         published: validatedData.published,
       },
     });

@@ -58,6 +58,7 @@ export const blogSchema = z
     excerpt: z.string().max(500, "Excerpt is too long").optional().nullable(),
     image: imageUrlSchema,
     videoUrl: youtubeUrlSchema,
+    videoThumbnail: imageUrlSchema,
     published: z.boolean().default(false),
   })
   .refine(

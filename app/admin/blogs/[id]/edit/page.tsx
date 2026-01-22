@@ -27,8 +27,12 @@ export default function EditBlogPage() {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [uploadedImage, setUploadedImage] = React.useState<string | null>(null);
   const [existingImage, setExistingImage] = React.useState<string | null>(null);
+  const [uploadedVideoThumbnail, setUploadedVideoThumbnail] = React.useState<string | null>(null);
+  const [existingVideoThumbnail, setExistingVideoThumbnail] = React.useState<string | null>(null);
   const [isUploading, setIsUploading] = React.useState(false);
+  const [isUploadingThumbnail, setIsUploadingThumbnail] = React.useState(false);
   const imageInputRef = React.useRef<HTMLInputElement>(null);
+  const videoThumbnailInputRef = React.useRef<HTMLInputElement>(null);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["admin-blog", blogId],
@@ -53,7 +57,9 @@ export default function EditBlogPage() {
     if (data) {
       const blogData = data as any;
       const image = blogData.image || null;
+      const videoThumbnail = blogData.videoThumbnail || null;
       setExistingImage(image);
+      setExistingVideoThumbnail(videoThumbnail);
       reset({
         title: blogData.title,
         slug: blogData.slug,
@@ -62,6 +68,7 @@ export default function EditBlogPage() {
         excerpt: blogData.excerpt || "",
         image: image || "",
         videoUrl: blogData.videoUrl || "",
+        videoThumbnail: videoThumbnail || "",
         published: blogData.published || false,
       });
     }
@@ -113,6 +120,50 @@ export default function EditBlogPage() {
     }
   };
 
+  const handleVideoThumbnailUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif"];
+    if (!allowedTypes.includes(file.type)) {
+      alert("Invalid file type. Please upload an image file (JPEG, PNG, WebP, or GIF).");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+      alert("File size exceeds 5MB limit. Please choose a smaller image.");
+      return;
+    }
+
+    setIsUploadingThumbnail(true);
+    try {
+      const response = await uploadApi.uploadImage(file);
+      if (response.success && response.data) {
+        const imageUrl = response.data.url;
+        setUploadedVideoThumbnail(imageUrl);
+        setValue("videoThumbnail", imageUrl);
+      } else {
+        alert(response.error || "Failed to upload thumbnail");
+      }
+    } catch (error: any) {
+      alert(error.message || "Failed to upload thumbnail. Please try again.");
+    } finally {
+      setIsUploadingThumbnail(false);
+    }
+  };
+
+  const handleRemoveVideoThumbnail = () => {
+    setUploadedVideoThumbnail(null);
+    const fallbackThumbnail = existingVideoThumbnail;
+    setValue("videoThumbnail", fallbackThumbnail || null);
+    if (videoThumbnailInputRef.current) {
+      videoThumbnailInputRef.current.value = "";
+    }
+  };
+
   const onSubmit = async (formData: BlogFormData) => {
     setIsSubmitting(true);
 
@@ -121,6 +172,7 @@ export default function EditBlogPage() {
         ...formData,
         image: blogType === BlogType.TEXT ? (uploadedImage || formData.image || null) : null,
         videoUrl: blogType === BlogType.VIDEO ? formData.videoUrl : null,
+        videoThumbnail: blogType === BlogType.VIDEO ? (uploadedVideoThumbnail || formData.videoThumbnail || null) : null,
       });
 
       if (response.success) {
@@ -304,24 +356,93 @@ export default function EditBlogPage() {
               )}
 
               {blogType === BlogType.VIDEO && (
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-2">
-                    YouTube Video URL *
-                  </label>
-                  <Input
-                    {...register("videoUrl")}
-                    className={errors.videoUrl ? "border-red-500" : ""}
-                    placeholder="https://www.youtube.com/watch?v=..."
-                  />
-                  {errors.videoUrl && (
-                    <p className="mt-1 text-sm text-red-600">
-                      {errors.videoUrl.message}
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-700 mb-2">
+                      YouTube Video URL *
+                    </label>
+                    <Input
+                      {...register("videoUrl")}
+                      className={errors.videoUrl ? "border-red-500" : ""}
+                      placeholder="https://www.youtube.com/watch?v=..."
+                    />
+                    {errors.videoUrl && (
+                      <p className="mt-1 text-sm text-red-600">
+                        {errors.videoUrl.message}
+                      </p>
+                    )}
+                    <p className="mt-1 text-xs text-neutral-500">
+                      Enter a valid YouTube URL (e.g., https://www.youtube.com/watch?v=... or https://youtu.be/...)
                     </p>
-                  )}
-                  <p className="mt-1 text-xs text-neutral-500">
-                    Enter a valid YouTube URL (e.g., https://www.youtube.com/watch?v=... or https://youtu.be/...)
-                  </p>
-                </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-700 mb-2">
+                      Video Thumbnail (Optional)
+                    </label>
+                    <label htmlFor="video-thumbnail-upload-edit" className="sr-only">
+                      Upload video thumbnail
+                    </label>
+                    <input
+                      ref={videoThumbnailInputRef}
+                      type="file"
+                      accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+                      onChange={handleVideoThumbnailUpload}
+                      className="hidden"
+                      id="video-thumbnail-upload-edit"
+                      disabled={isUploadingThumbnail}
+                      aria-label="Upload video thumbnail"
+                    />
+                    <div className="space-y-3">
+                      <div className="flex gap-2">
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          onClick={() => videoThumbnailInputRef.current?.click()}
+                          disabled={isUploadingThumbnail}
+                        >
+                          {isUploadingThumbnail ? "Uploading..." : "Upload Thumbnail"}
+                        </Button>
+                        {uploadedVideoThumbnail && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            onClick={handleRemoveVideoThumbnail}
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            Remove
+                          </Button>
+                        )}
+                      </div>
+                      {uploadedVideoThumbnail && (
+                        <div className="relative h-48 w-full max-w-md rounded overflow-hidden bg-neutral-200 border border-neutral-300">
+                          <img
+                            src={uploadedVideoThumbnail}
+                            alt="Uploaded video thumbnail"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
+                      {existingVideoThumbnail && !uploadedVideoThumbnail && (
+                        <div className="relative h-48 w-full max-w-md rounded overflow-hidden bg-neutral-200 border border-neutral-300">
+                          <img
+                            src={existingVideoThumbnail}
+                            alt="Current video thumbnail"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
+                    </div>
+                    {errors.videoThumbnail && (
+                      <p className="mt-1 text-sm text-red-600">
+                        {errors.videoThumbnail.message}
+                      </p>
+                    )}
+                    <p className="mt-1 text-xs text-neutral-500">
+                      Upload a custom thumbnail for the video. If not provided, YouTube thumbnail will be used.
+                    </p>
+                  </div>
+                </>
               )}
 
               <div>

@@ -89,7 +89,7 @@ export default function BlogsPage() {
                         variant="elevated"
                         className="h-full hover:shadow-xl transition-shadow cursor-pointer overflow-hidden"
                       >
-                        {blog.image && (
+                        {blog.type === "TEXT" && blog.image && (
                           <div className="relative h-48 w-full overflow-hidden bg-neutral-200">
                             <Image
                               src={blog.image}
@@ -99,6 +99,35 @@ export default function BlogsPage() {
                             />
                           </div>
                         )}
+                        {blog.type === "VIDEO" && blog.videoUrl && (() => {
+                          // Use uploaded thumbnail if available, otherwise use YouTube thumbnail
+                          const thumbnailUrl = blog.videoThumbnail || getYouTubeThumbnail(blog.videoUrl);
+                          return thumbnailUrl ? (
+                            <div className="relative h-48 w-full overflow-hidden bg-neutral-200">
+                              <Image
+                                src={thumbnailUrl}
+                                alt={blog.title}
+                                fill
+                                className="object-cover"
+                              />
+                              <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 hover:bg-opacity-40 transition-all">
+                                <i className="fa-solid fa-play-circle text-white text-5xl drop-shadow-lg"></i>
+                              </div>
+                              <div className="absolute bottom-2 right-2 bg-red-600 text-white px-2 py-1 rounded text-xs font-semibold">
+                                VIDEO
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="relative h-48 w-full overflow-hidden bg-neutral-200">
+                              <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                                <i className="fa-solid fa-play-circle text-white text-6xl"></i>
+                              </div>
+                              <div className="absolute bottom-2 right-2 bg-red-600 text-white px-2 py-1 rounded text-xs font-semibold">
+                                VIDEO
+                              </div>
+                            </div>
+                          );
+                        })()}
                         <div className="p-6">
                           <div className="text-sm text-neutral-500 mb-2">
                             {formatDate(blog.createdAt)}
@@ -112,7 +141,7 @@ export default function BlogsPage() {
                             </p>
                           )}
                           <span className="text-primary-700 font-medium hover:underline">
-                            Read More →
+                            {blog.type === "VIDEO" ? "Watch Video →" : "Read More →"}
                           </span>
                         </div>
                       </Card>
