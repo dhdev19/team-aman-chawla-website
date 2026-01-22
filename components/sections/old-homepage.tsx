@@ -57,10 +57,11 @@ export function OldHomepage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch featured properties
+        // Fetch new launch properties for featured section
         const propertiesResponse = await propertyApi.getAll({
           page: "1",
           limit: "6",
+          status: "NEW_LAUNCH",
         });
         if (propertiesResponse.success && propertiesResponse.data && typeof propertiesResponse.data === "object" && "data" in propertiesResponse.data) {
           const data = propertiesResponse.data as { data: Property[] };

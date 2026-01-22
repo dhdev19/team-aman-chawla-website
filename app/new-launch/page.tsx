@@ -33,7 +33,7 @@ export default function NewLaunchPage() {
       const params: Record<string, string> = {
         page: currentPage.toString(),
         limit: limit.toString(),
-        status: "AVAILABLE", // Only show available properties for new launches
+        status: "NEW_LAUNCH", // Only show new launch properties
       };
       if (searchQuery) params.search = searchQuery;
       if (selectedType) params.type = selectedType;
