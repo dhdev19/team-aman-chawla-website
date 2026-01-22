@@ -14,7 +14,6 @@ import { propertyApi } from "@/lib/api-client";
 import { useQuery } from "@tanstack/react-query";
 
 const propertyTypeOptions = [
-  { value: "", label: "All Types" },
   { value: "RESIDENTIAL", label: "Residential" },
   { value: "PLOT", label: "Plot" },
   { value: "COMMERCIAL", label: "Commercial" },
