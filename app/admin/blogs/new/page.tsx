@@ -10,8 +10,14 @@ import { generateSlug } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Select } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
+// BlogType enum from Prisma
+const BlogType = {
+  TEXT: "TEXT" as const,
+  VIDEO: "VIDEO" as const,
+} as const;
 
 export default function AddBlogPage() {
   const router = useRouter();
@@ -27,14 +33,16 @@ export default function AddBlogPage() {
     formState: { errors },
     watch,
     setValue,
-  } = useForm<BlogFormData>({
+  } = useForm({
     resolver: zodResolver(blogSchema),
     defaultValues: {
       published: false,
+      type: BlogType.TEXT,
     },
   });
 
   const title = watch("title");
+  const blogType = watch("type");
 
   // Auto-generate slug when title changes
   React.useEffect(() => {
@@ -168,6 +176,24 @@ export default function AddBlogPage() {
 
               <div>
                 <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Blog Type *
+                </label>
+                <Select
+                  {...register("type")}
+                  className={errors.type ? "border-red-500" : ""}
+                >
+                  <option value={BlogType.TEXT}>Text Blog</option>
+                  <option value={BlogType.VIDEO}>Video Blog</option>
+                </Select>
+                {errors.type && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.type.message}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
                   Excerpt
                 </label>
                 <Textarea
@@ -183,10 +209,11 @@ export default function AddBlogPage() {
                 )}
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-2">
-                  Featured Image
-                </label>
+              {blogType === BlogType.TEXT && (
+                <div>
+                  <label className="block text-sm font-medium text-neutral-700 mb-2">
+                    Featured Image
+                  </label>
                 <label htmlFor="featured-image-upload" className="sr-only">
                   Upload featured image
                 </label>
@@ -236,7 +263,29 @@ export default function AddBlogPage() {
                     {errors.image.message}
                   </p>
                 )}
-              </div>
+                </div>
+              )}
+
+              {blogType === BlogType.VIDEO && (
+                <div>
+                  <label className="block text-sm font-medium text-neutral-700 mb-2">
+                    YouTube Video URL *
+                  </label>
+                  <Input
+                    {...register("videoUrl")}
+                    className={errors.videoUrl ? "border-red-500" : ""}
+                    placeholder="https://www.youtube.com/watch?v=..."
+                  />
+                  {errors.videoUrl && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.videoUrl.message}
+                    </p>
+                  )}
+                  <p className="mt-1 text-xs text-neutral-500">
+                    Enter a valid YouTube URL (e.g., https://www.youtube.com/watch?v=... or https://youtu.be/...)
+                  </p>
+                </div>
+              )}
 
               <div>
                 <label className="block text-sm font-medium text-neutral-700 mb-2">

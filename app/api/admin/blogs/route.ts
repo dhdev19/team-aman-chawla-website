@@ -33,9 +33,11 @@ export async function POST(request: NextRequest) {
       data: {
         title: validatedData.title,
         slug,
+        type: validatedData.type,
         content: validatedData.content,
         excerpt: validatedData.excerpt,
         image: validatedData.image,
+        videoUrl: validatedData.videoUrl,
         published: validatedData.published,
       },
     });

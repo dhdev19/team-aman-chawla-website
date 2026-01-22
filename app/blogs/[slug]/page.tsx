@@ -5,6 +5,7 @@ import { Footer } from "@/components/layout/footer";
 import { Container } from "@/components/ui/container";
 import { Card } from "@/components/ui/card";
 import { formatDate } from "@/lib/utils";
+import { getYouTubeVideoId } from "@/lib/image";
 import { generateBlogMetadata } from "@/lib/metadata";
 import { ArticleSchema } from "@/components/seo/schema-org";
 import { Metadata } from "next";
@@ -76,7 +77,7 @@ export default async function BlogDetailPage({
       <ArticleSchema
         title={blog.title}
         description={blog.excerpt || undefined}
-        image={blog.image || undefined}
+        image={(blog as any).type === "TEXT" ? (blog.image || undefined) : undefined}
         datePublished={blog.createdAt.toISOString()}
         dateModified={blog.updatedAt.toISOString()}
         url={blogUrl}
@@ -101,7 +102,7 @@ export default async function BlogDetailPage({
             {/* Main Content */}
             <article className="lg:col-span-2">
               <Card>
-                {blog.image && (
+                {(blog as any).type === "TEXT" && blog.image && (
                   <div className="relative h-96 w-full rounded-lg overflow-hidden bg-neutral-200 mb-8">
                     <Image
                       src={blog.image}
@@ -112,6 +113,22 @@ export default async function BlogDetailPage({
                     />
                   </div>
                 )}
+
+                {(blog as any).type === "VIDEO" && (blog as any).videoUrl && (() => {
+                  const videoId = getYouTubeVideoId((blog as any).videoUrl);
+                  const embedUrl = videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+                  return embedUrl ? (
+                    <div className="relative w-full rounded-lg overflow-hidden bg-neutral-200 mb-8" style={{ paddingBottom: "56.25%" }}>
+                      <iframe
+                        src={embedUrl}
+                        title={blog.title}
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                        className="absolute top-0 left-0 w-full h-full"
+                      />
+                    </div>
+                  ) : null;
+                })()}
 
                 <div className="mb-6">
                   <div className="text-sm text-neutral-500 mb-4">

@@ -85,9 +85,11 @@ export async function PUT(
       data: {
         title: validatedData.title,
         slug: validatedData.slug,
+        type: validatedData.type,
         content: validatedData.content,
         excerpt: validatedData.excerpt,
         image: validatedData.image,
+        videoUrl: validatedData.videoUrl,
         published: validatedData.published,
       },
     });

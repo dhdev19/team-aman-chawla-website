@@ -10,9 +10,15 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Select } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
 import { LoadingSpinner } from "@/components/ui/loading";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
+// BlogType enum from Prisma
+const BlogType = {
+  TEXT: "TEXT" as const,
+  VIDEO: "VIDEO" as const,
+} as const;
 
 export default function EditBlogPage() {
   const router = useRouter();
@@ -51,13 +57,17 @@ export default function EditBlogPage() {
       reset({
         title: blogData.title,
         slug: blogData.slug,
+        type: blogData.type || BlogType.TEXT,
         content: blogData.content,
         excerpt: blogData.excerpt || "",
         image: image || "",
+        videoUrl: blogData.videoUrl || "",
         published: blogData.published || false,
       });
     }
   }, [data, reset]);
+
+  const blogType = watch("type");
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -109,7 +119,8 @@ export default function EditBlogPage() {
     try {
       const response = await blogApi.update(blogId, {
         ...formData,
-        image: uploadedImage || formData.image || null,
+        image: blogType === BlogType.TEXT ? (uploadedImage || formData.image || null) : null,
+        videoUrl: blogType === BlogType.VIDEO ? formData.videoUrl : null,
       });
 
       if (response.success) {
@@ -193,6 +204,24 @@ export default function EditBlogPage() {
 
               <div>
                 <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Blog Type *
+                </label>
+                <Select
+                  {...register("type")}
+                  className={errors.type ? "border-red-500" : ""}
+                >
+                  <option value={BlogType.TEXT}>Text Blog</option>
+                  <option value={BlogType.VIDEO}>Video Blog</option>
+                </Select>
+                {errors.type && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.type.message}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
                   Excerpt
                 </label>
                 <Textarea
@@ -208,10 +237,11 @@ export default function EditBlogPage() {
                 )}
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-neutral-700 mb-2">
-                  Featured Image
-                </label>
+              {blogType === BlogType.TEXT && (
+                <div>
+                  <label className="block text-sm font-medium text-neutral-700 mb-2">
+                    Featured Image
+                  </label>
                 <label htmlFor="featured-image-upload-edit" className="sr-only">
                   Upload featured image
                 </label>
@@ -270,7 +300,29 @@ export default function EditBlogPage() {
                     {errors.image.message}
                   </p>
                 )}
-              </div>
+                </div>
+              )}
+
+              {blogType === BlogType.VIDEO && (
+                <div>
+                  <label className="block text-sm font-medium text-neutral-700 mb-2">
+                    YouTube Video URL *
+                  </label>
+                  <Input
+                    {...register("videoUrl")}
+                    className={errors.videoUrl ? "border-red-500" : ""}
+                    placeholder="https://www.youtube.com/watch?v=..."
+                  />
+                  {errors.videoUrl && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.videoUrl.message}
+                    </p>
+                  )}
+                  <p className="mt-1 text-xs text-neutral-500">
+                    Enter a valid YouTube URL (e.g., https://www.youtube.com/watch?v=... or https://youtu.be/...)
+                  </p>
+                </div>
+              )}
 
               <div>
                 <label className="block text-sm font-medium text-neutral-700 mb-2">

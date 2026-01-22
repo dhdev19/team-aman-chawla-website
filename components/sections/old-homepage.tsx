@@ -954,11 +954,11 @@ export function OldHomepage() {
               navigation={true}
               className="blogs-swiper"
             >
-              {blogs.map((blog) => (
+              {blogs.map((blog: any) => (
                 <SwiperSlide key={blog.id}>
                   <Link href={`/blogs/${blog.slug}`}>
                     <div className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow overflow-hidden h-full cursor-pointer">
-                      {blog.image && (
+                      {blog.type === "TEXT" && blog.image && (
                         <div className="relative h-48 w-full overflow-hidden bg-neutral-200">
                           <Image
                             src={blog.image}
@@ -966,6 +966,16 @@ export function OldHomepage() {
                             fill
                             className="object-cover"
                           />
+                        </div>
+                      )}
+                      {blog.type === "VIDEO" && blog.videoUrl && (
+                        <div className="relative h-48 w-full overflow-hidden bg-neutral-200">
+                          <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                            <i className="fa-solid fa-play-circle text-white text-6xl"></i>
+                          </div>
+                          <div className="absolute bottom-2 right-2 bg-red-600 text-white px-2 py-1 rounded text-xs font-semibold">
+                            VIDEO
+                          </div>
                         </div>
                       )}
                       <div className="p-6">
@@ -985,7 +995,7 @@ export function OldHomepage() {
                           </p>
                         )}
                         <span className="text-primary-700 font-medium hover:underline inline-flex items-center">
-                          Read More
+                          {blog.type === "VIDEO" ? "Watch Video" : "Read More"}
                           <i className="fa-solid fa-arrow-right ml-2"></i>
                         </span>
                       </div>
