@@ -349,6 +349,7 @@ export default function AddPropertyPage() {
                   className={errors.status ? "border-red-500" : ""}
                 >
                   <option value={PropertyStatus.AVAILABLE}>Available</option>
+                  <option value={PropertyStatus.NEW_LAUNCH}>New Launch</option>
                   <option value={PropertyStatus.SOLD}>Sold</option>
                   <option value={PropertyStatus.RESERVED}>Reserved</option>
                 </Select>

@@ -21,6 +21,7 @@ enum PropertyStatus {
   AVAILABLE
   SOLD
   RESERVED
+  NEW_LAUNCH
 }
 
 enum UserRole {
