@@ -442,7 +442,7 @@ export function OldHomepage() {
       <section className="py-4 prpertysec">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-left mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 text-uppercase">
               Newly Launched Properties
             </h2>
             <p className="text-xl text-gray-600 description-text">
@@ -486,7 +486,7 @@ export function OldHomepage() {
       {/* Box Property Section */}
       <section className="box-propetysec">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h3>Get Genuine Buyers for Your Property—Effortlessly</h3>
+          <h3 className="text-uppercase">Get Genuine Buyers for Your Property—Effortlessly</h3>
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -538,7 +538,7 @@ export function OldHomepage() {
           <div className="videoControl flex items-center justify-between">
             <div className="flex items-center justify-between mb-8">
               <div>
-                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2 text-uppercase">
                   Latest Videos
                 </h2>
                 <p className="text-gray-600">
@@ -674,7 +674,7 @@ export function OldHomepage() {
       <section className="py-16 propertycategorysec">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 text-uppercase">
               Explore by Category
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl description-text">
@@ -710,7 +710,7 @@ export function OldHomepage() {
             >
               <div className="category-image-wrapper">
                 <Image
-                  src="/category-villas.png"
+                  src="/category-villas.jpeg"
                   alt="Villas"
                   width={300}
                   height={220}
@@ -730,7 +730,7 @@ export function OldHomepage() {
             >
               <div className="category-image-wrapper">
                 <Image
-                  src="/category-commercial.png"
+                  src="/category-commercial.jpeg"
                   alt="Commercial"
                   width={300}
                   height={220}
@@ -750,7 +750,7 @@ export function OldHomepage() {
             >
               <div className="category-image-wrapper">
                 <Image
-                  src="/category-plots.png"
+                  src="/category-plot.jpeg"
                   alt="Plots"
                   width={300}
                   height={220}
@@ -793,12 +793,27 @@ export function OldHomepage() {
         </div>
       </section>
 
+      {/* Sell Property Section */}
+      <section className="sell-propetysec">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h3 className="text-uppercase">Have a property to sell?</h3>
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <a href="#">
+            <img
+              src="/buy-property-banner.jpg"
+              alt="Property"
+              className="rounded-xl"
+            />
+          </a>
+        </div>
+      </section>
 
       {/* Reviews Section */}
       <section className="py-16 bg-white review-sec">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 text-uppercase">
               What Our Clients Say
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto description-text">
@@ -814,7 +829,7 @@ export function OldHomepage() {
               href="https://www.google.com/search?sca_esv=a7a7f7107bf5a5bb&rlz=1C1CHBF_enIN972IN974&sxsrf=AE3TifNmfAfEgIEVznDyZ8Hsh0vWHm6kCA:1762409209181&si=AMgyJEtREmoPL4P1I5IDCfuA8gybfVI2d5Uj7QMwYCZHKDZ-E65QvRCDQDIF9L4cx39JzL0Y5M7hV99XtWQpHy4gzH1ARbd0AISUa3BH2s_fpfQszglPQK-qqfm1RuvlUwq3Mc5D46HfahsuXmrHNJyJE8cGBB2h7SXkGgN30Ti3EYOxqeKORISxobILk1dGku8Bq2SlLeESKvUrlCb-Iewiyggk8wxPKA%3D%3D&q=Team+Aman+Chawla+-+Best+Property+Advisor+in+Lucknow+%E0%B2%B5%E0%B2%BF%E0%B2%AE%E0%B2%B0%E0%B3%8D%E0%B2%B6%E0%B3%86%E0%B2%97%E0%B2%B3%E0%B3%81&sa=X&ved=2ahUKEwjxyvL27dyQAxXuzTgGHaphM7cQ0bkNegQIKhAE&biw=1536&bih=747&dpr=1.25"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200"
+              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 testimonial-anchor"
             >
               View All Google Reviews
               <i className="fa-solid fa-external-link ml-2"></i>
@@ -827,7 +842,7 @@ export function OldHomepage() {
       <section className="py-16 bg-gray-50 our-associations-sec">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 text-uppercase">
               Our Association
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto description-text">
@@ -894,21 +909,6 @@ export function OldHomepage() {
         </div>
       </section>
 
-      {/* Sell Property Section */}
-      <section className="sell-propetysec">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h3>Have a property to sell?</h3>
-        </div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <a href="#">
-            <img
-              src="/buy-property-banner.jpg"
-              alt="Property"
-              className="rounded-xl"
-            />
-          </a>
-        </div>
-      </section>
 
       {/* Query Form with Mobile Mockup */}
       <section className="bg-white grey footer-contact">

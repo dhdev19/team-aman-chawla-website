@@ -82,6 +82,10 @@ body {
   font-family: "Montserrat", system-ui, -apple-system, sans-serif;
 }
 
+.text-uppercase {
+  text-transform: uppercase;
+}
+
 /* Make all button text uppercase */
 button {
   text-transform: uppercase;
@@ -669,10 +673,11 @@ html {
 .box-propetysec h3 {
   padding: 0 0 30px 0;
   margin: 0;
-  font-size: 2.25rem;
+  font-size: 22px;
   font-weight: 700;
   text-align: left;
   font-family: "Montserrat", system-ui, -apple-system, sans-serif;
+
 }
 
 .box-propetysec .box-section p {
@@ -684,6 +689,7 @@ html {
 .prpertysec h2{
   font-family: "Montserrat", system-ui, -apple-system, sans-serif;
   margin-bottom: 10px;
+  font-size: 22px;
 }
 
 .prpertysec .description-text{
@@ -695,6 +701,7 @@ html {
   font-family: "Montserrat", system-ui, -apple-system, sans-serif;
   text-align: left;
   margin-bottom: 10px;
+  font-size: 22px;
 }
 
 .propertycategorysec .description-text{
@@ -724,6 +731,7 @@ html {
 .wedeal-sec h2{
   font-family: "Montserrat", system-ui, -apple-system, sans-serif;
   text-align: left;
+  font-size: 22px;
 }
 
 
@@ -749,7 +757,7 @@ html {
 }
 
 .sell-propetysec h3 {
-  font-size: 2.25rem;
+  font-size: 30px;
   font-weight: 600;
   color: #000;
   margin: 0 0 10px 0;
@@ -912,6 +920,7 @@ html {
 .review-sec h2{
   font-family: "Montserrat", system-ui, -apple-system, sans-serif;
   margin-bottom: 10px;
+  font-size: 22px;
 }
 
 
@@ -1088,6 +1097,10 @@ html {
 
 .our-associations-sec {
   position: relative;
+}
+
+.our-associations-sec h2 {
+  font-size: 22px;
 }
 
 .associations-swiper {
@@ -1598,7 +1611,7 @@ h4.googlerev {
 }
 .video-sec h2 {
   font-family: "Montserrat", system-ui, -apple-system, sans-serif;
-  font-size: 2.25rem;
+  font-size: 22px;
 }
 
 
@@ -1742,12 +1755,16 @@ h4.googlerev {
   justify-content: center;
   align-items: center;
   margin: auto;
+  font-size: 13px;
 }
 
 .choose-us-counter-sec{
   padding: 35px 0 35px 0;
 }
 
+.testimonial-anchor {
+  font-size: 13px;
+}
 
 .header-logo img {
   width: 155px;
