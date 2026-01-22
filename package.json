@@ -34,11 +34,9 @@
     "next-seo": "^7.0.1",
     "pg": "^8.17.1",
     "prisma": "^7.2.0",
-    "quill": "^2.0.3",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-hook-form": "^7.71.1",
-    "react-quill": "^2.0.0",
     "swiper": "^12.0.3",
     "tailwind-merge": "^3.4.0",
     "zod": "^4.3.5"
