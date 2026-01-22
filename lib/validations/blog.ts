@@ -10,18 +10,23 @@ const BlogType = {
  * Shared image URL schema that supports both absolute and app-relative URLs.
  * This is needed because uploaded images are served from `/uploads/...`.
  */
-const imageUrlSchema = z
-  .string()
-  .refine(
-    (value) =>
-      // Allow absolute URLs
-      /^https?:\/\//.test(value) ||
-      // And app-relative URLs like `/uploads/xyz.jpg`
-      value.startsWith("/"),
-    { message: "Invalid image URL" }
-  )
-  .optional()
-  .nullable();
+const imageUrlSchema = z.preprocess(
+  (val) => (val === "" ? null : val),
+  z
+    .string()
+    .refine(
+      (value) => {
+        // Allow absolute URLs
+        if (/^https?:\/\//.test(value)) return true;
+        // And app-relative URLs like `/uploads/xyz.jpg`
+        if (value.startsWith("/")) return true;
+        return false;
+      },
+      { message: "Invalid image URL" }
+    )
+    .optional()
+    .nullable()
+);
 
 /**
  * YouTube URL validation schema
@@ -51,9 +56,7 @@ export const blogSchema = z
       .min(1, "Slug is required")
       .max(200, "Slug is too long")
       .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug must be URL-friendly (lowercase, hyphens only)"),
-    type: z.nativeEnum(BlogType, {
-      errorMap: () => ({ message: "Invalid blog type" }),
-    }),
+    type: z.nativeEnum(BlogType),
     content: z.string().min(100, "Content must be at least 100 characters"),
     excerpt: z.string().max(500, "Excerpt is too long").optional().nullable(),
     image: imageUrlSchema,
