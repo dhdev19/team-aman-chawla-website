@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { GoogleReviews } from "@/components/features/google-reviews";
-import { propertyApi, enquiryApi, videoApi } from "@/lib/api-client";
+import { propertyApi, enquiryApi, videoApi, blogApi } from "@/lib/api-client";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
@@ -52,6 +52,7 @@ export function OldHomepage() {
     "idle" | "success" | "error"
   >("idle");
   const [videos, setVideos] = useState<Video[]>([]);
+  const [blogs, setBlogs] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -70,6 +71,17 @@ export function OldHomepage() {
         const videosResponse = await videoApi.getAll();
         if (videosResponse.success && videosResponse.data && Array.isArray(videosResponse.data)) {
           setVideos(videosResponse.data as Video[]);
+        }
+
+        // Fetch blogs
+        const blogsResponse = await blogApi.getAll({
+          page: "1",
+          limit: "10",
+          published: "true",
+        });
+        if (blogsResponse.success && blogsResponse.data && typeof blogsResponse.data === "object" && "data" in blogsResponse.data) {
+          const data = blogsResponse.data as { data: any[] };
+          setBlogs(data.data);
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -909,6 +921,90 @@ export function OldHomepage() {
         </div>
       </section>
 
+      {/* Blogs Carousel Section */}
+      {blogs.length > 0 && (
+        <section className="py-16 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 text-uppercase">
+                Latest Blogs
+              </h2>
+              <p className="text-xl text-gray-600 max-w-2xl mx-auto description-text">
+                Stay updated with the latest real estate insights and news
+              </p>
+            </div>
+
+            <Swiper
+              modules={[Autoplay, Navigation]}
+              autoplay={{
+                delay: 3000,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true,
+              }}
+              loop={blogs.length > 3}
+              slidesPerView={1}
+              spaceBetween={20}
+              breakpoints={{
+                640: { slidesPerView: 2 },
+                768: { slidesPerView: 2 },
+                1024: { slidesPerView: 3 },
+                1280: { slidesPerView: 3 },
+              }}
+              navigation={true}
+              className="blogs-swiper"
+            >
+              {blogs.map((blog) => (
+                <SwiperSlide key={blog.id}>
+                  <Link href={`/blogs/${blog.slug}`}>
+                    <div className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow overflow-hidden h-full cursor-pointer">
+                      {blog.image && (
+                        <div className="relative h-48 w-full overflow-hidden bg-neutral-200">
+                          <Image
+                            src={blog.image}
+                            alt={blog.title}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      )}
+                      <div className="p-6">
+                        <div className="text-sm text-neutral-500 mb-2">
+                          {new Date(blog.createdAt).toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          })}
+                        </div>
+                        <h3 className="text-xl font-semibold text-neutral-900 mb-3 line-clamp-2">
+                          {blog.title}
+                        </h3>
+                        {blog.excerpt && (
+                          <p className="text-neutral-600 mb-4 line-clamp-3">
+                            {blog.excerpt}
+                          </p>
+                        )}
+                        <span className="text-primary-700 font-medium hover:underline inline-flex items-center">
+                          Read More
+                          <i className="fa-solid fa-arrow-right ml-2"></i>
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+
+            <div className="text-center mt-8">
+              <Link href={ROUTES.BLOGS}>
+                <Button size="lg">
+                  View All Blogs
+                  <i className="fa-solid fa-arrow-right ml-2"></i>
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Query Form with Mobile Mockup */}
       <section className="bg-white grey footer-contact">
