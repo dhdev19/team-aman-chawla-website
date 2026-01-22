@@ -96,6 +96,139 @@ a {
   text-transform: uppercase;
 }
 
+/* Blog Detail Page - Override global styles to protect blog content */
+.blog-detail-page button {
+  text-transform: none;
+}
+
+.blog-detail-page a {
+  text-transform: none;
+}
+
+/* Protect blog content prose from global styles */
+.blog-detail-page .prose,
+.blog-detail-page .prose * {
+  text-transform: none !important;
+}
+
+.blog-detail-page .prose h1,
+.blog-detail-page .prose h2,
+.blog-detail-page .prose h3,
+.blog-detail-page .prose h4,
+.blog-detail-page .prose h5,
+.blog-detail-page .prose h6 {
+  text-transform: none !important;
+  font-weight: 600;
+  line-height: 1.25;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+.blog-detail-page .prose h1 {
+  font-size: 2.25em;
+  font-weight: 700;
+}
+
+.blog-detail-page .prose h2 {
+  font-size: 1.875em;
+  font-weight: 700;
+}
+
+.blog-detail-page .prose h3 {
+  font-size: 1.5em;
+  font-weight: 600;
+}
+
+.blog-detail-page .prose h4 {
+  font-size: 1.25em;
+  font-weight: 600;
+}
+
+.blog-detail-page .prose p {
+  text-transform: none !important;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  line-height: 1.75;
+}
+
+.blog-detail-page .prose a {
+  text-transform: none !important;
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+.blog-detail-page .prose a:hover {
+  color: #1e40af;
+}
+
+.blog-detail-page .prose strong,
+.blog-detail-page .prose b {
+  text-transform: none !important;
+  font-weight: 700;
+}
+
+.blog-detail-page .prose em,
+.blog-detail-page .prose i {
+  text-transform: none !important;
+  font-style: italic;
+}
+
+.blog-detail-page .prose ul,
+.blog-detail-page .prose ol {
+  text-transform: none !important;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  padding-left: 1.625em;
+}
+
+.blog-detail-page .prose li {
+  text-transform: none !important;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.blog-detail-page .prose ul {
+  list-style-type: disc;
+}
+
+.blog-detail-page .prose ol {
+  list-style-type: decimal;
+}
+
+.blog-detail-page .prose blockquote {
+  text-transform: none !important;
+  border-left: 4px solid #e5e7eb;
+  padding-left: 1em;
+  margin: 1.5em 0;
+  font-style: italic;
+  color: #6b7280;
+}
+
+.blog-detail-page .prose code {
+  text-transform: none !important;
+  background-color: #f3f4f6;
+  padding: 0.125em 0.25em;
+  border-radius: 0.25rem;
+  font-size: 0.875em;
+}
+
+.blog-detail-page .prose pre {
+  text-transform: none !important;
+  background-color: #1f2937;
+  color: #f9fafb;
+  padding: 1em;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin: 1.5em 0;
+}
+
+.blog-detail-page .prose img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  margin: 1.5em 0;
+}
+
 .whatsapp-floating-button {
   position: fixed;
   right: 1.5rem;
