@@ -6,7 +6,6 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { GoogleReviews } from "@/components/features/google-reviews";
 import { propertyApi, enquiryApi, videoApi, blogApi } from "@/lib/api-client";
-import { getYouTubeThumbnail } from "@/lib/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
@@ -969,13 +968,11 @@ export function OldHomepage() {
                           />
                         </div>
                       )}
-                      {blog.type === "VIDEO" && blog.videoUrl && (() => {
-                        // Use uploaded thumbnail if available, otherwise use YouTube thumbnail
-                        const thumbnailUrl = blog.videoThumbnail || getYouTubeThumbnail(blog.videoUrl);
-                        return thumbnailUrl ? (
+                      {blog.type === "VIDEO" && blog.videoUrl && (
+                        blog.videoThumbnail ? (
                           <div className="relative h-48 w-full overflow-hidden bg-neutral-200">
                             <Image
-                              src={thumbnailUrl}
+                              src={blog.videoThumbnail}
                               alt={blog.title}
                               fill
                               className="object-cover"
@@ -996,8 +993,8 @@ export function OldHomepage() {
                               VIDEO
                             </div>
                           </div>
-                        );
-                      })()}
+                        )
+                      )}
                       <div className="p-6">
                         <div className="text-sm text-neutral-500 mb-2">
                           {new Date(blog.createdAt).toLocaleDateString("en-US", {
