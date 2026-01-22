@@ -51,7 +51,7 @@ export function Footer() {
           </div>
 
           {/* Quick Links */}
-          <div>
+          <div className="quick-links-sec">
             <h4 className="text-white font-semibold mb-4">Quick Links</h4>
             <ul className="space-y-2">
               <li>
@@ -90,7 +90,7 @@ export function Footer() {
           </div>
 
           {/* Contact Info */}
-          <div>
+          <div className="contact-info-sec">
             <h4 className="text-white font-semibold mb-4">Contact</h4>
             <ul className="space-y-2 text-neutral-400">
               <li><a href="mailto:info@teamamanchawla.com">Email: info@teamamanchawla.com</a></li>

@@ -1769,3 +1769,16 @@ h4.googlerev {
 .header-logo img {
   width: 155px;
 }
+
+
+
+
+.quick-links-sec a {
+  font-size: 13px;
+}
+
+.contact-info-sec li, .contact-info-sec a {
+  font-size: 13px;
+  text-transform: inherit;
+}
+
