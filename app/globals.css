@@ -82,6 +82,16 @@ body {
   font-family: "Montserrat", system-ui, -apple-system, sans-serif;
 }
 
+/* Make all button text uppercase */
+button {
+  text-transform: uppercase;
+}
+
+/* Make all anchor tag text uppercase */
+a {
+  text-transform: uppercase;
+}
+
 .whatsapp-floating-button {
   position: fixed;
   right: 1.5rem;

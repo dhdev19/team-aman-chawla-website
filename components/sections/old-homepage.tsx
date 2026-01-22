@@ -710,7 +710,7 @@ export function OldHomepage() {
             >
               <div className="category-image-wrapper">
                 <Image
-                  src="/category-villas.jpeg"
+                  src="/category-villas.png"
                   alt="Villas"
                   width={300}
                   height={220}
@@ -730,7 +730,7 @@ export function OldHomepage() {
             >
               <div className="category-image-wrapper">
                 <Image
-                  src="/category-commercial.jpeg"
+                  src="/category-commercial.png"
                   alt="Commercial"
                   width={300}
                   height={220}
@@ -750,7 +750,7 @@ export function OldHomepage() {
             >
               <div className="category-image-wrapper">
                 <Image
-                  src="/category-plots.jpeg"
+                  src="/category-plots.png"
                   alt="Plots"
                   width={300}
                   height={220}
