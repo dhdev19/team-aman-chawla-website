@@ -22,19 +22,41 @@ export function BlogContactForm() {
     handleSubmit,
     formState: { errors },
     reset,
+    setValue,
+    watch,
   } = useForm<EnquiryFormData>({
-    resolver: zodResolver(enquirySchema),
-    defaultValues: {
-      type: "contact",
-    },
+    resolver: zodResolver(enquirySchema) as any,
   });
+
+  const emailValue = watch("email");
+  const messageValue = watch("message");
+
+  // Set defaults if fields are empty
+  React.useEffect(() => {
+    if (!emailValue || emailValue.trim() === "") {
+      setValue("email", "johndoe@example.com", { shouldValidate: false });
+    }
+    if (!messageValue || messageValue.trim() === "") {
+      setValue("message", "Query from blog contact us page", { shouldValidate: false });
+    }
+  }, [emailValue, messageValue, setValue]);
 
   const onSubmit = async (data: EnquiryFormData) => {
     setIsSubmitting(true);
     setSubmitStatus({ type: null, message: "" });
 
+    // Apply defaults if fields are empty or not provided
+    const formData: EnquiryFormData = {
+      name: data.name,
+      email: data.email?.trim() || "johndoe@example.com",
+      phone: data.phone || null,
+      message: data.message?.trim() || "Query from blog contact us page",
+      type: data.type || "contact",
+      propertyId: data.propertyId || null,
+    };
+
     try {
-      const response = await enquiryApi.create(data);
+      const response = await enquiryApi.create(formData);
       if (response.success) {
         setSubmitStatus({
           type: "success",
@@ -78,7 +100,7 @@ export function BlogContactForm() {
             htmlFor="blog-contact-name"
             className="block text-sm font-medium text-neutral-700 mb-1"
           >
-            Name *
+            Name
           </label>
           <Input
             id="blog-contact-name"
@@ -96,14 +118,14 @@ export function BlogContactForm() {
             htmlFor="blog-contact-email"
             className="block text-sm font-medium text-neutral-700 mb-1"
           >
-            Email *
+            Email
           </label>
           <Input
             id="blog-contact-email"
             type="email"
             {...register("email")}
             className={errors.email ? "border-red-500" : ""}
-            placeholder="your@email.com"
+            placeholder="johndoe@example.com"
           />
           {errors.email && (
             <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>
@@ -134,7 +156,7 @@ export function BlogContactForm() {
             htmlFor="blog-contact-message"
             className="block text-sm font-medium text-neutral-700 mb-1"
           >
-            Message *
+            Message
           </label>
           <Textarea
             id="blog-contact-message"
