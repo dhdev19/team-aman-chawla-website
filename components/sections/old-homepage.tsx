@@ -873,7 +873,7 @@ export function OldHomepage() {
       {/* Sell Property Section */}
       <section className="sell-propetysec">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h3 className="text-uppercase">Have a property to sell?</h3>
+          {/* <h3 className="text-uppercase">Have a property to sell?</h3> */}
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <a href="#">
@@ -1101,9 +1101,9 @@ export function OldHomepage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 querywrapper">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
             <div className="formsec">
-              <h4 className="text-2xl font-semibold text-gray-900 mb-6">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 text-uppercase">
                 We're here to Assist — Submit Your Query
-              </h4>
+              </h2>
               <form onSubmit={handleQuerySubmit} className="space-y-4">
                 <div>
                   <label htmlFor="query-name-secondary" className="sr-only">

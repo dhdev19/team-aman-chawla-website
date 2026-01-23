@@ -1940,3 +1940,11 @@ h4.googlerev {
 .property-card-new-launch p {
   text-transform: none;
 }
+
+.footer-contact h2 {
+  font-size: 22px;
+}
+
+.footer-contact button {
+  font-size: 13px;
+}
