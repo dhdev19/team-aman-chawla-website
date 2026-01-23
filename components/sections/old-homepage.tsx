@@ -743,7 +743,7 @@ export function OldHomepage() {
             >
               <div className="category-image-wrapper">
                 <Image
-                  src="/category-commerciallll.png"
+                  src="/category-commercial.jpeg"
                   alt="Commercial"
                   width={300}
                   height={220}
