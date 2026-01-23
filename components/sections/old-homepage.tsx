@@ -798,10 +798,10 @@ export function OldHomepage() {
                 <div className="inline-flex items-center justify-center w-20 h-20 mb-6">
                   <i className="fa-solid fa-handshake text-4xl text-primary-600"></i>
                 </div>
-                <h5 className="text-lg font-bold text-gray-900 mb-4">
+                <h6 className="text-base font-bold text-gray-900 mb-4">
                 Your Hassle-Free Journey to Finding the Perfect Home in Lucknow
-                </h5>
-                <p className="text-gray-600 leading-relaxed text-base">
+                </h6>
+                <p className="text-gray-600 leading-relaxed text-base text-sm">
                   We know that the purchase of a property in Lucknow is going to be a huge step for you. Making your needs to choosing the right homes and site visits, we will be the one to take you through the entire process without hassle and stress.
                 </p>
               </div>
@@ -814,10 +814,10 @@ export function OldHomepage() {
                 <div className="inline-flex items-center justify-center w-20 h-20 mb-6">
                   <i className="fa-solid fa-shield-halved text-4xl text-primary-600"></i>
                 </div>
-                <h5 className="text-lg font-bold text-gray-900 mb-4">
+                <h6 className="text-base font-bold text-gray-900 mb-4">
                 Trusted Properties, Transparent Prices – Your Smart Investment in Lucknow Starts Here
-                </h5>
-                <p className="text-gray-600 leading-relaxed text-base">
+                </h6>
+                <p className="text-gray-600 leading-relaxed text-base text-sm">
                   A house or an investment in Lucknow is what you are looking for? We provide you with 100% trusted properties, clear prices, and professional and friendly local advice so that you can take assured and knowledgeable decisions.
                 </p>
               </div>
@@ -830,10 +830,10 @@ export function OldHomepage() {
                 <div className="inline-flex items-center justify-center w-20 h-20 mb-6">
                   <i className="fa-solid fa-user-tie text-4xl text-primary-600"></i>
                 </div>
-                <h5 className="text-lg font-bold text-gray-900 mb-4">
+                <h6 className="text-base font-bold text-gray-900 mb-4">
                 From First Look to Final Deal – Expert Guidance for Every Buyer and Investor in Lucknow
-                </h5>
-                <p className="text-gray-600 leading-relaxed text-base">
+                </h6>
+                <p className="text-gray-600 leading-relaxed text-base text-sm">
                   It doesn't matter in case you are a newbie purchaser or would-be professional investor, we will help you spot out the ideal property situated in a marvelous location. Our staff is always there for you. From look-up to signing the deal so nothing feels too much.
                 </p>
               </div>
