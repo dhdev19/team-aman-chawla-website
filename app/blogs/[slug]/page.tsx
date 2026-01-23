@@ -11,6 +11,7 @@ import { ArticleSchema } from "@/components/seo/schema-org";
 import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { BlogContactForm } from "@/components/features/blog-contact-form";
 
 async function getBlog(slug: string) {
   try {
@@ -153,6 +154,9 @@ export default async function BlogDetailPage({
 
             {/* Sidebar */}
             <aside className="space-y-6">
+              {/* Contact Form */}
+              <BlogContactForm />
+
               {/* Related Blogs */}
               {relatedBlogs.length > 0 && (
                 <Card>
