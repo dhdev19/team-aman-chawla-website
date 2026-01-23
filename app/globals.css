@@ -1934,6 +1934,9 @@ h4.googlerev {
   font-size: 16px;
 }
 
+.property-card-new-launch {
+  padding: 0 0 0 0;
+}
 .property-card-new-launch p {
   text-transform: none;
 }
