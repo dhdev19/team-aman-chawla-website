@@ -100,8 +100,16 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-neutral-800 mt-8 pt-8 text-center text-neutral-400">
-          <p>&copy; {currentYear} Team Aman Chawla. All rights reserved.</p>
+        <div className="border-t border-neutral-800 mt-8 pt-8">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-neutral-400">
+            <p>&copy; {currentYear} Team Aman Chawla. All rights reserved.</p>
+            <Link
+              href={ROUTES.PRIVACY_POLICY}
+              className="hover:text-white transition-colors"
+            >
+              Privacy Policy
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

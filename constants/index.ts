@@ -46,6 +46,7 @@ export const ROUTES = {
   ENQUIRY: "/enquiry",
   BLOGS: "/blogs",
   CONTACT: "/contact",
+  PRIVACY_POLICY: "/privacy-policy",
   TAC_REGISTRATION: "/tac-registration",
   ADMIN: "/admin",
   ADMIN_LOGIN: "/admin/login",
