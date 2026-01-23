@@ -32,7 +32,7 @@ export function PropertyCard({ property, className }: PropertyCardProps) {
       <Card
         variant="elevated"
         className={cn(
-          "group cursor-pointer overflow-hidden hover:shadow-xl transition-all duration-300",
+          "group cursor-pointer overflow-hidden hover:shadow-xl transition-all duration-300 property-card-new-launch",
           className
         )}
       >
