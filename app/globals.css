@@ -1952,3 +1952,7 @@ h4.googlerev {
 .blog-card-homepage {
   height:420px;
 }
+
+.privacy-policy-content p a {
+  text-transform: none;
+}

@@ -27,7 +27,7 @@ export default function PrivacyPolicyPage() {
         </div>
 
         <Container className="py-12">
-          <div className="space-y-8">
+          <div className="space-y-8 privacy-policy-content">
             <SlideIn direction="up">
               <div>
                 <h2 className="text-2xl font-bold text-neutral-900 mb-4">
