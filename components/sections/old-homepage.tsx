@@ -1021,7 +1021,7 @@ export function OldHomepage() {
               {blogs.map((blog: any) => (
                 <SwiperSlide key={blog.id}>
                   <Link href={`/blogs/${blog.slug}`}>
-                    <div className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow overflow-hidden h-full cursor-pointer">
+                    <div className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow overflow-hidden h-full cursor-pointer blog-card-homepage">
                       {blog.type === "TEXT" && blog.image && (
                         <div className="relative h-48 w-full overflow-hidden bg-neutral-200">
                           <Image
