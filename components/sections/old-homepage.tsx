@@ -779,6 +779,69 @@ export function OldHomepage() {
         </div>
       </section>
 
+      {/* Why Choose Us - Services Section */}
+      <section className="py-16 bg-gray-50 why-choose-us-services-sec">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 text-uppercase">
+              Why Choose Team Aman Chawla
+            </h2>
+            <p className="text-xl text-gray-600 description-text">
+              Your trusted partner in finding the perfect property in Lucknow
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Card 1 */}
+            <div className="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-primary-50 rounded-full -mr-16 -mt-16 opacity-50"></div>
+              <div className="relative z-10">
+                <div className="inline-flex items-center justify-center w-20 h-20 mb-6">
+                  <i className="fa-solid fa-handshake text-4xl text-primary-600"></i>
+                </div>
+                <h5 className="text-lg font-bold text-gray-900 mb-4">
+                Your Hassle-Free Journey to Finding the Perfect Home in Lucknow
+                </h5>
+                <p className="text-gray-600 leading-relaxed text-base">
+                  We know that the purchase of a property in Lucknow is going to be a huge step for you. Making your needs to choosing the right homes and site visits, we will be the one to take you through the entire process without hassle and stress.
+                </p>
+              </div>
+            </div>
+
+            {/* Card 2 */}
+            <div className="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-primary-50 rounded-full -mr-16 -mt-16 opacity-50"></div>
+              <div className="relative z-10">
+                <div className="inline-flex items-center justify-center w-20 h-20 mb-6">
+                  <i className="fa-solid fa-shield-halved text-4xl text-primary-600"></i>
+                </div>
+                <h5 className="text-lg font-bold text-gray-900 mb-4">
+                Trusted Properties, Transparent Prices – Your Smart Investment in Lucknow Starts Here
+                </h5>
+                <p className="text-gray-600 leading-relaxed text-base">
+                  A house or an investment in Lucknow is what you are looking for? We provide you with 100% trusted properties, clear prices, and professional and friendly local advice so that you can take assured and knowledgeable decisions.
+                </p>
+              </div>
+            </div>
+
+            {/* Card 3 */}
+            <div className="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-primary-50 rounded-full -mr-16 -mt-16 opacity-50"></div>
+              <div className="relative z-10">
+                <div className="inline-flex items-center justify-center w-20 h-20 mb-6">
+                  <i className="fa-solid fa-user-tie text-4xl text-primary-600"></i>
+                </div>
+                <h5 className="text-lg font-bold text-gray-900 mb-4">
+                From First Look to Final Deal – Expert Guidance for Every Buyer and Investor in Lucknow
+                </h5>
+                <p className="text-gray-600 leading-relaxed text-base">
+                  It doesn't matter in case you are a newbie purchaser or would-be professional investor, we will help you spot out the ideal property situated in a marvelous location. Our staff is always there for you. From look-up to signing the deal so nothing feels too much.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Why Choose Us */}
       <section className="bg-gray-50 choose-us-counter-sec">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -805,6 +868,7 @@ export function OldHomepage() {
           </div>
         </div>
       </section>
+
 
       {/* Sell Property Section */}
       <section className="sell-propetysec">
