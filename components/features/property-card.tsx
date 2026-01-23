@@ -72,6 +72,11 @@ export function PropertyCard({ property, className }: PropertyCardProps) {
           <h3 className="text-lg font-semibold text-neutral-900 mb-2 group-hover:text-primary-700 transition-colors">
             {property.name}
           </h3>
+          {property.builder && (
+            <p className="text-sm text-neutral-500 mb-2">
+              by {property.builder}
+            </p>
+          )}
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-neutral-600 capitalize">
               {property.type.replace("_", " ").toLowerCase()}
@@ -80,14 +85,10 @@ export function PropertyCard({ property, className }: PropertyCardProps) {
               {formatCurrency(property.price)}
             </span>
           </div>
-          {property.builder && (
-            <p className="text-sm text-neutral-500 mb-2">
-              Builder: {property.builder}
-            </p>
-          )}
+          
           {property.location && (
             <p className="text-sm text-neutral-500 flex items-center">
-              <span className="mr-1">📍</span>
+              <span className="mr-1"><i className="fa-solid fa-map-location-dot"></i></span>
               {property.location}
             </p>
           )}
