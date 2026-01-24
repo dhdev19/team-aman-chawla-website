@@ -29,6 +29,14 @@ enum UserRole {
   USER
 }
 
+enum ReferralSource {
+  FAMILY_FRIENDS
+  WEBSITE
+  YOUTUBE
+  ADVERTISEMENT
+  OTHER
+}
+
 // User Model (for admin authentication)
 model User {
   id        String   @id @default(cuid())
@@ -176,6 +184,25 @@ model Blog {
   @@index([type])
   @@index([createdAt])
   @@map("blogs")
+}
+
+// Career Application Model
+model CareerApplication {
+  id              String         @id @default(cuid())
+  name            String
+  email           String
+  whatsappNumber  String
+  city            String
+  referralSource  ReferralSource
+  referralOther   String?        // Used when referralSource is OTHER
+  resumeLink      String
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@index([email])
+  @@index([referralSource])
+  @@index([createdAt])
+  @@map("career_applications")
 }
 
 // Email Subscription Model

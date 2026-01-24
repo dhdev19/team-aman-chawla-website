@@ -30,6 +30,7 @@ export const NAVBAR_ITEMS = [
   // { label: "Refer", href: "/refer" },
   // { label: "Enquiry", href: "/enquiry" },
   { label: "Blogs", href: "/blogs" },
+  { label: "Join Us", href: "/careers" },
   { label: "Contact", href: "/contact" },
   // { label: "TAC Registration", href: "/tac-registration" },
 ] as const;
@@ -45,6 +46,7 @@ export const ROUTES = {
   REFER: "/refer",
   ENQUIRY: "/enquiry",
   BLOGS: "/blogs",
+  CAREERS: "/careers",
   CONTACT: "/contact",
   PRIVACY_POLICY: "/privacy-policy",
   TAC_REGISTRATION: "/tac-registration",

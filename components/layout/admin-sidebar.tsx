@@ -12,6 +12,7 @@ const adminMenuItems = [
   { label: "Videos", href: "/admin/videos", icon: "🎥" },
   { label: "Blogs", href: "/admin/blogs", icon: "📝" },
   { label: "Enquiries", href: "/admin/enquiries", icon: "📧" },
+  { label: "Career Applications", href: "/admin/career-applications", icon: "💼" },
   { label: "TAC Registrations", href: "/admin/tac-registrations", icon: "📋" },
   { label: "Broadcast Emails", href: "/admin/broadcast-emails", icon: "📬" },
   { label: "Page Stats", href: "/admin/stats", icon: "📈" },

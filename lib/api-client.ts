@@ -110,6 +110,19 @@ export const uploadApi = {
 };
 
 /**
+ * Career API endpoints
+ */
+export const careerApi = {
+  submit: (data: any) => apiPost("/api/career", data),
+  getAll: (params?: Record<string, any>) => {
+    const queryString = params ? `?${new URLSearchParams(params).toString()}` : "";
+    return apiGet(`/api/admin/career${queryString}`);
+  },
+  getById: (id: string) => apiGet(`/api/admin/career/${id}`),
+  delete: (id: string) => apiDelete(`/api/admin/career/${id}`),
+};
+
+/**
  * Email Subscription API endpoints
  */
 export const emailSubscriptionApi = {

@@ -7,3 +7,4 @@ export * from "./video";
 export * from "./enquiry";
 export * from "./tac";
 export * from "./blog";
+export * from "./career";
