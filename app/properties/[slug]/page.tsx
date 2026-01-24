@@ -9,6 +9,8 @@ import { formatCurrency, formatDate } from "@/lib/utils";
 import { generatePropertyMetadata } from "@/lib/metadata";
 import { PropertySchema } from "@/components/seo/schema-org";
 import { PropertyImageSlider } from "@/components/features/property-image-slider";
+import { PropertyContactForm } from "@/components/features/property-contact-form";
+import { LoanCalculator } from "@/components/features/loan-calculator";
 import { PropertyStatus } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
@@ -297,17 +299,16 @@ export default async function PropertyDetailPage({
             <div className="space-y-6">
               {/* Contact Form Card */}
               <Card>
-                <h2 className="text-xl font-semibold mb-4">
-                  Interested in this property?
-                </h2>
-                <p className="text-neutral-600 mb-4">
-                  Fill out the form below and we'll get back to you soon.
-                </p>
-                <Link href={`/contact?property=${property.id}`}>
-                  <Button variant="primary" className="w-full">
-                    Contact Us
-                  </Button>
-                </Link>
+                <PropertyContactForm
+                  propertyId={property.id}
+                  propertyName={property.name}
+                  propertyPrice={property.price || undefined}
+                />
+              </Card>
+
+              {/* Loan Calculator */}
+              <Card>
+                <LoanCalculator propertyPrice={property.price || 5000000} />
               </Card>
 
               {/* Related Properties */}
