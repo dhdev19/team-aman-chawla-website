@@ -91,6 +91,9 @@ export async function PUT(
         image: validatedData.image,
         videoUrl: validatedData.videoUrl,
         videoThumbnail: validatedData.videoThumbnail,
+        metaTitle: validatedData.metaTitle,
+        metaKeywords: validatedData.metaKeywords,
+        metaDescription: validatedData.metaDescription,
         published: validatedData.published,
       },
     });

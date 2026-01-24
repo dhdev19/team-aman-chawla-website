@@ -164,6 +164,9 @@ model Blog {
   image          String?
   videoUrl       String?
   videoThumbnail String?
+  metaTitle        String?
+  metaKeywords     String?
+  metaDescription  String?
   published      Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

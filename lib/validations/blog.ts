@@ -62,6 +62,9 @@ export const blogSchema = z
     image: imageUrlSchema,
     videoUrl: youtubeUrlSchema,
     videoThumbnail: imageUrlSchema,
+    metaTitle: z.string().max(200, "Meta title is too long").optional().nullable(),
+    metaKeywords: z.string().max(500, "Meta keywords is too long").optional().nullable(),
+    metaDescription: z.string().max(500, "Meta description is too long").optional().nullable(),
     published: z.boolean().default(false),
   })
   .refine(

@@ -39,6 +39,9 @@ export async function POST(request: NextRequest) {
         image: validatedData.image,
         videoUrl: validatedData.videoUrl,
         videoThumbnail: validatedData.videoThumbnail,
+        metaTitle: validatedData.metaTitle,
+        metaKeywords: validatedData.metaKeywords,
+        metaDescription: validatedData.metaDescription,
         published: validatedData.published,
       },
     });

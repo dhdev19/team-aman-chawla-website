@@ -427,6 +427,72 @@ export default function AddBlogPage() {
             </div>
           </div>
 
+          {/* SEO Metadata */}
+          <div>
+            <h2 className="text-xl font-semibold text-neutral-900 mb-4">
+              SEO Metadata
+            </h2>
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Meta Title
+                </label>
+                <Input
+                  {...register("metaTitle")}
+                  className={errors.metaTitle ? "border-red-500" : ""}
+                  placeholder="SEO title for search engines"
+                />
+                {errors.metaTitle && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.metaTitle.message}
+                  </p>
+                )}
+                <p className="mt-1 text-xs text-neutral-500">
+                  Optional. If not provided, the blog title will be used.
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Meta Keywords
+                </label>
+                <Input
+                  {...register("metaKeywords")}
+                  className={errors.metaKeywords ? "border-red-500" : ""}
+                  placeholder="keyword1, keyword2, keyword3"
+                />
+                {errors.metaKeywords && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.metaKeywords.message}
+                  </p>
+                )}
+                <p className="mt-1 text-xs text-neutral-500">
+                  Optional. Comma-separated keywords for SEO.
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Meta Description
+                </label>
+                <Textarea
+                  rows={3}
+                  {...register("metaDescription")}
+                  className={errors.metaDescription ? "border-red-500" : ""}
+                  placeholder="Brief description for search engines"
+                />
+                {errors.metaDescription && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.metaDescription.message}
+                  </p>
+                )}
+                <p className="mt-1 text-xs text-neutral-500">
+                  Optional. If not provided, the excerpt will be used.
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* Actions */}
           <div className="flex items-center justify-end gap-4 pt-6 border-t border-neutral-200">
             <Button
