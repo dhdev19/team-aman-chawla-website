@@ -59,15 +59,15 @@ export function LoanCalculator({ propertyPrice = 5000000 }: LoanCalculatorProps)
           </div>
           <input
             type="range"
-            min={propertyPrice * 0.3}
-            max={propertyPrice * 0.95}
+            min="0"
+            max={propertyPrice}
             value={loanAmount}
             onChange={(e) => setLoanAmount(Number(e.target.value))}
             className="w-full h-2 bg-neutral-200 rounded-lg appearance-none cursor-pointer accent-primary-700"
           />
           <div className="flex justify-between text-xs text-neutral-500 mt-1">
-            <span>{formatCurrency(propertyPrice * 0.3)}</span>
-            <span>{formatCurrency(propertyPrice * 0.95)}</span>
+            <span>{formatCurrency(0)}</span>
+            <span>{formatCurrency(propertyPrice)}</span>
           </div>
         </div>
 
