@@ -50,6 +50,9 @@ export async function GET(request: NextRequest) {
         skip: getSkip(page, limit),
         take: limit,
         orderBy: { createdAt: "desc" },
+        include: {
+          configurations: true,
+        },
       }),
       prisma.property.count({ where }),
     ]);

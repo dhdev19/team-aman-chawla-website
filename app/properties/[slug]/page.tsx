@@ -19,6 +19,9 @@ async function getPropertyBySlug(slug: string) {
   try {
     const property = await prisma.property.findUnique({
       where: { slug },
+      include: {
+        configurations: true,
+      },
     });
     return property;
   } catch (error) {
@@ -200,6 +203,119 @@ export default async function PropertyDetailPage({
                   </div>
                 </div>
               </Card>
+
+              {/* Property Format & Project Details */}
+              {(property.format || property.projectLaunchDate || property.possession || property.mapImage || property.builderReraQrCode) && (
+                <Card>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {property.format && (
+                      <div>
+                        <p className="text-sm text-neutral-600 mb-1">Property Format</p>
+                        <p className="font-semibold text-neutral-900 capitalize">
+                          {property.format.replace("_", " ").toLowerCase()}
+                        </p>
+                      </div>
+                    )}
+                    {property.projectLaunchDate && (
+                      <div>
+                        <p className="text-sm text-neutral-600 mb-1">Project Launch Date</p>
+                        <p className="font-semibold text-neutral-900">
+                          {formatDate(new Date(property.projectLaunchDate))}
+                        </p>
+                      </div>
+                    )}
+                    {property.possession && (
+                      <div className="md:col-span-2">
+                        <p className="text-sm text-neutral-600 mb-1">Possession Details</p>
+                        <p className="font-semibold text-neutral-900">
+                          {property.possession}
+                        </p>
+                      </div>
+                    )}
+                    {property.mapImage && (
+                      <div className="md:col-span-2">
+                        <p className="text-sm text-neutral-600 mb-2">Location Map</p>
+                        <div className="relative h-48 w-full rounded overflow-hidden bg-neutral-200 border border-neutral-300">
+                          <Image
+                            src={property.mapImage}
+                            alt="Location Map"
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      </div>
+                    )}
+                    {property.builderReraQrCode && (
+                      <div>
+                        <p className="text-sm text-neutral-600 mb-2">Builder RERA QR Code</p>
+                        <div className="relative h-40 w-40 rounded overflow-hidden bg-neutral-200 border border-neutral-300">
+                          <Image
+                            src={property.builderReraQrCode}
+                            alt="Builder RERA QR Code"
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </Card>
+              )}
+
+              {/* Pricing & Configurations */}
+              {property.configurations && property.configurations.length > 0 && (
+                <Card>
+                  <h2 className="text-xl font-semibold text-neutral-900 mb-4">
+                    Pricing & Configurations
+                  </h2>
+                  <div className="space-y-4">
+                    {property.configurations.map((config, index) => (
+                      <div
+                        key={config.id}
+                        className="border border-neutral-200 rounded-lg p-4 bg-neutral-50"
+                      >
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <p className="text-sm text-neutral-600 mb-1">Configuration</p>
+                            <p className="font-semibold text-neutral-900 capitalize">
+                              {config.configType}
+                            </p>
+                          </div>
+                          {config.carpetAreaSqft && (
+                            <div>
+                              <p className="text-sm text-neutral-600 mb-1">Carpet Area</p>
+                              <p className="font-semibold text-neutral-900">
+                                {config.carpetAreaSqft.toLocaleString()} sq ft
+                              </p>
+                            </div>
+                          )}
+                          {config.price && (
+                            <div>
+                              <p className="text-sm text-neutral-600 mb-1">Price</p>
+                              <p className="font-semibold text-primary-700 text-lg">
+                                {formatCurrency(config.price)}
+                              </p>
+                            </div>
+                          )}
+                          {config.floorPlanImage && (
+                            <div className="md:col-span-2">
+                              <p className="text-sm text-neutral-600 mb-2">Floor Plan</p>
+                              <div className="relative h-40 w-full rounded overflow-hidden bg-neutral-200 border border-neutral-300">
+                                <Image
+                                  src={config.floorPlanImage}
+                                  alt="Floor Plan"
+                                  fill
+                                  className="object-cover"
+                                />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              )}
 
               {/* Location Advantages & Amenities */}
               {(property.locationAdvantages?.length || property.amenities?.length) && (

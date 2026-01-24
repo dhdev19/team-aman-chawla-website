@@ -17,11 +17,23 @@ enum PropertyType {
   OFFICES
 }
 
+enum PropertyFormat {
+  APARTMENT
+  VILLA
+  PLOT
+  SHOP
+  OFFICE
+  PENTHOUSE
+}
+
 enum PropertyStatus {
   AVAILABLE
   SOLD
   RESERVED
   NEW_LAUNCH
+  FOR_SALE
+  FOR_RENT
+  UNDER_CONSTRUCTION
 }
 
 enum UserRole {
@@ -56,6 +68,7 @@ model Property {
   name             String
   slug             String?        @unique
   type             PropertyType
+  format           PropertyFormat?
   builder          String
   builderReraNumber String?
   description      String?
@@ -74,6 +87,11 @@ model Property {
   bankAccountNumber String?
   bankIfsc         String?
   bankBranch       String?
+  mapImage         String?
+  projectLaunchDate DateTime?
+  builderReraQrCode String?
+  possession       String?
+  configurations   PropertyConfiguration[]
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
 
@@ -86,6 +104,24 @@ model Property {
   @@index([slug])
   @@index([createdAt])
   @@map("properties")
+}
+
+// Property Configuration Model
+model PropertyConfiguration {
+  id              String   @id @default(cuid())
+  propertyId      String
+  configType      String   // 1BHK, 2BHK, 2.5BHK, 3BHK, or custom
+  carpetAreaSqft  Float?
+  price           Float?
+  floorPlanImage  String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  property        Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId])
+  @@map("property_configurations")
 }
 
 // Video Model

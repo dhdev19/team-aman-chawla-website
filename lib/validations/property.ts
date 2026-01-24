@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { PropertyType, PropertyStatus } from "@prisma/client";
+import { PropertyType, PropertyStatus, PropertyFormat } from "@prisma/client";
 
 /**
  * Shared image URL schema that supports both absolute and app-relative URLs.
@@ -18,6 +18,29 @@ const imageUrlSchema = z
   );
 
 /**
+ * Property Configuration schema
+ */
+export const propertyConfigurationSchema = z.object({
+  configType: z.string().min(1, "Configuration type is required"),
+  customConfigType: z.string().max(100, "Custom type is too long").optional().nullable(),
+  carpetAreaSqft: z
+    .number()
+    .positive("Carpet area must be positive")
+    .optional()
+    .nullable()
+    .or(z.literal("").transform(() => null)),
+  price: z
+    .number()
+    .positive("Price must be positive")
+    .optional()
+    .nullable()
+    .or(z.literal("").transform(() => null)),
+  floorPlanImage: imageUrlSchema.optional().nullable(),
+});
+
+export type PropertyConfigurationData = z.infer<typeof propertyConfigurationSchema>;
+
+/**
  * Property creation/update validation schema
  */
 export const propertySchema = z.object({
@@ -31,6 +54,9 @@ export const propertySchema = z.object({
   type: z.nativeEnum(PropertyType, {
     errorMap: () => ({ message: "Invalid property type" }),
   }),
+  format: z.nativeEnum(PropertyFormat, {
+    errorMap: () => ({ message: "Invalid property format" }),
+  }).optional().nullable(),
   builder: z.string().min(1, "Builder name is required").max(200, "Builder name is too long"),
   builderReraNumber: z.string().max(100, "RERA number is too long").optional().nullable(),
   description: z.string().max(5000, "Description is too long").optional().nullable(),
@@ -49,6 +75,10 @@ export const propertySchema = z.object({
   mainImage: imageUrlSchema.optional().nullable(),
   images: z.array(imageUrlSchema).default([]),
   amenities: z.array(z.string()).default([]),
+  mapImage: imageUrlSchema.optional().nullable(),
+  projectLaunchDate: z.string().datetime().optional().nullable(),
+  builderReraQrCode: imageUrlSchema.optional().nullable(),
+  possession: z.string().max(500, "Possession info is too long").optional().nullable(),
   metaTitle: z.string().max(200, "Meta title is too long").optional().nullable(),
   metaKeywords: z.string().max(500, "Meta keywords is too long").optional().nullable(),
   metaDescription: z.string().max(500, "Meta description is too long").optional().nullable(),
@@ -57,6 +87,7 @@ export const propertySchema = z.object({
   bankAccountNumber: z.string().max(50, "Account number is too long").optional().nullable(),
   bankIfsc: z.string().max(20, "IFSC code is too long").optional().nullable(),
   bankBranch: z.string().max(200, "Bank branch is too long").optional().nullable(),
+  configurations: z.array(propertyConfigurationSchema).default([]),
 });
 
 export type PropertyFormData = z.infer<typeof propertySchema>;

@@ -13,6 +13,9 @@ export async function GET(
 
     const property = await prisma.property.findUnique({
       where: { id },
+      include: {
+        configurations: true,
+      },
     });
 
     if (!property) {
@@ -62,12 +65,20 @@ export async function PUT(
     const body = await request.json();
     const validatedData = propertySchema.parse(body);
 
+    // Delete existing configurations and create new ones
+    if (validatedData.configurations) {
+      await prisma.propertyConfiguration.deleteMany({
+        where: { propertyId: id },
+      });
+    }
+
     const property = await prisma.property.update({
       where: { id },
       data: {
         name: validatedData.name,
         slug: validatedData.slug,
         type: validatedData.type,
+        format: validatedData.format,
         builder: validatedData.builder,
         builderReraNumber: validatedData.builderReraNumber,
         description: validatedData.description,
@@ -78,6 +89,10 @@ export async function PUT(
         mainImage: validatedData.mainImage,
         images: validatedData.images,
         amenities: validatedData.amenities,
+        mapImage: validatedData.mapImage,
+        projectLaunchDate: validatedData.projectLaunchDate,
+        builderReraQrCode: validatedData.builderReraQrCode,
+        possession: validatedData.possession,
         metaTitle: validatedData.metaTitle,
         metaKeywords: validatedData.metaKeywords,
         metaDescription: validatedData.metaDescription,
@@ -86,6 +101,16 @@ export async function PUT(
         bankAccountNumber: validatedData.bankAccountNumber,
         bankIfsc: validatedData.bankIfsc,
         bankBranch: validatedData.bankBranch,
+        configurations: validatedData.configurations
+          ? {
+              create: validatedData.configurations.map((config) => ({
+                configType: config.configType,
+                carpetAreaSqft: config.carpetAreaSqft,
+                price: config.price,
+                floorPlanImage: config.floorPlanImage,
+              })),
+            }
+          : undefined,
       },
     });
 

@@ -2,11 +2,11 @@
 
 import * as React from "react";
 import { useRouter, useParams } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { propertySchema, type PropertyFormData } from "@/lib/validations/property";
 import { propertyApi, uploadApi } from "@/lib/api-client";
-import { PropertyType, PropertyStatus } from "@prisma/client";
+import { PropertyType, PropertyStatus, PropertyFormat } from "@prisma/client";
 import { generateSlug } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -46,9 +46,17 @@ export default function EditPropertyPage() {
   const [customAmenity, setCustomAmenity] = React.useState("");
   const [locationAdvantages, setLocationAdvantages] = React.useState<string[]>([]);
   const [newLocationAdvantage, setNewLocationAdvantage] = React.useState("");
+  const [mapImage, setMapImage] = React.useState<string | null>(null);
+  const [builderReraQrCode, setBuilderReraQrCode] = React.useState<string | null>(null);
+  const [isUploadingMap, setIsUploadingMap] = React.useState(false);
+  const [isUploadingQr, setIsUploadingQr] = React.useState(false);
   const [autoSlug, setAutoSlug] = React.useState("");
+  const [isUploadingFloorPlan, setIsUploadingFloorPlan] = React.useState<boolean[]>([]);
   const mainImageInputRef = React.useRef<HTMLInputElement>(null);
   const additionalImagesInputRef = React.useRef<HTMLInputElement>(null);
+  const mapImageInputRef = React.useRef<HTMLInputElement>(null);
+  const qrCodeInputRef = React.useRef<HTMLInputElement>(null);
+  const floorPlanInputRefs = React.useRef<(HTMLInputElement | null)[]>([]);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["admin-property", propertyId],
@@ -65,8 +73,14 @@ export default function EditPropertyPage() {
     setValue,
     reset,
     watch,
-  } = useForm({
+    control,
+  } = useForm<PropertyFormData>({
     resolver: zodResolver(propertySchema),
+  });
+
+  const { fields: configFields, append: appendConfig, remove: removeConfig } = useFieldArray({
+    control,
+    name: "configurations",
   });
 
   const propertyName = watch("name");
@@ -93,6 +107,7 @@ export default function EditPropertyPage() {
         name: propertyData.name,
         slug: slug,
         type: propertyData.type,
+        format: propertyData.format || null,
         builder: propertyData.builder,
         builderReraNumber: propertyData.builderReraNumber || "",
         description: propertyData.description || "",
@@ -103,6 +118,11 @@ export default function EditPropertyPage() {
         mainImage: propertyData.mainImage || "",
         images: propertyData.images || [],
         amenities: propertyData.amenities || [],
+        mapImage: propertyData.mapImage || null,
+        projectLaunchDate: propertyData.projectLaunchDate ? new Date(propertyData.projectLaunchDate).toISOString().slice(0, 16) : null,
+        builderReraQrCode: propertyData.builderReraQrCode || null,
+        possession: propertyData.possession || "",
+        configurations: propertyData.configurations || [],
         metaTitle: propertyData.metaTitle || "",
         metaKeywords: propertyData.metaKeywords || "",
         metaDescription: propertyData.metaDescription || "",
@@ -116,6 +136,8 @@ export default function EditPropertyPage() {
       setMainImage(propertyData.mainImage || null);
       setAmenities(propertyData.amenities || []);
       setLocationAdvantages(propertyData.locationAdvantages || []);
+      setMapImage(propertyData.mapImage || null);
+      setBuilderReraQrCode(propertyData.builderReraQrCode || null);
     }
   }, [data, reset, setValue, watch]);
 
@@ -250,7 +272,107 @@ export default function EditPropertyPage() {
     setValue("locationAdvantages", updatedAdvantages);
   };
 
-  const onSubmit = async (formData: any) => {
+  const handleMapImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!validateImageFile(file)) return;
+
+    setIsUploadingMap(true);
+    try {
+      const slug = propertySlug || autoSlug;
+      const response = await uploadApi.uploadImage(file, {
+        slug: slug || undefined,
+        imageType: "map",
+      });
+      if (response.success && response.data) {
+        const imageUrl = response.data.url;
+        setMapImage(imageUrl);
+        setValue("mapImage", imageUrl);
+      } else {
+        alert(response.error || "Failed to upload map image");
+      }
+    } catch (error: any) {
+      alert(error.message || "Failed to upload map image. Please try again.");
+    } finally {
+      setIsUploadingMap(false);
+    }
+  };
+
+  const handleQrCodeUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!validateImageFile(file)) return;
+
+    setIsUploadingQr(true);
+    try {
+      const slug = propertySlug || autoSlug;
+      const response = await uploadApi.uploadImage(file, {
+        slug: slug || undefined,
+        imageType: "qrcode",
+      });
+      if (response.success && response.data) {
+        const imageUrl = response.data.url;
+        setBuilderReraQrCode(imageUrl);
+        setValue("builderReraQrCode", imageUrl);
+      } else {
+        alert(response.error || "Failed to upload QR code");
+      }
+    } catch (error: any) {
+      alert(error.message || "Failed to upload QR code. Please try again.");
+    } finally {
+      setIsUploadingQr(false);
+    }
+  };
+
+  const removeMapImage = () => {
+    setMapImage(null);
+    setValue("mapImage", null);
+    if (mapImageInputRef.current) {
+      mapImageInputRef.current.value = "";
+    }
+  };
+
+  const removeQrCode = () => {
+    setBuilderReraQrCode(null);
+    setValue("builderReraQrCode", null);
+    if (qrCodeInputRef.current) {
+      qrCodeInputRef.current.value = "";
+    }
+  };
+
+  const handleFloorPlanUpload = async (event: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!validateImageFile(file)) return;
+
+    const newUploadingState = [...isUploadingFloorPlan];
+    newUploadingState[index] = true;
+    setIsUploadingFloorPlan(newUploadingState);
+
+    try {
+      const slug = propertySlug || autoSlug;
+      const response = await uploadApi.uploadImage(file, {
+        slug: slug || undefined,
+        imageType: "floorplan",
+      });
+      if (response.success && response.data) {
+        const imageUrl = response.data.url;
+        setValue(`configurations.${index}.floorPlanImage`, imageUrl);
+      } else {
+        alert(response.error || "Failed to upload floor plan");
+      }
+    } catch (error: any) {
+      alert(error.message || "Failed to upload floor plan. Please try again.");
+    } finally {
+      newUploadingState[index] = false;
+      setIsUploadingFloorPlan(newUploadingState);
+    }
+  };
+
+  const onSubmit = async (formData: PropertyFormData) => {
     setIsSubmitting(true);
 
     try {
@@ -260,6 +382,8 @@ export default function EditPropertyPage() {
         amenities,
         locationAdvantages: locationAdvantages || [],
         mainImage: mainImage || formData.mainImage || null,
+        mapImage: mapImage || formData.mapImage || null,
+        builderReraQrCode: builderReraQrCode || formData.builderReraQrCode || null,
       });
 
       if (response.success) {
@@ -401,6 +525,29 @@ export default function EditPropertyPage() {
 
               <div>
                 <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Property Format
+                </label>
+                <Select
+                  {...register("format")}
+                  className={errors.format ? "border-red-500" : ""}
+                >
+                  <option value="">Select Format</option>
+                  <option value={PropertyFormat.APARTMENT}>Apartment</option>
+                  <option value={PropertyFormat.VILLA}>Villa</option>
+                  <option value={PropertyFormat.PLOT}>Plot</option>
+                  <option value={PropertyFormat.SHOP}>Shop</option>
+                  <option value={PropertyFormat.OFFICE}>Office</option>
+                  <option value={PropertyFormat.PENTHOUSE}>Penthouse</option>
+                </Select>
+                {errors.format && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.format.message}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
                   Status *
                 </label>
                 <Select
@@ -408,6 +555,9 @@ export default function EditPropertyPage() {
                   className={errors.status ? "border-red-500" : ""}
                 >
                   <option value={PropertyStatus.AVAILABLE}>Available</option>
+                  <option value={PropertyStatus.FOR_SALE}>For Sale</option>
+                  <option value={PropertyStatus.FOR_RENT}>For Rent</option>
+                  <option value={PropertyStatus.UNDER_CONSTRUCTION}>Under Construction</option>
                   <option value={PropertyStatus.NEW_LAUNCH}>New Launch</option>
                   <option value={PropertyStatus.SOLD}>Sold</option>
                   <option value={PropertyStatus.RESERVED}>Reserved</option>
@@ -658,6 +808,268 @@ export default function EditPropertyPage() {
             </div>
           </div>
 
+          {/* Pricing & Configurations */}
+          <div>
+            <h2 className="text-xl font-semibold text-neutral-900 mb-4">
+              Pricing & Configurations
+            </h2>
+            <div className="space-y-4">
+              <Button
+                type="button"
+                variant="primary"
+                onClick={() => appendConfig({ configType: "", carpetAreaSqft: undefined, price: undefined, floorPlanImage: null })}
+              >
+                Add Configuration
+              </Button>
+
+              {configFields.length > 0 && (
+                <div className="space-y-6 mt-4">
+                  {configFields.map((field, index) => (
+                    <div key={field.id} className="border border-neutral-200 rounded-lg p-4">
+                      <div className="flex justify-between items-center mb-4">
+                        <h3 className="font-semibold text-neutral-900">
+                          Configuration {index + 1}
+                        </h3>
+                        {configFields.length > 1 && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            onClick={() => removeConfig(index)}
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            Remove
+                          </Button>
+                        )}
+                      </div>
+
+                      <div className="space-y-4">
+                        {/* Config Type Radio Buttons */}
+                        <div>
+                          <label className="block text-sm font-medium text-neutral-700 mb-3">
+                            Configuration Type
+                          </label>
+                          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                            {["1BHK", "2BHK", "2.5BHK", "3BHK", "Other"].map((type) => (
+                              <label key={type} className="flex items-center space-x-2 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  value={type.toLowerCase()}
+                                  {...register(`configurations.${index}.configType`)}
+                                  className="w-4 h-4 text-primary-600 border-neutral-300"
+                                />
+                                <span className="text-sm text-neutral-700">{type}</span>
+                              </label>
+                            ))}
+                          </div>
+                          {watch(`configurations.${index}.configType`) === "other" && (
+                            <div className="mt-3">
+                              <Input
+                                placeholder="Enter custom configuration type"
+                                {...register(`configurations.${index}.customConfigType`)}
+                                className="text-sm"
+                              />
+                            </div>
+                          )}
+                          {errors.configurations?.[index]?.configType && (
+                            <p className="mt-1 text-sm text-red-600">
+                              {errors.configurations[index]?.configType?.message}
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-neutral-700 mb-2">
+                              Carpet Area (sqft)
+                            </label>
+                            <Input
+                              type="number"
+                              step="0.01"
+                              {...register(`configurations.${index}.carpetAreaSqft`, { valueAsNumber: true })}
+                              className={errors.configurations?.[index]?.carpetAreaSqft ? "border-red-500" : ""}
+                              placeholder="Enter carpet area"
+                            />
+                            {errors.configurations?.[index]?.carpetAreaSqft && (
+                              <p className="mt-1 text-sm text-red-600">
+                                {errors.configurations[index]?.carpetAreaSqft?.message}
+                              </p>
+                            )}
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-neutral-700 mb-2">
+                              Price
+                            </label>
+                            <Input
+                              type="number"
+                              step="0.01"
+                              {...register(`configurations.${index}.price`, { valueAsNumber: true })}
+                              className={errors.configurations?.[index]?.price ? "border-red-500" : ""}
+                              placeholder="Enter price"
+                            />
+                            {errors.configurations?.[index]?.price && (
+                              <p className="mt-1 text-sm text-red-600">
+                                {errors.configurations[index]?.price?.message}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-neutral-700 mb-2">
+                            Floor Plan Image
+                          </label>
+                          <label
+                            htmlFor={`floor-plan-upload-edit-${index}`}
+                            className="sr-only"
+                          >
+                            Upload floor plan
+                          </label>
+                          <input
+                            ref={(el) => {
+                              if (el) floorPlanInputRefs.current[index] = el;
+                            }}
+                            type="file"
+                            accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+                            onChange={(e) => handleFloorPlanUpload(e, index)}
+                            className="hidden"
+                            id={`floor-plan-upload-edit-${index}`}
+                            disabled={isUploadingFloorPlan[index]}
+                            aria-label="Upload floor plan"
+                          />
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            className="w-full"
+                            onClick={() => floorPlanInputRefs.current[index]?.click()}
+                            disabled={isUploadingFloorPlan[index]}
+                          >
+                            {isUploadingFloorPlan[index] ? "Uploading..." : "Upload Floor Plan"}
+                          </Button>
+                          {watch(`configurations.${index}.floorPlanImage`) && (
+                            <div className="mt-2 relative h-32 w-full rounded overflow-hidden bg-neutral-200 border border-neutral-300">
+                              <img
+                                src={watch(`configurations.${index}.floorPlanImage`)}
+                                alt="Floor plan"
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Additional Images & Map */}
+          <div>
+            <h2 className="text-xl font-semibold text-neutral-900 mb-4">
+              Additional Images & Map
+            </h2>
+            <div className="space-y-6">
+              {/* Map Image Upload */}
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Map Image
+                </label>
+                <label htmlFor="map-image-upload-edit" className="sr-only">
+                  Upload map image
+                </label>
+                <input
+                  ref={mapImageInputRef}
+                  type="file"
+                  accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+                  onChange={handleMapImageUpload}
+                  className="hidden"
+                  id="map-image-upload-edit"
+                  disabled={isUploadingMap}
+                  aria-label="Upload map image"
+                />
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => mapImageInputRef.current?.click()}
+                    disabled={isUploadingMap}
+                  >
+                    {isUploadingMap ? "Uploading..." : "Upload Map Image"}
+                  </Button>
+                  {mapImage && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={removeMapImage}
+                      className="text-red-600 hover:text-red-700"
+                    >
+                      Remove
+                    </Button>
+                  )}
+                </div>
+                {mapImage && (
+                  <div className="relative h-48 w-full max-w-md rounded overflow-hidden bg-neutral-200 border border-neutral-300 mt-3">
+                    <img
+                      src={mapImage}
+                      alt="Property map"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Builder RERA QR Code Upload */}
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Builder RERA QR Code
+                </label>
+                <label htmlFor="qr-code-upload-edit" className="sr-only">
+                  Upload QR code
+                </label>
+                <input
+                  ref={qrCodeInputRef}
+                  type="file"
+                  accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+                  onChange={handleQrCodeUpload}
+                  className="hidden"
+                  id="qr-code-upload-edit"
+                  disabled={isUploadingQr}
+                  aria-label="Upload QR code"
+                />
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => qrCodeInputRef.current?.click()}
+                    disabled={isUploadingQr}
+                  >
+                    {isUploadingQr ? "Uploading..." : "Upload QR Code"}
+                  </Button>
+                  {builderReraQrCode && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={removeQrCode}
+                      className="text-red-600 hover:text-red-700"
+                    >
+                      Remove
+                    </Button>
+                  )}
+                </div>
+                {builderReraQrCode && (
+                  <div className="relative h-48 w-48 rounded overflow-hidden bg-neutral-200 border border-neutral-300 mt-3">
+                    <img
+                      src={builderReraQrCode}
+                      alt="RERA QR code"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
           {/* Amenities */}
           <div>
             <h2 className="text-xl font-semibold text-neutral-900 mb-4">
@@ -745,6 +1157,47 @@ export default function EditPropertyPage() {
                   </div>
                 </div>
               )}
+            </div>
+          </div>
+
+          {/* Project Details */}
+          <div>
+            <h2 className="text-xl font-semibold text-neutral-900 mb-4">
+              Project Details
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Project Launch Date
+                </label>
+                <Input
+                  type="datetime-local"
+                  {...register("projectLaunchDate")}
+                  className={errors.projectLaunchDate ? "border-red-500" : ""}
+                />
+                {errors.projectLaunchDate && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.projectLaunchDate.message}
+                  </p>
+                )}
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Possession Details
+                </label>
+                <Textarea
+                  rows={3}
+                  {...register("possession")}
+                  className={errors.possession ? "border-red-500" : ""}
+                  placeholder="Enter possession details (e.g., Ready to Move, Oct 2026, etc.)"
+                />
+                {errors.possession && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.possession.message}
+                  </p>
+                )}
+              </div>
             </div>
           </div>
 

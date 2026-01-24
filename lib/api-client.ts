@@ -90,7 +90,7 @@ export const uploadApi = {
     file: File,
     options?: {
       slug?: string;
-      imageType?: "main" | "slider";
+      imageType?: "main" | "slider" | "map" | "qrcode" | "floorplan";
       index?: number;
     }
   ) => {

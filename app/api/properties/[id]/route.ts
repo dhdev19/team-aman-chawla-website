@@ -9,6 +9,9 @@ export async function GET(
     const { id } = await params;
     const property = await prisma.property.findUnique({
       where: { id },
+      include: {
+        configurations: true,
+      },
     });
 
     if (!property) {

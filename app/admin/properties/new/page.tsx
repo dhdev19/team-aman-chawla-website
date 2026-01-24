@@ -2,11 +2,11 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { propertySchema, type PropertyFormData } from "@/lib/validations/property";
 import { propertyApi, uploadApi } from "@/lib/api-client";
-import { PropertyType, PropertyStatus } from "@prisma/client";
+import { PropertyType, PropertyStatus, PropertyFormat } from "@prisma/client";
 import { generateSlug } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,10 +42,18 @@ export default function AddPropertyPage() {
   const [customAmenity, setCustomAmenity] = React.useState("");
   const [locationAdvantages, setLocationAdvantages] = React.useState<string[]>([]);
   const [newLocationAdvantage, setNewLocationAdvantage] = React.useState("");
+  const [mapImage, setMapImage] = React.useState<string | null>(null);
+  const [builderReraQrCode, setBuilderReraQrCode] = React.useState<string | null>(null);
+  const [isUploadingMap, setIsUploadingMap] = React.useState(false);
+  const [isUploadingQr, setIsUploadingQr] = React.useState(false);
   const mainImageInputRef = React.useRef<HTMLInputElement>(null);
   const additionalImagesInputRef = React.useRef<HTMLInputElement>(null);
+  const mapImageInputRef = React.useRef<HTMLInputElement>(null);
+  const qrCodeInputRef = React.useRef<HTMLInputElement>(null);
+  const floorPlanInputRefs = React.useRef<(HTMLInputElement | null)[]>([]);
 
   const [autoSlug, setAutoSlug] = React.useState("");
+  const [isUploadingFloorPlan, setIsUploadingFloorPlan] = React.useState<boolean[]>([]);
 
   const {
     register,
@@ -53,14 +61,21 @@ export default function AddPropertyPage() {
     formState: { errors },
     setValue,
     watch,
-  } = useForm({
+    control,
+  } = useForm<PropertyFormData>({
     resolver: zodResolver(propertySchema),
     defaultValues: {
       status: PropertyStatus.AVAILABLE,
       images: [],
       amenities: [],
       locationAdvantages: [],
+      configurations: [],
     },
+  });
+
+  const { fields: configFields, append: appendConfig, remove: removeConfig } = useFieldArray({
+    control,
+    name: "configurations",
   });
 
   const propertyName = watch("name");
@@ -206,6 +221,106 @@ export default function AddPropertyPage() {
     setValue("locationAdvantages", updatedAdvantages);
   };
 
+  const handleMapImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!validateImageFile(file)) return;
+
+    setIsUploadingMap(true);
+    try {
+      const slug = propertySlug || autoSlug;
+      const response = await uploadApi.uploadImage(file, {
+        slug: slug || undefined,
+        imageType: "map",
+      });
+      if (response.success && response.data) {
+        const imageUrl = response.data.url;
+        setMapImage(imageUrl);
+        setValue("mapImage", imageUrl);
+      } else {
+        alert(response.error || "Failed to upload map image");
+      }
+    } catch (error: any) {
+      alert(error.message || "Failed to upload map image. Please try again.");
+    } finally {
+      setIsUploadingMap(false);
+    }
+  };
+
+  const handleQrCodeUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!validateImageFile(file)) return;
+
+    setIsUploadingQr(true);
+    try {
+      const slug = propertySlug || autoSlug;
+      const response = await uploadApi.uploadImage(file, {
+        slug: slug || undefined,
+        imageType: "qrcode",
+      });
+      if (response.success && response.data) {
+        const imageUrl = response.data.url;
+        setBuilderReraQrCode(imageUrl);
+        setValue("builderReraQrCode", imageUrl);
+      } else {
+        alert(response.error || "Failed to upload QR code");
+      }
+    } catch (error: any) {
+      alert(error.message || "Failed to upload QR code. Please try again.");
+    } finally {
+      setIsUploadingQr(false);
+    }
+  };
+
+  const removeMapImage = () => {
+    setMapImage(null);
+    setValue("mapImage", null);
+    if (mapImageInputRef.current) {
+      mapImageInputRef.current.value = "";
+    }
+  };
+
+  const removeQrCode = () => {
+    setBuilderReraQrCode(null);
+    setValue("builderReraQrCode", null);
+    if (qrCodeInputRef.current) {
+      qrCodeInputRef.current.value = "";
+    }
+  };
+
+  const handleFloorPlanUpload = async (event: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!validateImageFile(file)) return;
+
+    const newUploadingState = [...isUploadingFloorPlan];
+    newUploadingState[index] = true;
+    setIsUploadingFloorPlan(newUploadingState);
+
+    try {
+      const slug = propertySlug || autoSlug;
+      const response = await uploadApi.uploadImage(file, {
+        slug: slug || undefined,
+        imageType: "floorplan",
+      });
+      if (response.success && response.data) {
+        const imageUrl = response.data.url;
+        setValue(`configurations.${index}.floorPlanImage`, imageUrl);
+      } else {
+        alert(response.error || "Failed to upload floor plan");
+      }
+    } catch (error: any) {
+      alert(error.message || "Failed to upload floor plan. Please try again.");
+    } finally {
+      newUploadingState[index] = false;
+      setIsUploadingFloorPlan(newUploadingState);
+    }
+  };
+
   const onSubmit = async (data: PropertyFormData) => {
     setIsSubmitting(true);
 
@@ -216,6 +331,8 @@ export default function AddPropertyPage() {
         amenities: amenities || [],
         locationAdvantages: locationAdvantages || [],
         mainImage: mainImage || data.mainImage || null,
+        mapImage: mapImage || data.mapImage || null,
+        builderReraQrCode: builderReraQrCode || data.builderReraQrCode || null,
       });
 
       if (response.success) {
@@ -342,6 +459,29 @@ export default function AddPropertyPage() {
 
               <div>
                 <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Property Format
+                </label>
+                <Select
+                  {...register("format")}
+                  className={errors.format ? "border-red-500" : ""}
+                >
+                  <option value="">Select Format</option>
+                  <option value={PropertyFormat.APARTMENT}>Apartment</option>
+                  <option value={PropertyFormat.VILLA}>Villa</option>
+                  <option value={PropertyFormat.PLOT}>Plot</option>
+                  <option value={PropertyFormat.SHOP}>Shop</option>
+                  <option value={PropertyFormat.OFFICE}>Office</option>
+                  <option value={PropertyFormat.PENTHOUSE}>Penthouse</option>
+                </Select>
+                {errors.format && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.format.message}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
                   Status *
                 </label>
                 <Select
@@ -349,6 +489,9 @@ export default function AddPropertyPage() {
                   className={errors.status ? "border-red-500" : ""}
                 >
                   <option value={PropertyStatus.AVAILABLE}>Available</option>
+                  <option value={PropertyStatus.FOR_SALE}>For Sale</option>
+                  <option value={PropertyStatus.FOR_RENT}>For Rent</option>
+                  <option value={PropertyStatus.UNDER_CONSTRUCTION}>Under Construction</option>
                   <option value={PropertyStatus.NEW_LAUNCH}>New Launch</option>
                   <option value={PropertyStatus.SOLD}>Sold</option>
                   <option value={PropertyStatus.RESERVED}>Reserved</option>
@@ -758,7 +901,305 @@ export default function AddPropertyPage() {
             </div>
           </div>
 
-          {/* Bank Details */}
+          {/* Pricing and Configuration */}
+          <div>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold text-neutral-900">
+                Pricing & Configurations
+              </h2>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => appendConfig({ configType: "", carpetAreaSqft: undefined, price: undefined, floorPlanImage: null })}
+              >
+                Add Configuration
+              </Button>
+            </div>
+
+            <div className="space-y-6">
+              {configFields.map((field, index) => (
+                <div key={field.id} className="border border-neutral-200 rounded-lg p-4 bg-neutral-50">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="font-medium text-neutral-900">Configuration {index + 1}</h3>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={() => removeConfig(index)}
+                      className="text-red-600 hover:text-red-700"
+                    >
+                      Remove
+                    </Button>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700 mb-2">
+                        Configuration Type *
+                      </label>
+                      <div className="space-y-2">
+                        {["1BHK", "2BHK", "2.5BHK", "3BHK"].map((config) => (
+                          <label key={config} className="flex items-center">
+                            <input
+                              type="radio"
+                              value={config}
+                              {...register(`configurations.${index}.configType`)}
+                              className="mr-2"
+                            />
+                            <span className="text-sm text-neutral-700">{config}</span>
+                          </label>
+                        ))}
+                        <label className="flex items-center">
+                          <input
+                            type="radio"
+                            value="other"
+                            {...register(`configurations.${index}.configType`)}
+                            className="mr-2"
+                          />
+                          <span className="text-sm text-neutral-700">Other</span>
+                        </label>
+                      </div>
+                      {watch(`configurations.${index}.configType`) === "other" && (
+                        <div className="mt-3">
+                          <Input
+                            placeholder="Enter custom configuration type"
+                            {...register(`configurations.${index}.customConfigType`)}
+                            className="text-sm"
+                          />
+                        </div>
+                      )}
+                      {errors.configurations?.[index]?.configType && (
+                        <p className="mt-1 text-sm text-red-600">
+                          {errors.configurations[index]?.configType?.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700 mb-2">
+                        Carpet Area (sq ft)
+                      </label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        {...register(`configurations.${index}.carpetAreaSqft`, { valueAsNumber: true })}
+                        className={errors.configurations?.[index]?.carpetAreaSqft ? "border-red-500" : ""}
+                        placeholder="Enter carpet area"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700 mb-2">
+                        Price
+                      </label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        {...register(`configurations.${index}.price`, { valueAsNumber: true })}
+                        className={errors.configurations?.[index]?.price ? "border-red-500" : ""}
+                        placeholder="Enter price"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700 mb-2">
+                        Floor Plan Image
+                      </label>
+                      <label htmlFor={`floor-plan-upload-${index}`} className="sr-only">
+                        Upload floor plan
+                      </label>
+                      <input
+                        ref={(el) => {
+                          if (el) floorPlanInputRefs.current[index] = el;
+                        }}
+                        type="file"
+                        accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+                        onChange={(e) => handleFloorPlanUpload(e, index)}
+                        className="hidden"
+                        id={`floor-plan-upload-${index}`}
+                        disabled={isUploadingFloorPlan[index]}
+                        aria-label="Upload floor plan"
+                      />
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        className="w-full"
+                        onClick={() => floorPlanInputRefs.current[index]?.click()}
+                        disabled={isUploadingFloorPlan[index]}
+                      >
+                        {isUploadingFloorPlan[index] ? "Uploading..." : "Upload Floor Plan"}
+                      </Button>
+                      {watch(`configurations.${index}.floorPlanImage`) && (
+                        <div className="mt-2 relative h-32 w-full rounded overflow-hidden bg-neutral-200 border border-neutral-300">
+                          <img
+                            src={watch(`configurations.${index}.floorPlanImage`)}
+                            alt="Floor plan"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {configFields.length === 0 && (
+                <div className="text-center py-8 bg-neutral-50 rounded border border-dashed border-neutral-300">
+                  <p className="text-neutral-600 mb-4">No configurations added yet</p>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => appendConfig({ configType: "", carpetAreaSqft: undefined, price: undefined, floorPlanImage: null })}
+                  >
+                    Add First Configuration
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Additional Images and Maps */}
+          <div>
+            <h2 className="text-xl font-semibold text-neutral-900 mb-4">
+              Additional Images & Map
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Map Image */}
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Map Image
+                </label>
+                <input
+                  ref={mapImageInputRef}
+                  type="file"
+                  accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+                  onChange={handleMapImageUpload}
+                  className="hidden"
+                  id="map-image-upload"
+                  disabled={isUploadingMap}
+                />
+                <div className="space-y-3">
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={() => mapImageInputRef.current?.click()}
+                      disabled={isUploadingMap}
+                    >
+                      {isUploadingMap ? "Uploading..." : "Upload Map"}
+                    </Button>
+                    {mapImage && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={removeMapImage}
+                        className="text-red-600 hover:text-red-700"
+                      >
+                        Remove
+                      </Button>
+                    )}
+                  </div>
+                  {mapImage && (
+                    <div className="relative h-32 w-full rounded overflow-hidden bg-neutral-200 border border-neutral-300">
+                      <img
+                        src={mapImage}
+                        alt="Map"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Builder RERA QR Code */}
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Builder RERA QR Code
+                </label>
+                <input
+                  ref={qrCodeInputRef}
+                  type="file"
+                  accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+                  onChange={handleQrCodeUpload}
+                  className="hidden"
+                  id="qr-code-upload"
+                  disabled={isUploadingQr}
+                />
+                <div className="space-y-3">
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={() => qrCodeInputRef.current?.click()}
+                      disabled={isUploadingQr}
+                    >
+                      {isUploadingQr ? "Uploading..." : "Upload QR Code"}
+                    </Button>
+                    {builderReraQrCode && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={removeQrCode}
+                        className="text-red-600 hover:text-red-700"
+                      >
+                        Remove
+                      </Button>
+                    )}
+                  </div>
+                  {builderReraQrCode && (
+                    <div className="relative h-32 w-32 rounded overflow-hidden bg-neutral-200 border border-neutral-300">
+                      <img
+                        src={builderReraQrCode}
+                        alt="QR Code"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Project Details */}
+          <div>
+            <h2 className="text-xl font-semibold text-neutral-900 mb-4">
+              Project Details
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Project Launch Date
+                </label>
+                <Input
+                  type="datetime-local"
+                  {...register("projectLaunchDate")}
+                  className={errors.projectLaunchDate ? "border-red-500" : ""}
+                />
+                {errors.projectLaunchDate && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.projectLaunchDate.message}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  Possession Details
+                </label>
+                <Textarea
+                  rows={3}
+                  {...register("possession")}
+                  className={errors.possession ? "border-red-500" : ""}
+                  placeholder="e.g., Q3 2025, Ready to Move, etc."
+                />
+                {errors.possession && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.possession.message}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
           <div>
             <h2 className="text-xl font-semibold text-neutral-900 mb-4">
               Bank Details

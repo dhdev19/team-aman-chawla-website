@@ -15,6 +15,7 @@ export async function POST(request: NextRequest) {
         name: validatedData.name,
         slug: validatedData.slug,
         type: validatedData.type,
+        format: validatedData.format,
         builder: validatedData.builder,
         builderReraNumber: validatedData.builderReraNumber,
         description: validatedData.description,
@@ -25,6 +26,10 @@ export async function POST(request: NextRequest) {
         mainImage: validatedData.mainImage,
         images: validatedData.images,
         amenities: validatedData.amenities,
+        mapImage: validatedData.mapImage,
+        projectLaunchDate: validatedData.projectLaunchDate,
+        builderReraQrCode: validatedData.builderReraQrCode,
+        possession: validatedData.possession,
         metaTitle: validatedData.metaTitle,
         metaKeywords: validatedData.metaKeywords,
         metaDescription: validatedData.metaDescription,
@@ -33,6 +38,16 @@ export async function POST(request: NextRequest) {
         bankAccountNumber: validatedData.bankAccountNumber,
         bankIfsc: validatedData.bankIfsc,
         bankBranch: validatedData.bankBranch,
+        configurations: validatedData.configurations
+          ? {
+              create: validatedData.configurations.map((config) => ({
+                configType: config.configType,
+                carpetAreaSqft: config.carpetAreaSqft,
+                price: config.price,
+                floorPlanImage: config.floorPlanImage,
+              })),
+            }
+          : undefined,
       },
     });
 
