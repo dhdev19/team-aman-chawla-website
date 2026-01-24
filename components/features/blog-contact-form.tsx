@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,6 +12,7 @@ import { enquirySchema, type EnquiryFormData } from "@/lib/validations";
 import { enquiryApi } from "@/lib/api-client";
 
 export function BlogContactForm() {
+  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [submitStatus, setSubmitStatus] = React.useState<{
     type: "success" | "error" | null;
@@ -58,11 +60,7 @@ export function BlogContactForm() {
     try {
       const response = await enquiryApi.create(formData);
       if (response.success) {
-        setSubmitStatus({
-          type: "success",
-          message: "Thank you! We'll get back to you soon.",
-        });
-        reset();
+        router.push("/thank-you?form=contact");
       } else {
         setSubmitStatus({
           type: "error",

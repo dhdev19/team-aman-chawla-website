@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useRouter } from "next/navigation";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Container } from "@/components/ui/container";
@@ -11,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { FadeIn, SlideIn } from "@/components/animations";
 
 export default function ReferPage() {
+  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [submitStatus, setSubmitStatus] = React.useState<{
     type: "success" | "error" | null;
@@ -22,14 +24,10 @@ export default function ReferPage() {
     setIsSubmitting(true);
     setSubmitStatus({ type: null, message: "" });
 
-    // Simulate form submission
+    // Simulate form submission and then redirect
     setTimeout(() => {
-      setSubmitStatus({
-        type: "success",
-        message: "Thank you for your referral! We'll contact you soon.",
-      });
+      router.push("/thank-you?form=refer");
       setIsSubmitting(false);
-      (e.target as HTMLFormElement).reset();
     }, 1000);
   };
 

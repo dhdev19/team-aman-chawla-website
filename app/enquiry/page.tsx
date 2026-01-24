@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Container } from "@/components/ui/container";
@@ -16,6 +16,7 @@ import { enquiryApi } from "@/lib/api-client";
 import { FadeIn } from "@/components/animations";
 
 export default function EnquiryPage() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const propertyId = searchParams.get("property");
   const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -44,11 +45,7 @@ export default function EnquiryPage() {
     try {
       const response = await enquiryApi.create(data);
       if (response.success) {
-        setSubmitStatus({
-          type: "success",
-          message: "Thank you! We'll get back to you soon.",
-        });
-        reset();
+        router.push("/thank-you?form=enquiry");
       } else {
         setSubmitStatus({
           type: "error",

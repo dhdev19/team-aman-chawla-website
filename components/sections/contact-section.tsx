@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useRouter } from "next/navigation";
 import { Container } from "@/components/ui/container";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,6 +14,7 @@ import { enquirySchema, type EnquiryFormData } from "@/lib/validations";
 import { enquiryApi } from "@/lib/api-client";
 
 export function ContactSection() {
+  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [submitStatus, setSubmitStatus] = React.useState<{
     type: "success" | "error" | null;
@@ -35,11 +37,7 @@ export function ContactSection() {
     try {
       const response = await enquiryApi.create(data);
       if (response.success) {
-        setSubmitStatus({
-          type: "success",
-          message: "Thank you! We'll get back to you soon.",
-        });
-        reset();
+        router.push("/thank-you?form=contact");
       } else {
         setSubmitStatus({
           type: "error",

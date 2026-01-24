@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -40,6 +41,7 @@ interface Video {
 }
 
 export function OldHomepage() {
+  const router = useRouter();
   const [featuredProperties, setFeaturedProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [queryForm, setQueryForm] = useState({
@@ -205,12 +207,7 @@ export function OldHomepage() {
         message: "Homepage quick query form submission",
         type: "contact",
       });
-      setQueryFeedback("success");
-      setQueryForm({
-        name: "",
-        email: "",
-        phone: "",
-      });
+      router.push("/thank-you?form=contact");
     } catch (error) {
       console.error("Error submitting query form:", error);
       setQueryFeedback("error");
