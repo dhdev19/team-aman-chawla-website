@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-server";
 import { careerApplicationFilterSchema } from "@/lib/validations/career";
-import { paginate } from "@/lib/pagination";
+import { createPaginatedResponse, getSkip } from "@/lib/pagination";
 
 export async function GET(request: NextRequest) {
   try {
@@ -31,15 +31,17 @@ export async function GET(request: NextRequest) {
       where.referralSource = filters.referralSource;
     }
 
-    // Get paginated results
-    const result = await paginate(
-      prisma.careerApplication,
-      {
+    const [total, data] = await Promise.all([
+      prisma.careerApplication.count({ where }),
+      prisma.careerApplication.findMany({
         where,
         orderBy: { createdAt: "desc" },
-      },
-      { page: filters.page, limit: filters.limit }
-    );
+        skip: getSkip(filters.page, filters.limit),
+        take: filters.limit,
+      }),
+    ]);
+
+    const result = createPaginatedResponse(data, filters.page, filters.limit, total);
 
     return NextResponse.json({
       success: true,
