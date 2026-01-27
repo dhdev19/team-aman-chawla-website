@@ -119,7 +119,9 @@ export default function EditPropertyPage() {
         images: propertyData.images || [],
         amenities: propertyData.amenities || [],
         mapImage: propertyData.mapImage || null,
-        projectLaunchDate: propertyData.projectLaunchDate ? new Date(propertyData.projectLaunchDate).toISOString().slice(0, 16) : null,
+        projectLaunchDate: propertyData.projectLaunchDate 
+          ? new Date(propertyData.projectLaunchDate).toISOString().slice(0, 16)
+          : null,
         builderReraQrCode: propertyData.builderReraQrCode || null,
         possession: propertyData.possession || "",
         configurations: propertyData.configurations || [],
@@ -376,15 +378,18 @@ export default function EditPropertyPage() {
     setIsSubmitting(true);
 
     try {
-      const response = await propertyApi.update(propertyId, {
+      const dataToSubmit = {
         ...formData,
+        projectLaunchDate: formData.projectLaunchDate ? new Date(formData.projectLaunchDate).toISOString() : null,
         images,
         amenities,
         locationAdvantages: locationAdvantages || [],
         mainImage: mainImage || formData.mainImage || null,
         mapImage: mapImage || formData.mapImage || null,
         builderReraQrCode: builderReraQrCode || formData.builderReraQrCode || null,
-      });
+      };
+      
+      const response = await propertyApi.update(propertyId, dataToSubmit);
 
       if (response.success) {
         router.push("/admin/properties");
