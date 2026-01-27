@@ -7,7 +7,7 @@ interface LoanCalculatorProps {
 }
 
 export function LoanCalculator({ propertyPrice = 5000000 }: LoanCalculatorProps) {
-  const [loanAmount, setLoanAmount] = React.useState(propertyPrice * 0.8); // 80% of property price
+  const [loanAmount, setLoanAmount] = React.useState(0); // Default to 0
   const [interestRate, setInterestRate] = React.useState(8.5); // Default 8.5%
   const [loanDuration, setLoanDuration] = React.useState(20); // Default 20 years
 

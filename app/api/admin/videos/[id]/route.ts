@@ -5,13 +5,14 @@ import { videoSchema } from "@/lib/validations/video";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAdmin();
+    const { id } = await params;
 
     const video = await prisma.video.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!video) {
@@ -52,16 +53,17 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAdmin();
+    const { id } = await params;
 
     const body = await request.json();
     const validatedData = videoSchema.parse(body);
 
     const video = await prisma.video.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         title: validatedData.title,
         videoLink: validatedData.videoLink,
@@ -110,13 +112,14 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAdmin();
+    const { id } = await params;
 
     await prisma.video.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({

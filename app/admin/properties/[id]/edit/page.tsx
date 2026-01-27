@@ -74,7 +74,7 @@ export default function EditPropertyPage() {
     reset,
     watch,
     control,
-  } = useForm<PropertyFormData>({
+  } = useForm({
     resolver: zodResolver(propertySchema),
   });
 
@@ -374,7 +374,7 @@ export default function EditPropertyPage() {
     }
   };
 
-  const onSubmit = async (formData: PropertyFormData) => {
+  const onSubmit = async (formData: any) => {
     setIsSubmitting(true);
 
     try {
@@ -952,7 +952,7 @@ export default function EditPropertyPage() {
                           {watch(`configurations.${index}.floorPlanImage`) && (
                             <div className="mt-2 relative h-32 w-full rounded overflow-hidden bg-neutral-200 border border-neutral-300">
                               <img
-                                src={watch(`configurations.${index}.floorPlanImage`)}
+                                src={watch(`configurations.${index}.floorPlanImage`) || ""}
                                 alt="Floor plan"
                                 className="w-full h-full object-cover"
                               />

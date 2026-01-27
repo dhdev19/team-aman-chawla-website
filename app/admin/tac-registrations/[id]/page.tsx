@@ -14,11 +14,11 @@ export default function TACRegistrationViewPage() {
   const params = useParams();
   const registrationId = params.id as string;
 
-  const { data: registration, isLoading, error } = useQuery({
+  const { data: registration, isLoading, error, refetch } = useQuery<any>({
     queryKey: ["admin-tac-registration", registrationId],
     queryFn: async () => {
       const response = await tacApi.getAll();
-      const registration = response.data?.data?.find(
+      const registration = (response.data as any)?.data?.data?.find(
         (r: any) => r.id === registrationId
       );
       if (!registration) {

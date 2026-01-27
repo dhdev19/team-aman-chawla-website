@@ -26,7 +26,7 @@ export default function AddVideoPage() {
     formState: { errors },
     watch,
     setValue,
-  } = useForm<VideoFormData>({
+  } = useForm({
     resolver: zodResolver(videoSchema),
     defaultValues: {
       order: 0,
@@ -101,7 +101,7 @@ export default function AddVideoPage() {
     }
   };
 
-  const onSubmit = async (data: VideoFormData) => {
+  const onSubmit = async (data: any) => {
     setIsSubmitting(true);
 
     try {

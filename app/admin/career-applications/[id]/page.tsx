@@ -15,11 +15,20 @@ export default function CareerApplicationDetailPage() {
   const params = useParams();
   const applicationId = params.id as string;
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error } = useQuery<{
+    success: boolean;
+    data: any;
+  }>({
     queryKey: ["admin-career-application", applicationId],
-    queryFn: async () => {
+    queryFn: async (): Promise<{
+      success: boolean;
+      data: any;
+    }> => {
       const response = await careerApi.getById(applicationId);
-      return response.data;
+      return response.data as {
+        success: boolean;
+        data: any;
+      };
     },
   });
 
@@ -82,14 +91,14 @@ export default function CareerApplicationDetailPage() {
           <div className="flex items-start justify-between mb-6">
             <div>
               <h2 className="text-2xl font-semibold text-neutral-900 mb-2">
-                {data.name}
+                {data.data.name}
               </h2>
               <div className="flex items-center gap-2">
                 <span className="px-3 py-1 text-sm font-medium bg-primary-100 text-primary-800 rounded-full">
-                  {getReferralSourceLabel(data.referralSource)}
+                  {getReferralSourceLabel(data.data.referralSource)}
                 </span>
                 <span className="text-sm text-neutral-500">
-                  Applied on {formatDate(new Date(data.createdAt), "MMMM dd, yyyy 'at' h:mm a")}
+                  Applied on {formatDate(new Date(data.data.createdAt), "MMMM dd, yyyy 'at' h:mm a")}
                 </span>
               </div>
             </div>
@@ -116,7 +125,7 @@ export default function CareerApplicationDetailPage() {
                 <label className="block text-sm font-medium text-neutral-700 mb-1">
                   Full Name
                 </label>
-                <p className="text-sm text-neutral-900">{data.name}</p>
+                <p className="text-sm text-neutral-900">{data.data.name}</p>
               </div>
               
               <div>
@@ -125,10 +134,10 @@ export default function CareerApplicationDetailPage() {
                 </label>
                 <p className="text-sm text-neutral-900">
                   <a
-                    href={`mailto:${data.email}`}
+                    href={`mailto:${data.data.email}`}
                     className="text-primary-700 hover:text-primary-800"
                   >
-                    {data.email}
+                    {data.data.email}
                   </a>
                 </p>
               </div>
@@ -139,12 +148,12 @@ export default function CareerApplicationDetailPage() {
                 </label>
                 <p className="text-sm text-neutral-900">
                   <a
-                    href={`https://wa.me/91${data.whatsappNumber}`}
+                    href={`https://wa.me/91${data.data.whatsappNumber}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-primary-700 hover:text-primary-800"
                   >
-                    +91 {data.whatsappNumber}
+                    +91 {data.data.whatsappNumber}
                   </a>
                 </p>
               </div>
@@ -153,7 +162,7 @@ export default function CareerApplicationDetailPage() {
                 <label className="block text-sm font-medium text-neutral-700 mb-1">
                   City
                 </label>
-                <p className="text-sm text-neutral-900">{data.city}</p>
+                <p className="text-sm text-neutral-900">{data.data.city}</p>
               </div>
             </div>
 
@@ -168,16 +177,16 @@ export default function CareerApplicationDetailPage() {
                   How they came to know about us
                 </label>
                 <p className="text-sm text-neutral-900">
-                  {getReferralSourceLabel(data.referralSource)}
+                  {getReferralSourceLabel(data.data.referralSource)}
                 </p>
               </div>
               
-              {data.referralOther && (
+              {data.data.referralOther && (
                 <div>
                   <label className="block text-sm font-medium text-neutral-700 mb-1">
                     Other Source Details
                   </label>
-                  <p className="text-sm text-neutral-900">{data.referralOther}</p>
+                  <p className="text-sm text-neutral-900">{data.data.referralOther}</p>
                 </div>
               )}
               
@@ -187,7 +196,7 @@ export default function CareerApplicationDetailPage() {
                 </label>
                 <p className="text-sm">
                   <a
-                    href={data.resumeLink}
+                    href={data.data.resumeLink}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 text-primary-700 hover:text-primary-800 font-medium"
@@ -205,7 +214,7 @@ export default function CareerApplicationDetailPage() {
                   Application Submitted
                 </label>
                 <p className="text-sm text-neutral-900">
-                  {formatDate(new Date(data.createdAt), "MMMM dd, yyyy 'at' h:mm a")}
+                  {formatDate(new Date(data.data.createdAt), "MMMM dd, yyyy 'at' h:mm a")}
                 </p>
               </div>
             </div>
@@ -219,7 +228,7 @@ export default function CareerApplicationDetailPage() {
           </h3>
           <div className="flex flex-wrap gap-3">
             <a
-              href={`mailto:${data.email}`}
+              href={`mailto:${data.data.email}`}
               className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-md hover:bg-blue-100 transition-colors"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -229,7 +238,7 @@ export default function CareerApplicationDetailPage() {
             </a>
             
             <a
-              href={`https://wa.me/91${data.whatsappNumber}`}
+              href={`https://wa.me/91${data.data.whatsappNumber}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 text-green-700 rounded-md hover:bg-green-100 transition-colors"
@@ -241,7 +250,7 @@ export default function CareerApplicationDetailPage() {
             </a>
             
             <a
-              href={data.resumeLink}
+              href={data.data.resumeLink}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-4 py-2 bg-purple-50 text-purple-700 rounded-md hover:bg-purple-100 transition-colors"

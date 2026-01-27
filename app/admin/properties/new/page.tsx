@@ -62,7 +62,7 @@ export default function AddPropertyPage() {
     setValue,
     watch,
     control,
-  } = useForm<PropertyFormData>({
+  } = useForm({
     resolver: zodResolver(propertySchema),
     defaultValues: {
       status: PropertyStatus.AVAILABLE,
@@ -321,7 +321,7 @@ export default function AddPropertyPage() {
     }
   };
 
-  const onSubmit = async (data: PropertyFormData) => {
+  const onSubmit = async (data: any) => {
     setIsSubmitting(true);
 
     try {
@@ -1029,7 +1029,7 @@ export default function AddPropertyPage() {
                       {watch(`configurations.${index}.floorPlanImage`) && (
                         <div className="mt-2 relative h-32 w-full rounded overflow-hidden bg-neutral-200 border border-neutral-300">
                           <img
-                            src={watch(`configurations.${index}.floorPlanImage`)}
+                            src={watch(`configurations.${index}.floorPlanImage`) || ""}
                             alt="Floor plan"
                             className="w-full h-full object-cover"
                           />

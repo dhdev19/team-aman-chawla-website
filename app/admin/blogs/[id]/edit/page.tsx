@@ -49,7 +49,7 @@ export default function EditBlogPage() {
     reset,
     setValue,
     watch,
-  } = useForm<BlogFormData>({
+  } = useForm({
     resolver: zodResolver(blogSchema),
   });
 
@@ -167,7 +167,7 @@ export default function EditBlogPage() {
     }
   };
 
-  const onSubmit = async (formData: BlogFormData) => {
+  const onSubmit = async (formData: any) => {
     setIsSubmitting(true);
 
     try {

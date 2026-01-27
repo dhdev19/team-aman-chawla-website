@@ -16,11 +16,20 @@ export default function PropertyViewPage() {
   const params = useParams();
   const propertyId = params.id as string;
 
-  const { data: property, isLoading, error, refetch } = useQuery({
+  const { data: property, isLoading, error, refetch } = useQuery<{
+    success: boolean;
+    data: any;
+  }>({
     queryKey: ["admin-property", propertyId],
-    queryFn: async () => {
+    queryFn: async (): Promise<{
+      success: boolean;
+      data: any;
+    }> => {
       const response = await propertyApi.getById(propertyId);
-      return response.data;
+      return response.data as {
+        success: boolean;
+        data: any;
+      };
     },
   });
 
@@ -57,14 +66,14 @@ export default function PropertyViewPage() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold text-neutral-900 mb-2">
-            {property.name}
+            {property.data.name}
           </h1>
           <p className="text-neutral-600">
             View property details
           </p>
         </div>
         <div className="flex gap-2">
-          <Link href={`/admin/properties/${property.id}/edit`}>
+          <Link href={`/admin/properties/${property.data.id}/edit`}>
             <Button variant="primary">Edit</Button>
           </Link>
           <Button variant="danger" onClick={handleDelete}>
@@ -81,11 +90,11 @@ export default function PropertyViewPage() {
             <h2 className="text-xl font-semibold text-neutral-900 mb-4">
               Images
             </h2>
-            {property.mainImage ? (
+            {property.data.mainImage ? (
               <div className="relative h-96 w-full rounded-lg overflow-hidden bg-neutral-200 mb-4">
                 <Image
-                  src={property.mainImage}
-                  alt={property.name}
+                  src={property.data.mainImage}
+                  alt={property.data.name}
                   fill
                   className="object-cover"
                 />
@@ -96,16 +105,16 @@ export default function PropertyViewPage() {
               </div>
             )}
 
-            {property.images && property.images.length > 0 && (
+            {property.data.images && property.data.images.length > 0 && (
               <div className="grid grid-cols-4 gap-4">
-                {property.images.map((image, index) => (
+                {property.data.images.map((image: any, index: number) => (
                   <div
                     key={index}
                     className="relative h-24 w-full rounded overflow-hidden bg-neutral-200"
                   >
                     <Image
                       src={image}
-                      alt={`${property.name} - Image ${index + 1}`}
+                      alt={`${property.data.name} - Image ${index + 1}`}
                       fill
                       className="object-cover"
                     />
@@ -126,7 +135,7 @@ export default function PropertyViewPage() {
                   Description
                 </label>
                 <p className="mt-1 text-neutral-900 whitespace-pre-line">
-                  {property.description || "No description provided"}
+                  {property.data.description || "No description provided"}
                 </p>
               </div>
             </div>
@@ -145,7 +154,7 @@ export default function PropertyViewPage() {
                   Property Type
                 </label>
                 <p className="mt-1 text-neutral-900 capitalize">
-                  {property.type.replace("_", " ").toLowerCase()}
+                  {property.data.type.replace("_", " ").toLowerCase()}
                 </p>
               </div>
 
@@ -153,7 +162,7 @@ export default function PropertyViewPage() {
                 <label className="text-sm font-medium text-neutral-600">
                   Builder
                 </label>
-                <p className="mt-1 text-neutral-900">{property.builder}</p>
+                <p className="mt-1 text-neutral-900">{property.data.builder}</p>
               </div>
 
               <div>
@@ -163,14 +172,14 @@ export default function PropertyViewPage() {
                 <p className="mt-1">
                   <span
                     className={`px-2 py-1 text-xs font-medium rounded ${
-                      property.status === "AVAILABLE"
+                      property.data.status === "AVAILABLE"
                         ? "bg-green-100 text-green-700"
-                        : property.status === "SOLD"
+                        : property.data.status === "SOLD"
                         ? "bg-red-100 text-red-700"
                         : "bg-yellow-100 text-yellow-700"
                     }`}
                   >
-                    {property.status}
+                    {property.data.status}
                   </span>
                 </p>
               </div>
@@ -180,16 +189,16 @@ export default function PropertyViewPage() {
                   Price
                 </label>
                 <p className="mt-1 text-neutral-900 text-lg font-semibold">
-                  {formatCurrency(property.price)}
+                  {formatCurrency(property.data.price)}
                 </p>
               </div>
 
-              {property.location && (
+              {property.data.location && (
                 <div>
                   <label className="text-sm font-medium text-neutral-600">
                     Location
                   </label>
-                  <p className="mt-1 text-neutral-900">{property.location}</p>
+                  <p className="mt-1 text-neutral-900">{property.data.location}</p>
                 </div>
               )}
 
@@ -198,7 +207,7 @@ export default function PropertyViewPage() {
                   Created At
                 </label>
                 <p className="mt-1 text-neutral-900">
-                  {formatDate(property.createdAt)}
+                  {formatDate(property.data.createdAt)}
                 </p>
               </div>
 
@@ -207,7 +216,7 @@ export default function PropertyViewPage() {
                   Updated At
                 </label>
                 <p className="mt-1 text-neutral-900">
-                  {formatDate(property.updatedAt)}
+                  {formatDate(property.data.updatedAt)}
                 </p>
               </div>
             </div>
@@ -218,7 +227,7 @@ export default function PropertyViewPage() {
               Actions
             </h2>
             <div className="space-y-2">
-              <Link href={`/admin/properties/${property.id}/edit`} className="block">
+              <Link href={`/admin/properties/${property.data.id}/edit`} className="block">
                 <Button variant="primary" className="w-full">
                   Edit Property
                 </Button>
@@ -231,7 +240,7 @@ export default function PropertyViewPage() {
                 Delete Property
               </Button>
               <Link
-                href={`/properties/${property.slug || property.id}`}
+                href={`/properties/${property.data.slug || property.data.id}`}
                 className="block"
               >
                 <Button variant="ghost" className="w-full">

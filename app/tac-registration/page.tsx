@@ -26,11 +26,11 @@ export default function TACRegistrationPage() {
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<TACRegistrationFormData>({
+  } = useForm({
     resolver: zodResolver(tacRegistrationSchema),
   });
 
-  const onSubmit = async (data: TACRegistrationFormData) => {
+  const onSubmit = async (data: any) => {
     setIsSubmitting(true);
     setSubmitStatus({ type: null, message: "" });
 
@@ -113,7 +113,7 @@ export default function TACRegistrationPage() {
                   />
                   {errors.name && (
                     <p className="mt-1 text-sm text-red-600">
-                      {errors.name.message}
+                      {String(errors.name?.message || "")}
                     </p>
                   )}
                 </div>
@@ -134,7 +134,7 @@ export default function TACRegistrationPage() {
                     />
                     {errors.email && (
                       <p className="mt-1 text-sm text-red-600">
-                        {errors.email.message}
+                        {String(errors.email?.message || "")}
                       </p>
                     )}
                   </div>
@@ -154,7 +154,7 @@ export default function TACRegistrationPage() {
                     />
                     {errors.phone && (
                       <p className="mt-1 text-sm text-red-600">
-                        {errors.phone.message}
+                        {String(errors.phone?.message || "")}
                       </p>
                     )}
                   </div>
@@ -175,7 +175,7 @@ export default function TACRegistrationPage() {
                   />
                   {errors.address && (
                     <p className="mt-1 text-sm text-red-600">
-                      {errors.address.message}
+                      {String(errors.address?.message || "")}
                     </p>
                   )}
                 </div>

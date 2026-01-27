@@ -26,7 +26,7 @@ export function BlogContactForm() {
     reset,
     setValue,
     watch,
-  } = useForm<EnquiryFormData>({
+  } = useForm({
     resolver: zodResolver(enquirySchema) as any,
   });
 
@@ -43,7 +43,7 @@ export function BlogContactForm() {
     }
   }, [emailValue, messageValue, setValue]);
 
-  const onSubmit = async (data: EnquiryFormData) => {
+  const onSubmit = async (data: any) => {
     setIsSubmitting(true);
     setSubmitStatus({ type: null, message: "" });
 
@@ -107,7 +107,7 @@ export function BlogContactForm() {
             placeholder="Your name"
           />
           {errors.name && (
-            <p className="mt-1 text-xs text-red-600">{errors.name.message}</p>
+            <p className="mt-1 text-xs text-red-600">{String(errors.name?.message || "")}</p>
           )}
         </div>
 
@@ -126,7 +126,7 @@ export function BlogContactForm() {
             placeholder="johndoe@example.com"
           />
           {errors.email && (
-            <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>
+            <p className="mt-1 text-xs text-red-600">{String(errors.email?.message || "")}</p>
           )}
         </div>
 
@@ -145,7 +145,7 @@ export function BlogContactForm() {
             placeholder="Your phone number"
           />
           {errors.phone && (
-            <p className="mt-1 text-xs text-red-600">{errors.phone.message}</p>
+            <p className="mt-1 text-xs text-red-600">{String(errors.phone?.message || "")}</p>
           )}
         </div>
 
@@ -165,7 +165,7 @@ export function BlogContactForm() {
           />
           {errors.message && (
             <p className="mt-1 text-xs text-red-600">
-              {errors.message.message}
+              {String(errors.message?.message || "")}
             </p>
           )}
         </div>

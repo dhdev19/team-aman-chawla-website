@@ -30,9 +30,21 @@ export default function CareerApplicationsPage() {
     setCurrentPage(1);
   }, [debouncedSearch, referralSource]);
 
-  const { data, isLoading, error, refetch } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery<{
+    success: boolean;
+    data: {
+      data: any[];
+      pagination: any;
+    };
+  }>({
     queryKey: ["admin-career-applications", debouncedSearch, referralSource, currentPage],
-    queryFn: async () => {
+    queryFn: async (): Promise<{
+      success: boolean;
+      data: {
+        data: any[];
+        pagination: any;
+      };
+    }> => {
       const params: Record<string, string> = {
         page: currentPage.toString(),
       };
@@ -41,7 +53,13 @@ export default function CareerApplicationsPage() {
       if (referralSource) params.referralSource = referralSource;
 
       const response = await careerApi.getAll(params);
-      return response;
+      return response.data as {
+        success: boolean;
+        data: {
+          data: any[];
+          pagination: any;
+        };
+      };
     },
   });
 
@@ -138,7 +156,7 @@ export default function CareerApplicationsPage() {
         <div className="text-center py-12">
           <LoadingSpinner size="lg" />
         </div>
-      ) : !data?.data || data.data.length === 0 ? (
+      ) : !data?.data || data.data.data.length === 0 ? (
         <Card className="text-center py-12">
           <p className="text-neutral-500 mb-4">No career applications found</p>
           {(debouncedSearch || referralSource) && (
@@ -157,7 +175,7 @@ export default function CareerApplicationsPage() {
       ) : (
         <>
           <div className="grid gap-6">
-            {data.data.map((application: any) => (
+            {data.data.data.map((application: any) => (
               <Card key={application.id} className="p-6">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -231,11 +249,11 @@ export default function CareerApplicationsPage() {
           </div>
 
           {/* Pagination */}
-          {data.pagination && (
+          {data.data.pagination && (
             <div className="mt-8">
               <Pagination
                 currentPage={currentPage}
-                totalPages={data.pagination.totalPages}
+                totalPages={data.data.pagination.totalPages}
                 onPageChange={setCurrentPage}
               />
             </div>

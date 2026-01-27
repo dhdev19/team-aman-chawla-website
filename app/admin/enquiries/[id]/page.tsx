@@ -15,11 +15,11 @@ export default function EnquiryViewPage() {
   const params = useParams();
   const enquiryId = params.id as string;
 
-  const { data: enquiry, isLoading, error, refetch } = useQuery({
+  const { data: enquiry, isLoading, error, refetch } = useQuery<any>({
     queryKey: ["admin-enquiry", enquiryId],
     queryFn: async () => {
       const response = await enquiryApi.getAll();
-      const enquiry = response.data?.data?.find((e: any) => e.id === enquiryId);
+      const enquiry = (response.data as any)?.data?.data?.find((e: any) => e.id === enquiryId);
       if (!enquiry) {
         throw new Error("Enquiry not found");
       }

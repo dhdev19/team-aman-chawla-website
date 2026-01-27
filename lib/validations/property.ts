@@ -46,21 +46,15 @@ export const propertySchema = z.object({
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug must be URL-friendly (lowercase, hyphens only)")
     .optional()
     .nullable(),
-  type: z.nativeEnum(PropertyType, {
-    errorMap: () => ({ message: "Invalid property type" }),
-  }),
-  format: z.nativeEnum(PropertyFormat, {
-    errorMap: () => ({ message: "Invalid property format" }),
-  }).optional().nullable(),
+  type: z.nativeEnum(PropertyType),
+  format: z.nativeEnum(PropertyFormat).optional().nullable(),
   builder: z.string().min(1, "Builder name is required").max(200, "Builder name is too long"),
   builderReraNumber: z.string().max(100, "RERA number is too long").optional().nullable(),
   description: z.string().max(5000, "Description is too long").optional().nullable(),
   price: z.string().max(50, "Price is too long").optional().nullable(),
   location: z.string().max(200, "Location is too long").optional().nullable(),
   locationAdvantages: z.array(z.string()).default([]),
-  status: z.nativeEnum(PropertyStatus, {
-    errorMap: () => ({ message: "Invalid property status" }),
-  }),
+  status: z.nativeEnum(PropertyStatus),
   // Allow relative URLs from the upload endpoint as well as absolute URLs
   mainImage: imageUrlSchema.optional().nullable(),
   images: z.array(imageUrlSchema).default([]),

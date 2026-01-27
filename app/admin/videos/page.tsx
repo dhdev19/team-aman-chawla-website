@@ -18,11 +18,11 @@ export default function VideosListPage() {
   const [currentPage, setCurrentPage] = React.useState(1);
   const limit = 10;
 
-  const { data, isLoading, error, refetch } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery<any>({
     queryKey: ["admin-videos", searchQuery, currentPage],
     queryFn: async () => {
       const response = await videoApi.getAll();
-      let videos = response.data || [];
+      let videos = (response.data as any)?.data || [];
 
       // Client-side search and pagination
       if (searchQuery) {

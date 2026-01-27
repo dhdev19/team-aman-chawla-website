@@ -15,7 +15,9 @@ import { enquirySchema, type EnquiryFormData } from "@/lib/validations";
 import { enquiryApi } from "@/lib/api-client";
 import { FadeIn } from "@/components/animations";
 
-export default function ContactPage() {
+import { Suspense } from "react";
+
+function ContactContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const propertyId = searchParams.get("property");
@@ -30,14 +32,14 @@ export default function ContactPage() {
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<EnquiryFormData>({
+  } = useForm({
     resolver: zodResolver(enquirySchema),
     defaultValues: {
       propertyId: propertyId || undefined,
     },
   });
 
-  const onSubmit = async (data: EnquiryFormData) => {
+  const onSubmit = async (data: any) => {
     setIsSubmitting(true);
     setSubmitStatus({ type: null, message: "" });
 
@@ -112,7 +114,7 @@ export default function ContactPage() {
                       />
                       {errors.name && (
                         <p className="mt-1 text-sm text-red-600">
-                          {errors.name.message}
+                          {String(errors.name?.message || "")}
                         </p>
                       )}
                     </div>
@@ -132,7 +134,7 @@ export default function ContactPage() {
                       />
                       {errors.email && (
                         <p className="mt-1 text-sm text-red-600">
-                          {errors.email.message}
+                          {String(errors.email?.message || "")}
                         </p>
                       )}
                     </div>
@@ -153,7 +155,7 @@ export default function ContactPage() {
                     />
                     {errors.phone && (
                       <p className="mt-1 text-sm text-red-600">
-                        {errors.phone.message}
+                        {String(errors.phone?.message || "")}
                       </p>
                     )}
                   </div>
@@ -173,7 +175,7 @@ export default function ContactPage() {
                     />
                     {errors.message && (
                       <p className="mt-1 text-sm text-red-600">
-                        {errors.message.message}
+                        {String(errors.message?.message || "")}
                       </p>
                     )}
                   </div>
@@ -250,5 +252,13 @@ export default function ContactPage() {
       </main>
       <Footer />
     </>
+  );
+}
+
+export default function ContactPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ContactContent />
+    </Suspense>
   );
 }

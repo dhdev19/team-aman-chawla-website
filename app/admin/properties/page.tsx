@@ -37,9 +37,21 @@ export default function PropertiesListPage() {
   const [currentPage, setCurrentPage] = React.useState(1);
   const limit = 25;
 
-  const { data, isLoading, error, refetch } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery<{
+    success: boolean;
+    data: {
+      data: any[];
+      pagination: any;
+    };
+  }>({
     queryKey: ["admin-properties", searchQuery, selectedType, selectedStatus, currentPage],
-    queryFn: async () => {
+    queryFn: async (): Promise<{
+      success: boolean;
+      data: {
+        data: any[];
+        pagination: any;
+      };
+    }> => {
       const params: Record<string, string> = {
         page: currentPage.toString(),
         limit: limit.toString(),
@@ -49,12 +61,18 @@ export default function PropertiesListPage() {
       if (selectedStatus) params.status = selectedStatus;
 
       const response = await propertyApi.getAll(params);
-      return response.data;
+      return response.data as {
+        success: boolean;
+        data: {
+          data: any[];
+          pagination: any;
+        };
+      };
     },
   });
 
-  const properties = data?.data || [];
-  const pagination = data?.pagination;
+  const properties = data?.data?.data || [];
+  const pagination = data?.data?.pagination;
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this property?")) {

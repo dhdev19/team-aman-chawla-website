@@ -26,9 +26,21 @@ export default function BlogsListPage() {
   const [currentPage, setCurrentPage] = React.useState(1);
   const limit = 12;
 
-  const { data, isLoading, error, refetch } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery<{
+    success: boolean;
+    data: {
+      data: any[];
+      pagination: any;
+    };
+  }>({
     queryKey: ["admin-blogs", searchQuery, publishedFilter, currentPage],
-    queryFn: async () => {
+    queryFn: async (): Promise<{
+      success: boolean;
+      data: {
+        data: any[];
+        pagination: any;
+      };
+    }> => {
       const params: Record<string, string> = {
         page: currentPage.toString(),
         limit: limit.toString(),
@@ -37,12 +49,18 @@ export default function BlogsListPage() {
       if (publishedFilter) params.published = publishedFilter;
 
       const response = await blogApi.getAll(params);
-      return response.data;
+      return response.data as {
+        success: boolean;
+        data: {
+          data: any[];
+          pagination: any;
+        };
+      };
     },
   });
 
-  const blogs = data?.data || [];
-  const pagination = data?.pagination;
+  const blogs = data?.data?.data || [];
+  const pagination = data?.data?.pagination;
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this blog post?")) {

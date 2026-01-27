@@ -21,9 +21,7 @@ export const careerApplicationSchema = z
       .min(1, "WhatsApp number is required")
       .regex(/^[6-9]\d{9}$/, "Invalid WhatsApp number (10 digits starting with 6-9)"),
     city: z.string().min(1, "City is required").max(100, "City name is too long"),
-    referralSource: z.nativeEnum(ReferralSource, {
-      errorMap: () => ({ message: "Please select how you came to know about us" }),
-    }),
+    referralSource: z.nativeEnum(ReferralSource),
     referralOther: z.string().max(200, "Other source description is too long").optional().nullable(),
     resumeLink: z
       .string()
