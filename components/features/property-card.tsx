@@ -17,6 +17,7 @@ interface Property {
   status: PropertyStatus;
   mainImage: string | null;
   images: string[];
+  configurations?: Array<{ configType: string }>;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -80,6 +81,11 @@ export function PropertyCard({ property, className }: PropertyCardProps) {
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm text-neutral-600 capitalize">
               {property.type.replace("_", " ").toLowerCase()}
+              {property.configurations && property.configurations.length > 0 && (
+                <span className="font-normal">
+                  {" "}({property.configurations.map(c => c.configType.toUpperCase()).join(", ")})
+                </span>
+              )}
             </span>
             <span className="text-sm font-medium text-primary-700">
               {formatCurrency(property.price)}
