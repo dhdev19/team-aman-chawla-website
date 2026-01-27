@@ -456,7 +456,7 @@ export default async function PropertyDetailPage({
                               {related.name}
                             </h3>
                             <p className="text-sm text-neutral-600">
-                              {formatCurrency(Number(related.price))}
+                              {related.price || "Price on request"}
                             </p>
                           </div>
                         </div>

@@ -6,6 +6,7 @@ import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { propertySchema, type PropertyFormData } from "@/lib/validations/property";
 import { propertyApi, uploadApi } from "@/lib/api-client";
+import { apiPost } from "@/lib/api";
 import { PropertyType, PropertyStatus, PropertyFormat } from "@prisma/client";
 import { generateSlug } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -325,7 +326,7 @@ export default function AddPropertyPage() {
     setIsSubmitting(true);
 
     try {
-      const response = await propertyApi.create({
+      const response = await apiPost("/api/admin/properties", {
         ...data,
         images,
         amenities: amenities || [],

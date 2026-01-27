@@ -6,6 +6,8 @@ import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { propertySchema, type PropertyFormData } from "@/lib/validations/property";
 import { propertyApi, uploadApi } from "@/lib/api-client";
+import { apiGet, apiPut } from "@/lib/api";
+import { ApiResponse } from "@/types";
 import { PropertyType, PropertyStatus, PropertyFormat } from "@prisma/client";
 import { generateSlug } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
@@ -58,11 +60,11 @@ export default function EditPropertyPage() {
   const qrCodeInputRef = React.useRef<HTMLInputElement>(null);
   const floorPlanInputRefs = React.useRef<(HTMLInputElement | null)[]>([]);
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error } = useQuery<ApiResponse<any>>({
     queryKey: ["admin-property", propertyId],
-    queryFn: async () => {
-      const response = await propertyApi.getById(propertyId);
-      return response.data;
+    queryFn: async (): Promise<ApiResponse<any>> => {
+      const response = await apiGet(`/api/admin/properties/${propertyId}`);
+      return response;
     },
   });
 
@@ -100,7 +102,7 @@ export default function EditPropertyPage() {
 
   React.useEffect(() => {
     if (data) {
-      const propertyData = data as any;
+      const propertyData = data.data;
       const slug = propertyData.slug || "";
       setAutoSlug(slug ? "" : generateSlug(propertyData.name || ""));
       reset({
@@ -389,7 +391,7 @@ export default function EditPropertyPage() {
         builderReraQrCode: builderReraQrCode || formData.builderReraQrCode || null,
       };
       
-      const response = await propertyApi.update(propertyId, dataToSubmit);
+      const response = await apiPut(`/api/admin/properties/${propertyId}`, dataToSubmit);
 
       if (response.success) {
         router.push("/admin/properties");

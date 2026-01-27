@@ -3,7 +3,9 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { blogApi } from "@/lib/api-client";
+import { apiGet, apiDelete } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
+import { ApiResponse } from "@/types";
 import { SearchBar } from "@/components/features/search-bar";
 import { FilterDropdown } from "@/components/features/filter-dropdown";
 import { Pagination } from "@/components/features/pagination";
@@ -26,21 +28,15 @@ export default function BlogsListPage() {
   const [currentPage, setCurrentPage] = React.useState(1);
   const limit = 12;
 
-  const { data, isLoading, error, refetch } = useQuery<{
-    success: boolean;
-    data: {
+  const { data, isLoading, error, refetch } = useQuery<ApiResponse<{
+    data: any[];
+    pagination: any;
+  }>>({
+    queryKey: ["admin-blogs", searchQuery, publishedFilter, currentPage],
+    queryFn: async (): Promise<ApiResponse<{
       data: any[];
       pagination: any;
-    };
-  }>({
-    queryKey: ["admin-blogs", searchQuery, publishedFilter, currentPage],
-    queryFn: async (): Promise<{
-      success: boolean;
-      data: {
-        data: any[];
-        pagination: any;
-      };
-    }> => {
+    }>> => {
       const params: Record<string, string> = {
         page: currentPage.toString(),
         limit: limit.toString(),
@@ -48,14 +44,12 @@ export default function BlogsListPage() {
       if (searchQuery) params.search = searchQuery;
       if (publishedFilter) params.published = publishedFilter;
 
-      const response = await blogApi.getAll(params);
-      return response.data as {
-        success: boolean;
-        data: {
-          data: any[];
-          pagination: any;
-        };
-      };
+      const queryString = `?${new URLSearchParams(params).toString()}`;
+      const response = await apiGet(`/api/admin/blogs${queryString}`) as ApiResponse<{
+        data: any[];
+        pagination: any;
+      }>;
+      return response;
     },
   });
 
@@ -68,7 +62,7 @@ export default function BlogsListPage() {
     }
 
     try {
-      await blogApi.delete(id);
+      await apiDelete(`/api/admin/blogs/${id}`);
       refetch();
     } catch (error) {
       alert("Failed to delete blog post. Please try again.");

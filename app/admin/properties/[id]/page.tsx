@@ -3,6 +3,8 @@
 import * as React from "react";
 import { useRouter, useParams } from "next/navigation";
 import { propertyApi } from "@/lib/api-client";
+import { apiGet, apiDelete } from "@/lib/api";
+import { ApiResponse } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -16,20 +18,11 @@ export default function PropertyViewPage() {
   const params = useParams();
   const propertyId = params.id as string;
 
-  const { data: property, isLoading, error, refetch } = useQuery<{
-    success: boolean;
-    data: any;
-  }>({
+  const { data: property, isLoading, error, refetch } = useQuery<ApiResponse<any>>({
     queryKey: ["admin-property", propertyId],
-    queryFn: async (): Promise<{
-      success: boolean;
-      data: any;
-    }> => {
-      const response = await propertyApi.getById(propertyId);
-      return response.data as {
-        success: boolean;
-        data: any;
-      };
+    queryFn: async (): Promise<ApiResponse<any>> => {
+      const response = await apiGet(`/api/admin/properties/${propertyId}`);
+      return response;
     },
   });
 
@@ -39,7 +32,7 @@ export default function PropertyViewPage() {
     }
 
     try {
-      await propertyApi.delete(propertyId);
+      await apiDelete(`/api/admin/properties/${propertyId}`);
       router.push("/admin/properties");
     } catch (error) {
       alert("Failed to delete property. Please try again.");
@@ -189,7 +182,7 @@ export default function PropertyViewPage() {
                   Price
                 </label>
                 <p className="mt-1 text-neutral-900 text-lg font-semibold">
-                  {formatCurrency(property.data.price)}
+                  {property.data.price || "Price on request"}
                 </p>
               </div>
 

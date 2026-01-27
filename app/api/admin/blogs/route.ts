@@ -4,6 +4,79 @@ import { requireAdmin } from "@/lib/auth-server";
 import { blogSchema } from "@/lib/validations/blog";
 import { generateSlug } from "@/lib/utils";
 
+export async function GET(request: NextRequest) {
+  try {
+    await requireAdmin();
+
+    const searchParams = request.nextUrl.searchParams;
+    const params = {
+      search: searchParams.get("search") || undefined,
+      published: searchParams.get("published") || undefined,
+      page: searchParams.get("page") || "1",
+      limit: searchParams.get("limit") || "12",
+    };
+
+    const { page, limit, search, published } = params;
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    const where: any = {};
+
+    if (search) {
+      where.OR = [
+        { title: { contains: search, mode: "insensitive" } },
+        { excerpt: { contains: search, mode: "insensitive" } },
+        { content: { contains: search, mode: "insensitive" } },
+      ];
+    }
+
+    if (published !== undefined) {
+      where.published = published === "true";
+    }
+
+    const [blogs, total] = await Promise.all([
+      prisma.blog.findMany({
+        where,
+        skip,
+        take: parseInt(limit),
+        orderBy: { createdAt: "desc" },
+      }),
+      prisma.blog.count({ where }),
+    ]);
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        data: blogs,
+        pagination: {
+          page: parseInt(page),
+          limit: parseInt(limit),
+          total,
+          totalPages: Math.ceil(total / parseInt(limit)),
+        },
+      },
+    });
+  } catch (error: any) {
+    if (error.message?.includes("Unauthorized") || error.message?.includes("Forbidden")) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: error.message,
+        },
+        { status: 401 }
+      );
+    }
+
+    console.error("Error fetching blogs:", error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: error.message || "Failed to fetch blogs",
+      },
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     await requireAdmin();

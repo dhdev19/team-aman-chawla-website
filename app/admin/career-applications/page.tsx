@@ -1,8 +1,11 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { careerApi } from "@/lib/api-client";
+import { apiGet, apiDelete } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
+import { ApiResponse } from "@/types";
 import { careerApi } from "@/lib/api-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,21 +33,15 @@ export default function CareerApplicationsPage() {
     setCurrentPage(1);
   }, [debouncedSearch, referralSource]);
 
-  const { data, isLoading, error, refetch } = useQuery<{
-    success: boolean;
-    data: {
+  const { data, isLoading, error, refetch } = useQuery<ApiResponse<{
+    data: any[];
+    pagination: any;
+  }>>({
+    queryKey: ["admin-career-applications", debouncedSearch, referralSource, currentPage],
+    queryFn: async (): Promise<ApiResponse<{
       data: any[];
       pagination: any;
-    };
-  }>({
-    queryKey: ["admin-career-applications", debouncedSearch, referralSource, currentPage],
-    queryFn: async (): Promise<{
-      success: boolean;
-      data: {
-        data: any[];
-        pagination: any;
-      };
-    }> => {
+    }>> => {
       const params: Record<string, string> = {
         page: currentPage.toString(),
       };
@@ -52,14 +49,12 @@ export default function CareerApplicationsPage() {
       if (debouncedSearch) params.search = debouncedSearch;
       if (referralSource) params.referralSource = referralSource;
 
-      const response = await careerApi.getAll(params);
-      return response.data as {
-        success: boolean;
-        data: {
-          data: any[];
-          pagination: any;
-        };
-      };
+      const queryString = `?${new URLSearchParams(params).toString()}`;
+      const response = await apiGet(`/api/admin/career${queryString}`) as ApiResponse<{
+        data: any[];
+        pagination: any;
+      }>;
+      return response;
     },
   });
 
@@ -67,7 +62,7 @@ export default function CareerApplicationsPage() {
     if (!confirm("Are you sure you want to delete this career application?")) return;
     
     try {
-      await careerApi.delete(id);
+      await apiDelete(`/api/admin/career/${id}`);
       refetch();
     } catch (error) {
       alert("Failed to delete career application");

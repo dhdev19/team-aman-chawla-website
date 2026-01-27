@@ -1,8 +1,11 @@
 "use client";
 
 import * as React from "react";
+import { useRouter } from "next/navigation";
 import { enquiryApi } from "@/lib/api-client";
+import { apiGet, apiDelete } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
+import { ApiResponse } from "@/types";
 import { FilterDropdown } from "@/components/features/filter-dropdown";
 import { Pagination } from "@/components/features/pagination";
 import { Button } from "@/components/ui/button";
@@ -21,35 +24,27 @@ export default function EnquiriesListPage() {
   const [currentPage, setCurrentPage] = React.useState(1);
   const limit = 25;
 
-  const { data, isLoading, error, refetch } = useQuery<{
-    success: boolean;
-    data: {
+  const { data, isLoading, error, refetch } = useQuery<ApiResponse<{
+    data: any[];
+    pagination: any;
+  }>>({
+    queryKey: ["admin-enquiries", selectedType, currentPage],
+    queryFn: async (): Promise<ApiResponse<{
       data: any[];
       pagination: any;
-    };
-  }>({
-    queryKey: ["admin-enquiries", selectedType, currentPage],
-    queryFn: async (): Promise<{
-      success: boolean;
-      data: {
-        data: any[];
-        pagination: any;
-      };
-    }> => {
+    }>> => {
       const params: Record<string, string> = {
         page: currentPage.toString(),
         limit: limit.toString(),
       };
       if (selectedType) params.type = selectedType;
 
-      const response = await enquiryApi.getAll();
-      return response.data as {
-        success: boolean;
-        data: {
-          data: any[];
-          pagination: any;
-        };
-      };
+      const queryString = `?${new URLSearchParams(params).toString()}`;
+      const response = await apiGet(`/api/admin/enquiries${queryString}`) as ApiResponse<{
+        data: any[];
+        pagination: any;
+      }>;
+      return response;
     },
   });
 
@@ -62,7 +57,7 @@ export default function EnquiriesListPage() {
     }
 
     try {
-      await enquiryApi.delete(id);
+      await apiDelete(`/api/admin/enquiries/${id}`);
       refetch();
     } catch (error) {
       alert("Failed to delete enquiry. Please try again.");
