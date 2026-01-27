@@ -90,7 +90,7 @@ export async function PUT(
         images: validatedData.images,
         amenities: validatedData.amenities,
         mapImage: validatedData.mapImage,
-        projectLaunchDate: validatedData.projectLaunchDate,
+        projectLaunchDate: validatedData.projectLaunchDate ? new Date(validatedData.projectLaunchDate) : null,
         builderReraQrCode: validatedData.builderReraQrCode,
         possession: validatedData.possession,
         metaTitle: validatedData.metaTitle,
