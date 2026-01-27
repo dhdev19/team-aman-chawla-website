@@ -8,9 +8,13 @@
     "start": "next start",
     "lint": "eslint",
     "db:migrate": "prisma migrate dev",
+    "db:migrate:prod": "prisma migrate deploy",
     "db:generate": "prisma generate",
     "db:seed": "tsx prisma/seed.ts",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "prod:build": "next build",
+    "prod:start": "next start",
+    "prod:setup": "npm run db:generate && npm run db:migrate:prod && npm run db:seed"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
