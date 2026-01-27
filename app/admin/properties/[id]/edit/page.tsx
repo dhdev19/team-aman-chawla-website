@@ -576,14 +576,13 @@ export default function EditPropertyPage() {
 
               <div>
                 <label className="block text-sm font-medium text-neutral-700 mb-2">
-                  Price
+                  Price (e.g., 2.5 Cr, 50 Lac)
                 </label>
                 <Input
-                  type="number"
-                  step="0.01"
-                  {...register("price", { valueAsNumber: true })}
+                  type="text"
+                  {...register("price")}
                   className={errors.price ? "border-red-500" : ""}
-                  placeholder="Enter price"
+                  placeholder="e.g., 2.5 Cr or 50 Lac"
                 />
                 {errors.price && (
                   <p className="mt-1 text-sm text-red-600">
@@ -906,11 +905,10 @@ export default function EditPropertyPage() {
                               Price
                             </label>
                             <Input
-                              type="number"
-                              step="0.01"
-                              {...register(`configurations.${index}.price`, { valueAsNumber: true })}
+                              type="text"
+                              {...register(`configurations.${index}.price`)}
                               className={errors.configurations?.[index]?.price ? "border-red-500" : ""}
-                              placeholder="Enter price"
+                              placeholder="e.g., 2.5 Cr or 50 Lac"
                             />
                             {errors.configurations?.[index]?.price && (
                               <p className="mt-1 text-sm text-red-600">

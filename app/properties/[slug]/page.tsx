@@ -5,7 +5,7 @@ import { Footer } from "@/components/layout/footer";
 import { Container } from "@/components/ui/container";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { formatCurrency, formatDate } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
 import { generatePropertyMetadata } from "@/lib/metadata";
 import { PropertySchema } from "@/components/seo/schema-org";
 import { PropertyImageSlider } from "@/components/features/property-image-slider";
@@ -191,7 +191,7 @@ export default async function PropertyDetailPage({
                     <div>
                       <p className="text-sm text-neutral-600 mb-1">Price</p>
                       <p className="font-semibold text-primary-700 text-xl">
-                        {formatCurrency(property.price)}
+                        {property.price}
                       </p>
                     </div>
                   )}
@@ -293,7 +293,7 @@ export default async function PropertyDetailPage({
                             <div>
                               <p className="text-sm text-neutral-600 mb-1">Price</p>
                               <p className="font-semibold text-primary-700 text-lg">
-                                {formatCurrency(config.price)}
+                                {config.price}
                               </p>
                             </div>
                           )}

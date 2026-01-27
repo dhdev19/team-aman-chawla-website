@@ -12,7 +12,7 @@ interface Property {
   type: PropertyType;
   builder: string;
   description: string | null;
-  price: number | null;
+  price: string | null;
   location: string | null;
   status: PropertyStatus;
   mainImage: string | null;
@@ -88,7 +88,7 @@ export function PropertyCard({ property, className }: PropertyCardProps) {
               )}
             </span>
             <span className="text-sm font-medium text-primary-700">
-              {formatCurrency(property.price)}
+              {property.price || "Price on request"}
             </span>
           </div>
           

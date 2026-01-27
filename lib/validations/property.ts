@@ -29,12 +29,7 @@ export const propertyConfigurationSchema = z.object({
     .optional()
     .nullable()
     .or(z.literal("").transform(() => null)),
-  price: z
-    .number()
-    .positive("Price must be positive")
-    .optional()
-    .nullable()
-    .or(z.literal("").transform(() => null)),
+  price: z.string().max(50, "Price is too long").optional().nullable(),
   floorPlanImage: imageUrlSchema.optional().nullable(),
 });
 
@@ -60,12 +55,7 @@ export const propertySchema = z.object({
   builder: z.string().min(1, "Builder name is required").max(200, "Builder name is too long"),
   builderReraNumber: z.string().max(100, "RERA number is too long").optional().nullable(),
   description: z.string().max(5000, "Description is too long").optional().nullable(),
-  price: z
-    .number()
-    .positive("Price must be positive")
-    .optional()
-    .nullable()
-    .or(z.literal("").transform(() => null)),
+  price: z.string().max(50, "Price is too long").optional().nullable(),
   location: z.string().max(200, "Location is too long").optional().nullable(),
   locationAdvantages: z.array(z.string()).default([]),
   status: z.nativeEnum(PropertyStatus, {

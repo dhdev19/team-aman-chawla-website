@@ -11,7 +11,7 @@ export interface Property {
   type: PropertyType;
   builder: string;
   description: string | null;
-  price: number | null;
+  price: string | null;
   location: string | null;
   status: PropertyStatus;
   mainImage: string | null;

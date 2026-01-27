@@ -72,7 +72,7 @@ model Property {
   builder          String
   builderReraNumber String?
   description      String?
-  price            Float?
+  price            String?
   location         String?
   locationAdvantages String[]     @default([])
   status           PropertyStatus @default(AVAILABLE)
@@ -112,7 +112,7 @@ model PropertyConfiguration {
   propertyId      String
   configType      String   // 1BHK, 2BHK, 2.5BHK, 3BHK, or custom
   carpetAreaSqft  Float?
-  price           Float?
+  price           String?
   floorPlanImage  String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
