@@ -910,7 +910,7 @@ export default function AddPropertyPage() {
               <Button
                 type="button"
                 variant="secondary"
-                onClick={() => appendConfig({ configType: "", carpetAreaSqft: undefined, price: undefined, floorPlanImage: null })}
+                onClick={() => appendConfig({ configType: "", carpetAreaSqft: undefined, price: 0, floorPlanImage: null })}
               >
                 Add Configuration
               </Button>
@@ -1048,7 +1048,7 @@ export default function AddPropertyPage() {
                   <Button
                     type="button"
                     variant="secondary"
-                    onClick={() => appendConfig({ configType: "", carpetAreaSqft: undefined, price: undefined, floorPlanImage: null })}
+                    onClick={() => appendConfig({ configType: "", carpetAreaSqft: undefined, price: 0, floorPlanImage: null })}
                   >
                     Add First Configuration
                   </Button>

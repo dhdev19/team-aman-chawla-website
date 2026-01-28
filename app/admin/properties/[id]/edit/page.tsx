@@ -822,7 +822,7 @@ export default function EditPropertyPage() {
               <Button
                 type="button"
                 variant="primary"
-                onClick={() => appendConfig({ configType: "", carpetAreaSqft: undefined, price: undefined, floorPlanImage: null })}
+                onClick={() => appendConfig({ configType: "", carpetAreaSqft: undefined, price: 0, floorPlanImage: null })}
               >
                 Add Configuration
               </Button>

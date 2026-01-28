@@ -158,7 +158,7 @@ export async function POST(request: NextRequest) {
               create: validatedData.configurations.map((config) => ({
                 configType: config.configType,
                 carpetAreaSqft: config.carpetAreaSqft,
-                price: config.price,
+                price: config.price ?? 0, // Default to 0 if null/undefined
                 floorPlanImage: config.floorPlanImage,
               })),
             }

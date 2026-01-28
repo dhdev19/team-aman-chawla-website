@@ -289,11 +289,11 @@ export default async function PropertyDetailPage({
                               </p>
                             </div>
                           )}
-                          {config.price && (
+                          {config.price !== null && config.price !== undefined && (
                             <div>
                               <p className="text-sm text-neutral-600 mb-1">Price</p>
                               <p className="font-semibold text-primary-700 text-lg">
-                                {formatCurrency(config.price)}
+                                {config.price === 0 ? "On Request" : formatCurrency(config.price)}
                               </p>
                             </div>
                           )}

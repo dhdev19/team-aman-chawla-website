@@ -31,10 +31,11 @@ export const propertyConfigurationSchema = z.object({
     .or(z.literal("").transform(() => null)),
   price: z
     .number()
-    .positive("Price must be positive")
+    .nonnegative("Price must be zero or positive")
     .optional()
     .nullable()
-    .or(z.literal("").transform(() => null)),
+    .or(z.literal("").transform(() => null))
+    .or(z.literal(0)),
   floorPlanImage: imageUrlSchema.optional().nullable(),
 });
 
