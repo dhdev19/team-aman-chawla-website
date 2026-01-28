@@ -124,7 +124,15 @@ export default function EditPropertyPage() {
           : null,
         builderReraQrCode: propertyData.builderReraQrCode || null,
         possession: propertyData.possession || "",
-        configurations: propertyData.configurations || [],
+        configurations: (propertyData.configurations || []).map(config => {
+          const standardTypes = ["1BHK", "2BHK", "2.5BHK", "3BHK", "4BHK", "5BHK", "1RK", "Studio", "Penthouse", "Villa", "Duplex"];
+          const isCustomType = !standardTypes.includes(config.configType);
+          return {
+            ...config,
+            configType: isCustomType ? "other" : config.configType,
+            customConfigType: isCustomType ? config.configType : null,
+          };
+        }),
         metaTitle: propertyData.metaTitle || "",
         metaKeywords: propertyData.metaKeywords || "",
         metaDescription: propertyData.metaDescription || "",

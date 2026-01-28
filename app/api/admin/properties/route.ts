@@ -156,7 +156,9 @@ export async function POST(request: NextRequest) {
         configurations: validatedData.configurations
           ? {
               create: validatedData.configurations.map((config) => ({
-                configType: config.configType,
+                configType: config.configType === "other" && config.customConfigType 
+                  ? config.customConfigType 
+                  : config.configType,
                 carpetAreaSqft: config.carpetAreaSqft,
                 price: config.price ?? 0, // Default to 0 if null/undefined
                 floorPlanImage: config.floorPlanImage,
