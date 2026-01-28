@@ -1,0 +1,314 @@
+import { NextRequest } from 'next/server'
+import { GET, PUT, DELETE } from '@/app/api/admin/properties/[id]/route'
+import { prisma } from '@/lib/prisma'
+import { requireAdmin } from '@/lib/auth-server'
+import { createMockRequest, createMockParams, createPrismaError } from '../../utils/test-helpers'
+
+// Mock NextResponse
+const mockJson = jest.fn()
+jest.mock('next/server', () => ({
+  NextRequest: jest.fn(),
+  NextResponse: {
+    json: mockJson,
+  },
+}))
+
+// Mock dependencies
+jest.mock('@/lib/prisma')
+jest.mock('@/lib/auth-server')
+jest.mock('@/lib/validations/property')
+
+describe('/api/admin/properties/[id]', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+    requireAdmin.mockResolvedValue(true)
+  })
+
+  describe('GET /api/admin/properties/[id]', () => {
+    it('should return a single property', async () => {
+      // Arrange
+      const mockProperty = {
+        id: '1',
+        name: 'Test Property',
+        type: 'RESIDENTIAL',
+        status: 'AVAILABLE',
+        price: '50 Lac',
+        builder: 'Test Builder',
+        location: 'Test Location',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }
+      
+      prisma.property.findUnique.mockResolvedValue(mockProperty)
+      
+      const mockRequest = {}
+      const mockParams = Promise.resolve({ id: '1' })
+
+      // Act
+      await GET(mockRequest, { params: mockParams })
+
+      // Assert
+      expect(requireAdmin).toHaveBeenCalled()
+      expect(prisma.property.findUnique).toHaveBeenCalledWith({
+        where: { id: '1' },
+      })
+      expect(mockJson).toHaveBeenCalledWith({
+        success: true,
+        data: mockProperty,
+      })
+    })
+
+    it('should return 404 for non-existent property', async () => {
+      // Arrange
+      prisma.property.findUnique.mockResolvedValue(null)
+      
+      const mockRequest = {}
+      const mockParams = Promise.resolve({ id: 'nonexistent' })
+
+      // Act
+      await GET(mockRequest, { params: mockParams })
+
+      // Assert
+      expect(mockJson).toHaveBeenCalledWith(
+        {
+          success: false,
+          error: 'Property not found',
+        },
+        { status: 404 }
+      )
+    })
+
+    it('should handle unauthorized access', async () => {
+      // Arrange
+      requireAdmin.mockRejectedValue(new Error('Unauthorized'))
+      
+      const mockRequest = {}
+      const mockParams = Promise.resolve({ id: '1' })
+
+      // Act
+      await GET(mockRequest, { params: mockParams })
+
+      // Assert
+      expect(mockJson).toHaveBeenCalledWith(
+        {
+          success: false,
+          error: 'Unauthorized',
+        },
+        { status: 401 }
+      )
+    })
+  })
+
+  describe('PUT /api/admin/properties/[id]', () => {
+    it('should update a property', async () => {
+      // Arrange
+      const mockUpdatedProperty = {
+        id: '1',
+        name: 'Updated Property',
+        type: 'RESIDENTIAL',
+        status: 'AVAILABLE',
+        price: '55 Lac',
+        builder: 'Updated Builder',
+        updatedAt: new Date(),
+      }
+      
+      prisma.property.update.mockResolvedValue(mockUpdatedProperty)
+      
+      const mockBody = {
+        name: 'Updated Property',
+        price: '55 Lac',
+        builder: 'Updated Builder',
+      }
+      
+      const mockRequest = {
+        json: jest.fn().mockResolvedValue(mockBody),
+      }
+      const mockParams = Promise.resolve({ id: '1' })
+
+      // Act
+      await PUT(mockRequest, { params: mockParams })
+
+      // Assert
+      expect(requireAdmin).toHaveBeenCalled()
+      expect(prisma.propertyConfiguration.deleteMany).toHaveBeenCalledWith({
+        where: { propertyId: '1' },
+      })
+      expect(prisma.property.update).toHaveBeenCalledWith({
+        where: { id: '1' },
+        data: expect.objectContaining({
+          name: 'Updated Property',
+          price: '55 Lac',
+          builder: 'Updated Builder',
+        }),
+      })
+      expect(mockJson).toHaveBeenCalledWith({
+        success: true,
+        data: mockUpdatedProperty,
+        message: 'Property updated successfully',
+      })
+    })
+
+    it('should handle property update with new configurations', async () => {
+      // Arrange
+      const mockUpdatedProperty = {
+        id: '1',
+        name: 'Property with New Configs',
+        configurations: [],
+      }
+      
+      prisma.property.update.mockResolvedValue(mockUpdatedProperty)
+      
+      const mockBody = {
+        name: 'Property with New Configs',
+        configurations: [
+          {
+            configType: '3BHK',
+            price: '75 Lac',
+          },
+        ],
+      }
+      
+      const mockRequest = {
+        json: jest.fn().mockResolvedValue(mockBody),
+      }
+      const mockParams = Promise.resolve({ id: '1' })
+
+      // Act
+      await PUT(mockRequest, { params: mockParams })
+
+      // Assert
+      expect(prisma.propertyConfiguration.deleteMany).toHaveBeenCalledWith({
+        where: { propertyId: '1' },
+      })
+      expect(prisma.property.update).toHaveBeenCalledWith({
+        where: { id: '1' },
+        data: expect.objectContaining({
+          name: 'Property with New Configs',
+          configurations: {
+            create: [
+              {
+                configType: '3BHK',
+                price: '75 Lac',
+              },
+            ],
+          },
+        }),
+      })
+    })
+
+    it('should return 404 when updating non-existent property', async () => {
+      // Arrange
+      const error = new Error('Property not found')
+      error.code = 'P2025'
+      prisma.property.update.mockRejectedValue(error)
+      
+      const mockRequest = {
+        json: jest.fn().mockResolvedValue({ name: 'Updated' }),
+      }
+      const mockParams = Promise.resolve({ id: 'nonexistent' })
+
+      // Act
+      await PUT(mockRequest, { params: mockParams })
+
+      // Assert
+      expect(mockJson).toHaveBeenCalledWith(
+        {
+          success: false,
+          error: 'Property not found',
+        },
+        { status: 404 }
+      )
+    })
+
+    it('should handle validation errors during update', async () => {
+      // Arrange
+      const mockRequest = {
+        json: jest.fn().mockResolvedValue({}),
+      }
+      const mockParams = Promise.resolve({ id: '1' })
+      
+      // Mock validation to throw error
+      const { propertySchema } = require('@/lib/validations/property')
+      propertySchema.parse = jest.fn().mockImplementation(() => {
+        throw new Error('Validation failed')
+      })
+
+      // Act
+      await PUT(mockRequest, { params: mockParams })
+
+      // Assert
+      expect(mockJson).toHaveBeenCalledWith(
+        {
+          success: false,
+          error: 'Validation failed',
+        },
+        { status: 400 }
+      )
+    })
+  })
+
+  describe('DELETE /api/admin/properties/[id]', () => {
+    it('should delete a property', async () => {
+      // Arrange
+      prisma.property.delete.mockResolvedValue({ id: '1' })
+      
+      const mockRequest = {}
+      const mockParams = Promise.resolve({ id: '1' })
+
+      // Act
+      await DELETE(mockRequest, { params: mockParams })
+
+      // Assert
+      expect(requireAdmin).toHaveBeenCalled()
+      expect(prisma.property.delete).toHaveBeenCalledWith({
+        where: { id: '1' },
+      })
+      expect(mockJson).toHaveBeenCalledWith({
+        success: true,
+        message: 'Property deleted successfully',
+      })
+    })
+
+    it('should return 404 when deleting non-existent property', async () => {
+      // Arrange
+      const error = new Error('Property not found')
+      error.code = 'P2025'
+      prisma.property.delete.mockRejectedValue(error)
+      
+      const mockRequest = {}
+      const mockParams = Promise.resolve({ id: 'nonexistent' })
+
+      // Act
+      await DELETE(mockRequest, { params: mockParams })
+
+      // Assert
+      expect(mockJson).toHaveBeenCalledWith(
+        {
+          success: false,
+          error: 'Property not found',
+        },
+        { status: 404 }
+      )
+    })
+
+    it('should handle unauthorized access during deletion', async () => {
+      // Arrange
+      requireAdmin.mockRejectedValue(new Error('Forbidden'))
+      
+      const mockRequest = {}
+      const mockParams = Promise.resolve({ id: '1' })
+
+      // Act
+      await DELETE(mockRequest, { params: mockParams })
+
+      // Assert
+      expect(mockJson).toHaveBeenCalledWith(
+        {
+          success: false,
+          error: 'Forbidden',
+        },
+        { status: 401 }
+      )
+    })
+  })
+})

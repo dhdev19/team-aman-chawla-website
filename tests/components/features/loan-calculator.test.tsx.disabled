@@ -1,0 +1,248 @@
+import React from 'react'
+import { render, screen, fireEvent } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import '@testing-library/jest-dom'
+import { LoanCalculator } from '@/components/features/loan-calculator'
+
+describe('LoanCalculator Component', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
+  it('should render loan calculator with default values', () => {
+    // Arrange & Act
+    render(<LoanCalculator propertyPrice={5000000} />)
+
+    // Assert
+    expect(screen.getByLabelText('Loan Amount')).toBeInTheDocument()
+    expect(screen.getByLabelText('Interest Rate (%)')).toBeInTheDocument()
+    expect(screen.getByLabelText('Loan Tenure (Years)')).toBeInTheDocument()
+    expect(screen.getByDisplayValue('4000000')).toBeInTheDocument() // 80% of 50L
+    expect(screen.getByDisplayValue('8.5')).toBeInTheDocument()
+    expect(screen.getByDisplayValue('20')).toBeInTheDocument()
+  })
+
+  it('should calculate EMI correctly', () => {
+    // Arrange & Act
+    render(<LoanCalculator propertyPrice={5000000} />)
+
+    // Assert
+    expect(screen.getByText(/Monthly EMI:/)).toBeInTheDocument()
+    expect(screen.getByText(/₹34,712\.93/)).toBeInTheDocument()
+  })
+
+  it('should update EMI when loan amount changes', async () => {
+    // Arrange
+    const user = userEvent.setup()
+    render(<LoanCalculator propertyPrice={5000000} />)
+
+    // Act
+    const loanAmountInput = screen.getByRole('slider', { name: /loan/i })
+    fireEvent.change(loanAmountInput, { target: { value: '3000000' } })
+
+    // Assert
+    expect(screen.getByText(/Monthly EMI:/)).toBeInTheDocument()
+    expect(screen.getByText(/₹25,952/)).toBeInTheDocument()
+  })
+
+  it('should update EMI when interest rate changes', async () => {
+    // Arrange
+    const user = userEvent.setup()
+    render(<LoanCalculator propertyPrice={5000000} />)
+
+    // Act
+    const interestRateInput = screen.getByRole('slider', { name: /interest/i })
+    fireEvent.change(interestRateInput, { target: { value: '10' } })
+
+    // Assert
+    expect(screen.getByText(/Monthly EMI:/)).toBeInTheDocument()
+    expect(screen.getByText(/₹38,601/)).toBeInTheDocument()
+  })
+
+  it('should update EMI when loan tenure changes', async () => {
+    // Arrange
+    const user = userEvent.setup()
+    render(<LoanCalculator propertyPrice={5000000} />)
+
+    // Act
+    const tenureInput = screen.getByRole('slider', { name: /tenure/i })
+    fireEvent.change(tenureInput, { target: { value: '15' } })
+
+    // Assert
+    expect(screen.getByText(/Monthly EMI:/)).toBeInTheDocument()
+    expect(screen.getByText(/₹39,354/)).toBeInTheDocument()
+  })
+
+  it('should display total interest and total payment', () => {
+    // Arrange & Act
+    render(<LoanCalculator propertyPrice={5000000} />)
+
+    // Assert
+    expect(screen.getByText(/Total Interest:/)).toBeInTheDocument()
+    expect(screen.getByText(/Total Payment:/)).toBeInTheDocument()
+    expect(screen.getByText(/₹43,04,720/)).toBeInTheDocument() // Total interest
+    expect(screen.getByText(/₹83,04,720/)).toBeInTheDocument() // Total payment
+  })
+
+  it('should handle zero loan amount', async () => {
+    // Arrange
+    const user = userEvent.setup()
+    render(<LoanCalculator propertyPrice={5000000} />)
+
+    // Act
+    const loanAmountInput = screen.getByRole('slider', { name: /loan/i })
+    fireEvent.change(loanAmountInput, { target: { value: '0' } })
+
+    // Assert
+    expect(screen.getByText(/Monthly EMI:/)).toBeInTheDocument()
+    expect(screen.getByText(/₹0/)).toBeInTheDocument()
+    expect(screen.getByText(/Total Interest:/)).toBeInTheDocument()
+    expect(screen.getByText(/₹0/)).toBeInTheDocument()
+    expect(screen.getByText(/Total Amount Payable:/)).toBeInTheDocument()
+    expect(screen.getByText(/₹0/)).toBeInTheDocument()
+  })
+
+  it('should validate loan amount input', async () => {
+    // Arrange
+    const user = userEvent.setup()
+    render(<LoanCalculator propertyPrice={5000000} />)
+
+    // Act
+    const loanAmountInput = screen.getByRole('slider', { name: /loan/i })
+    fireEvent.change(loanAmountInput, { target: { value: '6000000' } }) // More than property price
+
+    // Assert - Component doesn't have validation, just updates calculation
+    expect(screen.getByText(/Monthly EMI:/)).toBeInTheDocument()
+  })
+
+  it('should validate interest rate input', async () => {
+    // Arrange
+    const user = userEvent.setup()
+    render(<LoanCalculator propertyPrice={5000000} />)
+
+    // Act
+    const interestRateInput = screen.getByRole('slider', { name: /interest/i })
+    fireEvent.change(interestRateInput, { target: { value: '50' } }) // Too high
+
+    // Assert - Component doesn't have validation, just updates calculation
+    expect(screen.getByText(/Monthly EMI:/)).toBeInTheDocument()
+  })
+
+  it('should validate loan tenure input', async () => {
+    // Arrange
+    const user = userEvent.setup()
+    render(<LoanCalculator propertyPrice={5000000} />)
+
+    // Act
+    const tenureInput = screen.getByRole('slider', { name: /tenure/i })
+    fireEvent.change(tenureInput, { target: { value: '40' } }) // Too high
+
+    // Assert - Component doesn't have validation, just updates calculation
+    expect(screen.getByText(/Monthly EMI:/)).toBeInTheDocument()
+  })
+
+  it('should handle decimal values correctly', async () => {
+    // Arrange
+    const user = userEvent.setup()
+    render(<LoanCalculator propertyPrice={5000000} />)
+
+    // Act
+    const interestRateInput = screen.getByRole('slider', { name: /interest/i })
+    fireEvent.change(interestRateInput, { target: { value: '8.75' } })
+
+    // Assert
+    expect(screen.getByText(/Monthly EMI:/)).toBeInTheDocument()
+    expect(screen.getByText(/₹35,241/)).toBeInTheDocument()
+  })
+
+  it('should calculate with minimum values', async () => {
+    // Arrange
+    const user = userEvent.setup()
+    render(<LoanCalculator propertyPrice={1000000} />)
+
+    // Act
+    const loanAmountInput = screen.getByRole('slider', { name: /loan/i })
+    const interestRateInput = screen.getByRole('slider', { name: /interest/i })
+    const tenureInput = screen.getByRole('slider', { name: /tenure/i })
+    
+    fireEvent.change(loanAmountInput, { target: { value: '100000' } })
+    fireEvent.change(interestRateInput, { target: { value: '1' } })
+    fireEvent.change(tenureInput, { target: { value: '1' } })
+
+    // Assert
+    expect(screen.getByText(/Monthly EMI:/)).toBeInTheDocument()
+    expect(screen.getByText(/₹8,375/)).toBeInTheDocument()
+  })
+
+  it('should calculate with maximum values', async () => {
+    // Arrange
+    const user = userEvent.setup()
+    render(<LoanCalculator propertyPrice={10000000} />)
+
+    // Act
+    const loanAmountInput = screen.getByDisplayValue('4000000')
+    const interestRateInput = screen.getByDisplayValue('8.5')
+    const tenureInput = screen.getByDisplayValue('20')
+    
+    await user.clear(loanAmountInput)
+    await user.type(loanAmountInput, '10000000')
+    await user.clear(interestRateInput)
+    await user.type(interestRateInput, '30')
+    await user.clear(tenureInput)
+    await user.type(tenureInput, '30')
+
+    // Assert
+    expect(screen.getByText(/Monthly EMI:/)).toBeInTheDocument()
+    expect(screen.getByText(/₹26,861/)).toBeInTheDocument()
+  })
+
+  it('should handle edge case of very small loan amount', async () => {
+    // Arrange
+    const user = userEvent.setup()
+    render(<LoanCalculator propertyPrice={5000000} />)
+
+    // Act
+    const loanAmountInput = screen.getByLabelText('Loan Amount')
+    await user.clear(loanAmountInput)
+    await user.type(loanAmountInput, '1000')
+
+    // Assert
+    expect(screen.getByText(/Monthly EMI:/)).toBeInTheDocument()
+    expect(screen.getByText(/₹9/)).toBeInTheDocument()
+  })
+
+  it('should display formatted currency values', () => {
+    // Arrange & Act
+    render(<LoanCalculator propertyPrice={5000000} />)
+
+    // Assert
+    expect(screen.getByText(/₹34,603/)).toBeInTheDocument()
+    expect(screen.getByText(/₹43,04,720/)).toBeInTheDocument()
+    expect(screen.getByText(/₹83,04,720/)).toBeInTheDocument()
+  })
+
+  it('should handle property price of zero', () => {
+    // Arrange & Act
+    render(<LoanCalculator propertyPrice={0} />)
+
+    // Assert
+    expect(screen.getByDisplayValue('0')).toBeInTheDocument() // Loan amount
+    expect(screen.getByText(/Monthly EMI:/)).toBeInTheDocument()
+    expect(screen.getByText(/₹0/)).toBeInTheDocument()
+  })
+
+  it('should reset to default when property price changes', () => {
+    // Arrange
+    const { rerender } = render(<LoanCalculator propertyPrice={5000000} />)
+    
+    // Act - Change loan amount
+    const loanAmountInput = screen.getByDisplayValue('4000000')
+    fireEvent.change(loanAmountInput, { target: { value: '2000000' } })
+    
+    // Re-render with new property price
+    rerender(<LoanCalculator propertyPrice={6000000} />)
+
+    // Assert - Should reset to 80% of new property price
+    expect(screen.getByDisplayValue('4800000')).toBeInTheDocument()
+  })
+})

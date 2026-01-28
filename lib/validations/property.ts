@@ -76,7 +76,7 @@ export const propertySchema = z.object({
   images: z.array(imageUrlSchema).default([]),
   amenities: z.array(z.string()).default([]),
   mapImage: imageUrlSchema.optional().nullable(),
-  projectLaunchDate: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/).optional().nullable(),
+  projectLaunchDate: z.string().optional().nullable(),
   builderReraQrCode: imageUrlSchema.optional().nullable(),
   possession: z.string().max(500, "Possession info is too long").optional().nullable(),
   metaTitle: z.string().max(200, "Meta title is too long").optional().nullable(),

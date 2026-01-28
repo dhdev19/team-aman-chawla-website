@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { PropertyType, PropertyStatus } from "@prisma/client";
+import { PropertyType, PropertyFormat, PropertyStatus } from "@prisma/client";
 import { formatCurrency } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -10,13 +10,28 @@ interface Property {
   name: string;
   slug: string | null;
   type: PropertyType;
+  format: PropertyFormat | null;
   builder: string;
   description: string | null;
-  price: number | null;
+  price: number | null; // Float? from database
   location: string | null;
+  locationAdvantages: string[];
   status: PropertyStatus;
   mainImage: string | null;
   images: string[];
+  amenities: string[];
+  mapImage: string | null;
+  projectLaunchDate: Date | null;
+  builderReraQrCode: string | null;
+  possession: string | null;
+  metaTitle: string | null;
+  metaKeywords: string | null;
+  metaDescription: string | null;
+  bankAccountName: string | null;
+  bankName: string | null;
+  bankAccountNumber: string | null;
+  bankIfsc: string | null;
+  bankBranch: string | null;
   configurations?: Array<{ configType: string }>;
   createdAt: Date;
   updatedAt: Date;
