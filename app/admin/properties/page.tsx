@@ -3,10 +3,8 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { propertyApi } from "@/lib/api-client";
-import { apiGet, apiDelete } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { PropertyType, PropertyStatus } from "@prisma/client";
-import { ApiResponse } from "@/types";
 import { SearchBar } from "@/components/features/search-bar";
 import { FilterDropdown } from "@/components/features/filter-dropdown";
 import { Pagination } from "@/components/features/pagination";
@@ -39,15 +37,9 @@ export default function PropertiesListPage() {
   const [currentPage, setCurrentPage] = React.useState(1);
   const limit = 25;
 
-  const { data, isLoading, error, refetch } = useQuery<ApiResponse<{
-    data: any[];
-    pagination: any;
-  }>>({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["admin-properties", searchQuery, selectedType, selectedStatus, currentPage],
-    queryFn: async (): Promise<ApiResponse<{
-      data: any[];
-      pagination: any;
-    }>> => {
+    queryFn: async () => {
       const params: Record<string, string> = {
         page: currentPage.toString(),
         limit: limit.toString(),
@@ -56,17 +48,13 @@ export default function PropertiesListPage() {
       if (selectedType) params.type = selectedType;
       if (selectedStatus) params.status = selectedStatus;
 
-      const queryString = `?${new URLSearchParams(params).toString()}`;
-      const response = await apiGet(`/api/admin/properties${queryString}`) as ApiResponse<{
-        data: any[];
-        pagination: any;
-      }>;
-      return response;
+      const response = await propertyApi.getAll(params);
+      return response.data;
     },
   });
 
-  const properties = data?.data?.data || [];
-  const pagination = data?.data?.pagination;
+  const properties = data?.data || [];
+  const pagination = data?.pagination;
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this property?")) {
@@ -74,7 +62,7 @@ export default function PropertiesListPage() {
     }
 
     try {
-      await apiDelete(`/api/admin/properties/${id}`);
+      await propertyApi.delete(id);
       refetch();
     } catch (error) {
       alert("Failed to delete property. Please try again.");
@@ -218,7 +206,7 @@ export default function PropertiesListPage() {
                         {property.builder}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-900">
-                        {property.price || "Price on request"}
+                        {formatCurrency(property.price)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span

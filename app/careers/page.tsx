@@ -27,13 +27,13 @@ export default function CareersPage() {
     formState: { errors },
     reset,
     watch,
-  } = useForm({
+  } = useForm<CareerApplicationFormData>({
     resolver: zodResolver(careerApplicationSchema),
   });
 
   const referralSource = watch("referralSource");
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: CareerApplicationFormData) => {
     setIsSubmitting(true);
     setSubmitStatus({ type: null, message: "" });
 
@@ -169,7 +169,7 @@ export default function CareersPage() {
                       />
                       {errors.name && (
                         <p className="mt-1 text-sm text-red-600">
-                          {String(errors.name?.message || "")}
+                          {errors.name.message}
                         </p>
                       )}
                     </div>
@@ -186,7 +186,7 @@ export default function CareersPage() {
                       />
                       {errors.email && (
                         <p className="mt-1 text-sm text-red-600">
-                          {String(errors.email?.message || "")}
+                          {errors.email.message}
                         </p>
                       )}
                     </div>
@@ -202,7 +202,7 @@ export default function CareersPage() {
                       />
                       {errors.whatsappNumber && (
                         <p className="mt-1 text-sm text-red-600">
-                          {String(errors.whatsappNumber?.message || "")}
+                          {errors.whatsappNumber.message}
                         </p>
                       )}
                     </div>
@@ -218,7 +218,7 @@ export default function CareersPage() {
                       />
                       {errors.city && (
                         <p className="mt-1 text-sm text-red-600">
-                          {String(errors.city?.message || "")}
+                          {errors.city.message}
                         </p>
                       )}
                     </div>
@@ -242,7 +242,7 @@ export default function CareersPage() {
                     </Select>
                     {errors.referralSource && (
                       <p className="mt-1 text-sm text-red-600">
-                        {String(errors.referralSource?.message || "")}
+                        {errors.referralSource.message}
                       </p>
                     )}
                   </div>
@@ -260,7 +260,7 @@ export default function CareersPage() {
                       />
                       {errors.referralOther && (
                         <p className="mt-1 text-sm text-red-600">
-                          {String(errors.referralOther?.message || "")}
+                          {errors.referralOther.message}
                         </p>
                       )}
                     </div>
@@ -278,7 +278,7 @@ export default function CareersPage() {
                     />
                     {errors.resumeLink && (
                       <p className="mt-1 text-sm text-red-600">
-                        {String(errors.resumeLink?.message || "")}
+                        {errors.resumeLink.message}
                       </p>
                     )}
                     <p className="mt-1 text-xs text-neutral-500">

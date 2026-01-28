@@ -5,7 +5,7 @@ import { Footer } from "@/components/layout/footer";
 import { Container } from "@/components/ui/container";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { formatDate, formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatDate } from "@/lib/utils";
 import { generatePropertyMetadata } from "@/lib/metadata";
 import { PropertySchema } from "@/components/seo/schema-org";
 import { PropertyImageSlider } from "@/components/features/property-image-slider";
@@ -96,7 +96,7 @@ export default async function PropertyDetailPage({
         name={property.name}
         description={property.description || undefined}
         type={property.type}
-        price={property.price ? Number(property.price) : undefined}
+        price={property.price || undefined}
         location={property.location || undefined}
         image={property.mainImage || undefined}
         url={propertyUrl}
@@ -191,7 +191,7 @@ export default async function PropertyDetailPage({
                     <div>
                       <p className="text-sm text-neutral-600 mb-1">Price</p>
                       <p className="font-semibold text-primary-700 text-xl">
-                        {property.price}
+                        {formatCurrency(property.price)}
                       </p>
                     </div>
                   )}
@@ -293,7 +293,7 @@ export default async function PropertyDetailPage({
                             <div>
                               <p className="text-sm text-neutral-600 mb-1">Price</p>
                               <p className="font-semibold text-primary-700 text-lg">
-                                {config.price}
+                                {formatCurrency(config.price)}
                               </p>
                             </div>
                           )}
@@ -418,13 +418,13 @@ export default async function PropertyDetailPage({
                 <PropertyContactForm
                   propertyId={property.id}
                   propertyName={property.name}
-                  propertyPrice={property.price ? Number(property.price) : undefined}
+                  propertyPrice={property.price || undefined}
                 />
               </Card>
 
               {/* Loan Calculator */}
               <Card>
-                <LoanCalculator propertyPrice={property.price ? Number(property.price) : 5000000} />
+                <LoanCalculator propertyPrice={property.price || 5000000} />
               </Card>
 
               {/* Related Properties */}
@@ -456,7 +456,7 @@ export default async function PropertyDetailPage({
                               {related.name}
                             </h3>
                             <p className="text-sm text-neutral-600">
-                              {related.price || "Price on request"}
+                              {formatCurrency(related.price)}
                             </p>
                           </div>
                         </div>

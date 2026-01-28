@@ -31,9 +31,7 @@ const propertyStatusOptions = [
   { value: "RESERVED", label: "Reserved" },
 ];
 
-import { Suspense } from "react";
-
-function PropertiesContent() {
+export default function PropertiesPage() {
   const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = React.useState("");
   const [selectedType, setSelectedType] = React.useState<PropertyType | "">(
@@ -45,21 +43,9 @@ function PropertiesContent() {
   const [currentPage, setCurrentPage] = React.useState(1);
   const limit = 25;
 
-  const { data, isLoading, error, refetch } = useQuery<{
-    success: boolean;
-    data: {
-      data: any[];
-      pagination: any;
-    };
-  }>({
+  const { data, isLoading, error } = useQuery({
     queryKey: ["properties", searchQuery, selectedType, selectedStatus, currentPage],
-    queryFn: async (): Promise<{
-      success: boolean;
-      data: {
-        data: any[];
-        pagination: any;
-      };
-    }> => {
+    queryFn: async () => {
       const params: Record<string, string> = {
         page: currentPage.toString(),
         limit: limit.toString(),
@@ -69,18 +55,12 @@ function PropertiesContent() {
       if (selectedStatus) params.status = selectedStatus;
 
       const response = await propertyApi.getAll(params);
-      return response.data as {
-        success: boolean;
-        data: {
-          data: any[];
-          pagination: any;
-        };
-      };
+      return response.data;
     },
   });
 
-  const properties = data?.data?.data || [];
-  const pagination = data?.data?.pagination;
+  const properties = data?.data || [];
+  const pagination = data?.pagination;
 
   return (
     <>
@@ -166,13 +146,5 @@ function PropertiesContent() {
       </main>
       <Footer />
     </>
-  );
-}
-
-export default function PropertiesPage() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <PropertiesContent />
-    </Suspense>
   );
 }

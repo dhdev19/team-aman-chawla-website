@@ -6,7 +6,6 @@ import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { propertySchema, type PropertyFormData } from "@/lib/validations/property";
 import { propertyApi, uploadApi } from "@/lib/api-client";
-import { apiPost } from "@/lib/api";
 import { PropertyType, PropertyStatus, PropertyFormat } from "@prisma/client";
 import { generateSlug } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -63,7 +62,7 @@ export default function AddPropertyPage() {
     setValue,
     watch,
     control,
-  } = useForm({
+  } = useForm<PropertyFormData>({
     resolver: zodResolver(propertySchema),
     defaultValues: {
       status: PropertyStatus.AVAILABLE,
@@ -322,11 +321,11 @@ export default function AddPropertyPage() {
     }
   };
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: PropertyFormData) => {
     setIsSubmitting(true);
 
     try {
-      const response = await apiPost("/api/admin/properties", {
+      const response = await propertyApi.create({
         ...data,
         images,
         amenities: amenities || [],
@@ -506,13 +505,14 @@ export default function AddPropertyPage() {
 
               <div>
                 <label className="block text-sm font-medium text-neutral-700 mb-2">
-                  Price (e.g., 2.5 Cr, 50 Lac)
+                  Price
                 </label>
                 <Input
-                  type="text"
-                  {...register("price")}
+                  type="number"
+                  step="0.01"
+                  {...register("price", { valueAsNumber: true })}
                   className={errors.price ? "border-red-500" : ""}
-                  placeholder="e.g., 2.5 Cr or 50 Lac"
+                  placeholder="Enter price"
                 />
                 {errors.price && (
                   <p className="mt-1 text-sm text-red-600">
@@ -992,10 +992,11 @@ export default function AddPropertyPage() {
                         Price
                       </label>
                       <Input
-                        type="text"
-                        {...register(`configurations.${index}.price`)}
+                        type="number"
+                        step="0.01"
+                        {...register(`configurations.${index}.price`, { valueAsNumber: true })}
                         className={errors.configurations?.[index]?.price ? "border-red-500" : ""}
-                        placeholder="e.g., 2.5 Cr or 50 Lac"
+                        placeholder="Enter price"
                       />
                     </div>
 
@@ -1030,7 +1031,7 @@ export default function AddPropertyPage() {
                       {watch(`configurations.${index}.floorPlanImage`) && (
                         <div className="mt-2 relative h-32 w-full rounded overflow-hidden bg-neutral-200 border border-neutral-300">
                           <img
-                            src={watch(`configurations.${index}.floorPlanImage`) || ""}
+                            src={watch(`configurations.${index}.floorPlanImage`)}
                             alt="Floor plan"
                             className="w-full h-full object-cover"
                           />

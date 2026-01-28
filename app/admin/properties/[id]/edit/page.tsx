@@ -6,8 +6,6 @@ import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { propertySchema, type PropertyFormData } from "@/lib/validations/property";
 import { propertyApi, uploadApi } from "@/lib/api-client";
-import { apiGet, apiPut } from "@/lib/api";
-import { ApiResponse } from "@/types";
 import { PropertyType, PropertyStatus, PropertyFormat } from "@prisma/client";
 import { generateSlug } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
@@ -60,11 +58,11 @@ export default function EditPropertyPage() {
   const qrCodeInputRef = React.useRef<HTMLInputElement>(null);
   const floorPlanInputRefs = React.useRef<(HTMLInputElement | null)[]>([]);
 
-  const { data, isLoading, error } = useQuery<ApiResponse<any>>({
+  const { data, isLoading, error } = useQuery({
     queryKey: ["admin-property", propertyId],
-    queryFn: async (): Promise<ApiResponse<any>> => {
-      const response = await apiGet(`/api/admin/properties/${propertyId}`);
-      return response;
+    queryFn: async () => {
+      const response = await propertyApi.getById(propertyId);
+      return response.data;
     },
   });
 
@@ -76,7 +74,7 @@ export default function EditPropertyPage() {
     reset,
     watch,
     control,
-  } = useForm({
+  } = useForm<PropertyFormData>({
     resolver: zodResolver(propertySchema),
   });
 
@@ -102,7 +100,7 @@ export default function EditPropertyPage() {
 
   React.useEffect(() => {
     if (data) {
-      const propertyData = data.data;
+      const propertyData = data as any;
       const slug = propertyData.slug || "";
       setAutoSlug(slug ? "" : generateSlug(propertyData.name || ""));
       reset({
@@ -376,7 +374,7 @@ export default function EditPropertyPage() {
     }
   };
 
-  const onSubmit = async (formData: any) => {
+  const onSubmit = async (formData: PropertyFormData) => {
     setIsSubmitting(true);
 
     try {
@@ -391,7 +389,7 @@ export default function EditPropertyPage() {
         builderReraQrCode: builderReraQrCode || formData.builderReraQrCode || null,
       };
       
-      const response = await apiPut(`/api/admin/properties/${propertyId}`, dataToSubmit);
+      const response = await propertyApi.update(propertyId, dataToSubmit);
 
       if (response.success) {
         router.push("/admin/properties");
@@ -578,13 +576,14 @@ export default function EditPropertyPage() {
 
               <div>
                 <label className="block text-sm font-medium text-neutral-700 mb-2">
-                  Price (e.g., 2.5 Cr, 50 Lac)
+                  Price
                 </label>
                 <Input
-                  type="text"
-                  {...register("price")}
+                  type="number"
+                  step="0.01"
+                  {...register("price", { valueAsNumber: true })}
                   className={errors.price ? "border-red-500" : ""}
-                  placeholder="e.g., 2.5 Cr or 50 Lac"
+                  placeholder="Enter price"
                 />
                 {errors.price && (
                   <p className="mt-1 text-sm text-red-600">
@@ -907,10 +906,11 @@ export default function EditPropertyPage() {
                               Price
                             </label>
                             <Input
-                              type="text"
-                              {...register(`configurations.${index}.price`)}
+                              type="number"
+                              step="0.01"
+                              {...register(`configurations.${index}.price`, { valueAsNumber: true })}
                               className={errors.configurations?.[index]?.price ? "border-red-500" : ""}
-                              placeholder="e.g., 2.5 Cr or 50 Lac"
+                              placeholder="Enter price"
                             />
                             {errors.configurations?.[index]?.price && (
                               <p className="mt-1 text-sm text-red-600">
@@ -954,7 +954,7 @@ export default function EditPropertyPage() {
                           {watch(`configurations.${index}.floorPlanImage`) && (
                             <div className="mt-2 relative h-32 w-full rounded overflow-hidden bg-neutral-200 border border-neutral-300">
                               <img
-                                src={watch(`configurations.${index}.floorPlanImage`) || ""}
+                                src={watch(`configurations.${index}.floorPlanImage`)}
                                 alt="Floor plan"
                                 className="w-full h-full object-cover"
                               />

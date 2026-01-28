@@ -3,8 +3,6 @@
 import * as React from "react";
 import { useRouter, useParams } from "next/navigation";
 import { blogApi } from "@/lib/api-client";
-import { apiGet, apiDelete, apiPut } from "@/lib/api";
-import { ApiResponse } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -18,11 +16,11 @@ export default function BlogViewPage() {
   const params = useParams();
   const blogId = params.id as string;
 
-  const { data: blog, isLoading, error, refetch } = useQuery<ApiResponse<any>>({
+  const { data: blog, isLoading, error, refetch } = useQuery({
     queryKey: ["admin-blog", blogId],
-    queryFn: async (): Promise<ApiResponse<any>> => {
-      const response = await apiGet(`/api/admin/blogs/${blogId}`);
-      return response;
+    queryFn: async () => {
+      const response = await blogApi.getById(blogId);
+      return response.data;
     },
   });
 
@@ -32,7 +30,7 @@ export default function BlogViewPage() {
     }
 
     try {
-      await apiDelete(`/api/admin/blogs/${blogId}`);
+      await blogApi.delete(blogId);
       router.push("/admin/blogs");
     } catch (error) {
       alert("Failed to delete blog post. Please try again.");
@@ -43,8 +41,8 @@ export default function BlogViewPage() {
     if (!blog) return;
 
     try {
-      const blogData = blog.data;
-      await apiPut(`/api/admin/blogs/${blogId}`, {
+      const blogData = blog as any;
+      await blogApi.update(blogId, {
         ...blogData,
         published: !blogData.published,
       });

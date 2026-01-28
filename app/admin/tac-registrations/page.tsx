@@ -13,39 +13,21 @@ export default function TACRegistrationsListPage() {
   const [currentPage, setCurrentPage] = React.useState(1);
   const limit = 25;
 
-  const { data, isLoading, error, refetch } = useQuery<{
-    success: boolean;
-    data: {
-      data: any[];
-      pagination: any;
-    };
-  }>({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["admin-tac-registrations", currentPage],
-    queryFn: async (): Promise<{
-      success: boolean;
-      data: {
-        data: any[];
-        pagination: any;
-      };
-    }> => {
+    queryFn: async () => {
       const params: Record<string, string> = {
         page: currentPage.toString(),
         limit: limit.toString(),
       };
 
       const response = await tacApi.getAll();
-      return response.data as {
-        success: boolean;
-        data: {
-          data: any[];
-          pagination: any;
-        };
-      };
+      return response.data;
     },
   });
 
-  const registrations = data?.data?.data || [];
-  const pagination = data?.data?.pagination;
+  const registrations = data?.data || [];
+  const pagination = data?.pagination;
 
   return (
     <div>

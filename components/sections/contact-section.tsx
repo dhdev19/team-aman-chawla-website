@@ -26,11 +26,11 @@ export function ContactSection() {
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm({
-    resolver: zodResolver(enquirySchema) as any,
+  } = useForm<EnquiryFormData>({
+    resolver: zodResolver(enquirySchema),
   });
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: EnquiryFormData) => {
     setIsSubmitting(true);
     setSubmitStatus({ type: null, message: "" });
 
@@ -99,7 +99,7 @@ export function ContactSection() {
                   />
                   {errors.name && (
                     <p className="mt-1 text-sm text-red-600">
-                      {String(errors.name?.message || "")}
+                      {errors.name.message}
                     </p>
                   )}
                 </div>
@@ -119,7 +119,7 @@ export function ContactSection() {
                   />
                   {errors.email && (
                     <p className="mt-1 text-sm text-red-600">
-                      {String(errors.email?.message || "")}
+                      {errors.email.message}
                     </p>
                   )}
                 </div>
@@ -140,7 +140,7 @@ export function ContactSection() {
                 />
                 {errors.phone && (
                   <p className="mt-1 text-sm text-red-600">
-                    {String(errors.phone?.message || "")}
+                    {errors.phone.message}
                   </p>
                 )}
               </div>
@@ -160,7 +160,7 @@ export function ContactSection() {
                 />
                 {errors.message && (
                   <p className="mt-1 text-sm text-red-600">
-                    {String(errors.message?.message || "")}
+                    {errors.message.message}
                   </p>
                 )}
               </div>

@@ -3,67 +3,6 @@ import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth-server";
 import { videoSchema } from "@/lib/validations/video";
 
-export async function GET(request: NextRequest) {
-  try {
-    await requireAdmin();
-
-    const searchParams = request.nextUrl.searchParams;
-    const page = parseInt(searchParams.get("page") || "1");
-    const limit = parseInt(searchParams.get("limit") || "10");
-    const search = searchParams.get("search") || undefined;
-
-    const where: any = {};
-    if (search) {
-      where.OR = [
-        { title: { contains: search, mode: "insensitive" } },
-        { description: { contains: search, mode: "insensitive" } },
-      ];
-    }
-
-    const [videos, total] = await Promise.all([
-      prisma.video.findMany({
-        where,
-        skip: (page - 1) * limit,
-        take: limit,
-        orderBy: { order: "asc" },
-      }),
-      prisma.video.count({ where }),
-    ]);
-
-    return NextResponse.json({
-      success: true,
-      data: {
-        data: videos,
-        pagination: {
-          page,
-          limit,
-          total,
-          totalPages: Math.ceil(total / limit),
-        },
-      },
-    });
-  } catch (error: any) {
-    if (error.message?.includes("Unauthorized") || error.message?.includes("Forbidden")) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: error.message,
-        },
-        { status: 401 }
-      );
-    }
-
-    console.error("Error fetching videos:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: error.message || "Failed to fetch videos",
-      },
-      { status: 500 }
-    );
-  }
-}
-
 export async function POST(request: NextRequest) {
   try {
     await requireAdmin();

@@ -15,9 +15,7 @@ import { enquirySchema, type EnquiryFormData } from "@/lib/validations";
 import { enquiryApi } from "@/lib/api-client";
 import { FadeIn } from "@/components/animations";
 
-import { Suspense } from "react";
-
-function EnquiryContent() {
+export default function EnquiryPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const propertyId = searchParams.get("property");
@@ -32,7 +30,7 @@ function EnquiryContent() {
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm({
+  } = useForm<EnquiryFormData>({
     resolver: zodResolver(enquirySchema),
     defaultValues: {
       type: "enquiry",
@@ -40,7 +38,7 @@ function EnquiryContent() {
     },
   });
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: EnquiryFormData) => {
     setIsSubmitting(true);
     setSubmitStatus({ type: null, message: "" });
 
@@ -114,7 +112,7 @@ function EnquiryContent() {
                       />
                       {errors.name && (
                         <p className="mt-1 text-sm text-red-600">
-                          {String(errors.name?.message || "")}
+                          {errors.name.message}
                         </p>
                       )}
                     </div>
@@ -134,7 +132,7 @@ function EnquiryContent() {
                       />
                       {errors.email && (
                         <p className="mt-1 text-sm text-red-600">
-                          {String(errors.email?.message || "")}
+                          {errors.email.message}
                         </p>
                       )}
                     </div>
@@ -155,7 +153,7 @@ function EnquiryContent() {
                     />
                     {errors.phone && (
                       <p className="mt-1 text-sm text-red-600">
-                        {String(errors.phone?.message || "")}
+                        {errors.phone.message}
                       </p>
                     )}
                   </div>
@@ -176,7 +174,7 @@ function EnquiryContent() {
                     />
                     {errors.message && (
                       <p className="mt-1 text-sm text-red-600">
-                        {String(errors.message?.message || "")}
+                        {errors.message.message}
                       </p>
                     )}
                   </div>
@@ -197,13 +195,5 @@ function EnquiryContent() {
       </main>
       <Footer />
     </>
-  );
-}
-
-export default function EnquiryPage() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <EnquiryContent />
-    </Suspense>
   );
 }

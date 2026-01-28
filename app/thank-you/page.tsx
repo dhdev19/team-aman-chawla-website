@@ -8,9 +8,7 @@ import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { FadeIn } from "@/components/animations";
 
-import { Suspense } from "react";
-
-function ThankYouContent() {
+export default function ThankYouPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const formType = searchParams.get("form") || "enquiry";
@@ -115,13 +113,5 @@ function ThankYouContent() {
       </main>
       <Footer />
     </>
-  );
-}
-
-export default function ThankYouPage() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <ThankYouContent />
-    </Suspense>
   );
 }

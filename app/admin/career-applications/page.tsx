@@ -1,11 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { useRouter } from "next/navigation";
-import { careerApi } from "@/lib/api-client";
-import { apiGet, apiDelete } from "@/lib/api";
+import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { ApiResponse } from "@/types";
 import { careerApi } from "@/lib/api-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,15 +30,9 @@ export default function CareerApplicationsPage() {
     setCurrentPage(1);
   }, [debouncedSearch, referralSource]);
 
-  const { data, isLoading, error, refetch } = useQuery<ApiResponse<{
-    data: any[];
-    pagination: any;
-  }>>({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["admin-career-applications", debouncedSearch, referralSource, currentPage],
-    queryFn: async (): Promise<ApiResponse<{
-      data: any[];
-      pagination: any;
-    }>> => {
+    queryFn: async () => {
       const params: Record<string, string> = {
         page: currentPage.toString(),
       };
@@ -49,11 +40,7 @@ export default function CareerApplicationsPage() {
       if (debouncedSearch) params.search = debouncedSearch;
       if (referralSource) params.referralSource = referralSource;
 
-      const queryString = `?${new URLSearchParams(params).toString()}`;
-      const response = await apiGet(`/api/admin/career${queryString}`) as ApiResponse<{
-        data: any[];
-        pagination: any;
-      }>;
+      const response = await careerApi.getAll(params);
       return response;
     },
   });
@@ -62,7 +49,7 @@ export default function CareerApplicationsPage() {
     if (!confirm("Are you sure you want to delete this career application?")) return;
     
     try {
-      await apiDelete(`/api/admin/career/${id}`);
+      await careerApi.delete(id);
       refetch();
     } catch (error) {
       alert("Failed to delete career application");
@@ -151,7 +138,7 @@ export default function CareerApplicationsPage() {
         <div className="text-center py-12">
           <LoadingSpinner size="lg" />
         </div>
-      ) : !data?.data || data.data.data.length === 0 ? (
+      ) : !data?.data || data.data.length === 0 ? (
         <Card className="text-center py-12">
           <p className="text-neutral-500 mb-4">No career applications found</p>
           {(debouncedSearch || referralSource) && (
@@ -170,7 +157,7 @@ export default function CareerApplicationsPage() {
       ) : (
         <>
           <div className="grid gap-6">
-            {data.data.data.map((application: any) => (
+            {data.data.map((application: any) => (
               <Card key={application.id} className="p-6">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -244,11 +231,11 @@ export default function CareerApplicationsPage() {
           </div>
 
           {/* Pagination */}
-          {data.data.pagination && (
+          {data.pagination && (
             <div className="mt-8">
               <Pagination
                 currentPage={currentPage}
-                totalPages={data.data.pagination.totalPages}
+                totalPages={data.pagination.totalPages}
                 onPageChange={setCurrentPage}
               />
             </div>

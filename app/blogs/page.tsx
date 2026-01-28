@@ -20,21 +20,9 @@ export default function BlogsPage() {
   const [currentPage, setCurrentPage] = React.useState(1);
   const limit = 12;
 
-  const { data, isLoading, error, refetch } = useQuery<{
-    success: boolean;
-    data: {
-      data: any[];
-      pagination: any;
-    };
-  }>({
+  const { data, isLoading, error } = useQuery({
     queryKey: ["blogs", searchQuery, currentPage],
-    queryFn: async (): Promise<{
-      success: boolean;
-      data: {
-        data: any[];
-        pagination: any;
-      };
-    }> => {
+    queryFn: async () => {
       const params: Record<string, string> = {
         page: currentPage.toString(),
         limit: limit.toString(),
@@ -43,18 +31,12 @@ export default function BlogsPage() {
       if (searchQuery) params.search = searchQuery;
 
       const response = await blogApi.getAll(params);
-      return response.data as {
-        success: boolean;
-        data: {
-          data: any[];
-          pagination: any;
-        };
-      };
+      return response.data;
     },
   });
 
-  const blogs = data?.data?.data || [];
-  const pagination = data?.data?.pagination;
+  const blogs = data?.data || [];
+  const pagination = data?.pagination;
 
   return (
     <>

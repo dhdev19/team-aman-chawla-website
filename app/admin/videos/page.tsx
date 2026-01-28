@@ -3,9 +3,7 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { videoApi } from "@/lib/api-client";
-import { apiGet, apiDelete } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
-import { ApiResponse } from "@/types";
 import { SearchBar } from "@/components/features/search-bar";
 import { Pagination } from "@/components/features/pagination";
 import { Button } from "@/components/ui/button";
@@ -20,32 +18,40 @@ export default function VideosListPage() {
   const [currentPage, setCurrentPage] = React.useState(1);
   const limit = 10;
 
-  const { data, isLoading, error, refetch } = useQuery<ApiResponse<{
-    data: any[];
-    pagination: any;
-  }>>({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["admin-videos", searchQuery, currentPage],
-    queryFn: async (): Promise<ApiResponse<{
-      data: any[];
-      pagination: any;
-    }>> => {
-      const params: Record<string, string> = {
-        page: currentPage.toString(),
-        limit: limit.toString(),
-      };
-      if (searchQuery) params.search = searchQuery;
+    queryFn: async () => {
+      const response = await videoApi.getAll();
+      let videos = response.data || [];
 
-      const queryString = `?${new URLSearchParams(params).toString()}`;
-      const response = await apiGet(`/api/admin/videos${queryString}`) as ApiResponse<{
-        data: any[];
-        pagination: any;
-      }>;
-      return response;
+      // Client-side search and pagination
+      if (searchQuery) {
+        videos = videos.filter(
+          (video: any) =>
+            video.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (video.description &&
+              video.description.toLowerCase().includes(searchQuery.toLowerCase()))
+        );
+      }
+
+      const total = videos.length;
+      const startIndex = (currentPage - 1) * limit;
+      const paginatedVideos = videos.slice(startIndex, startIndex + limit);
+
+      return {
+        data: paginatedVideos,
+        pagination: {
+          page: currentPage,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        },
+      };
     },
   });
 
-  const videos = data?.data?.data || [];
-  const pagination = data?.data?.pagination;
+  const videos = data?.data || [];
+  const pagination = data?.pagination;
 
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this video?")) {
@@ -53,7 +59,7 @@ export default function VideosListPage() {
     }
 
     try {
-      await apiDelete(`/api/admin/videos/${id}`);
+      await videoApi.delete(id);
       refetch();
     } catch (error) {
       alert("Failed to delete video. Please try again.");

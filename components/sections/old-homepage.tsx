@@ -472,7 +472,6 @@ export function OldHomepage() {
                 ...property,
                 type: property.type as any,
                 status: property.status as any,
-                price: property.price ? String(property.price) : null,
                 createdAt: property.createdAt ? new Date(property.createdAt) : new Date(),
                 updatedAt: property.updatedAt ? new Date(property.updatedAt) : new Date(),
               };

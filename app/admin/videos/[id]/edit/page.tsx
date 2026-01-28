@@ -40,7 +40,7 @@ export default function EditVideoPage() {
     reset,
     watch,
     setValue,
-  } = useForm({
+  } = useForm<VideoFormData>({
     resolver: zodResolver(videoSchema),
   });
 
@@ -126,13 +126,13 @@ export default function EditVideoPage() {
     }
   };
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (formData: VideoFormData) => {
     setIsSubmitting(true);
 
     try {
       const response = await videoApi.update(videoId, {
-        ...data,
-        thumbnail: uploadedThumbnail || data.thumbnail || autoThumbnail || null,
+        ...formData,
+        thumbnail: uploadedThumbnail || formData.thumbnail || autoThumbnail || null,
       });
 
       if (response.success) {
@@ -190,7 +190,7 @@ export default function EditVideoPage() {
                 />
                 {errors.title && (
                   <p className="mt-1 text-sm text-red-600">
-                    {String(errors.title?.message || "")}
+                    {errors.title.message}
                   </p>
                 )}
               </div>
@@ -206,7 +206,7 @@ export default function EditVideoPage() {
                 />
                 {errors.videoLink && (
                   <p className="mt-1 text-sm text-red-600">
-                    {String(errors.videoLink?.message || "")}
+                    {errors.videoLink.message}
                   </p>
                 )}
                 <p className="mt-1 text-xs text-neutral-500">
@@ -298,7 +298,7 @@ export default function EditVideoPage() {
                 </div>
                 {errors.thumbnail && (
                   <p className="mt-1 text-sm text-red-600">
-                    {String(errors.thumbnail?.message || "")}
+                    {errors.thumbnail.message}
                   </p>
                 )}
               </div>
@@ -315,7 +315,7 @@ export default function EditVideoPage() {
                 />
                 {errors.description && (
                   <p className="mt-1 text-sm text-red-600">
-                    {String(errors.description?.message || "")}
+                    {errors.description.message}
                   </p>
                 )}
               </div>
@@ -333,7 +333,7 @@ export default function EditVideoPage() {
                 />
                 {errors.order && (
                   <p className="mt-1 text-sm text-red-600">
-                    {String(errors.order?.message || "")}
+                    {errors.order.message}
                   </p>
                 )}
                 <p className="mt-1 text-xs text-neutral-500">

@@ -45,10 +45,8 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      data: {
-        data: result.data,
-        pagination: result.pagination,
-      },
+      data: result.data,
+      pagination: result.pagination,
     });
   } catch (error: any) {
     if (error.message?.includes("Unauthorized") || error.message?.includes("Forbidden")) {
