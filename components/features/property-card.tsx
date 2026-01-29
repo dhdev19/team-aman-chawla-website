@@ -123,7 +123,7 @@ export function PropertyCard({ property, className }: PropertyCardProps) {
               {property.configurations && property.configurations.length > 0 && (
                 <span className="font-normal">
                   {[...new Set(property.configurations.map(c => c.configType.toUpperCase()))].join(", ")}
-                  {property.format && (
+                  {property.format && ![...new Set(property.configurations.map(c => c.configType.toUpperCase()))].includes(property.format.toUpperCase()) && (
                     <span style={{ textTransform: 'capitalize' }}>
                       {` ${property.format.toLowerCase()}`}
                     </span>
