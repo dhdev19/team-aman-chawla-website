@@ -81,6 +81,15 @@ export function PropertyCard({ property, className }: PropertyCardProps) {
               {property.status.replace("_", " ").toLowerCase()}
             </span>
           </div>
+          {/* Property Type Badge */}
+          <div className="absolute top-2 left-2">
+            <span
+              className="px-2 py-1 rounded-full text-xs font-semibold text-white"
+              style={{ backgroundColor: "#005ba1" }}
+            >
+              {property.type.replace("_", " ").charAt(0).toUpperCase() + property.type.replace("_", " ").slice(1).toLowerCase()}
+            </span>
+          </div>
         </div>
 
         {/* Content */}
@@ -94,11 +103,10 @@ export function PropertyCard({ property, className }: PropertyCardProps) {
             </p>
           )}
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-neutral-600 capitalize">
-              {property.type.replace("_", " ").toLowerCase()}
+            <span className="text-sm text-neutral-600">
               {property.configurations && property.configurations.length > 0 && (
                 <span className="font-normal">
-                  {" "}({property.configurations.map(c => c.configType.toUpperCase()).join(", ")})
+                  {property.configurations.map(c => c.configType.toUpperCase()).join(", ")}
                 </span>
               )}
             </span>

@@ -146,7 +146,7 @@ export default async function PropertyDetailPage({
                         ? "bg-yellow-100 text-yellow-700"
                         : (property.status as string) === "NEW_LAUNCH"
                         ? "bg-blue-100 text-blue-700"
-                        : "bg-gray-100 text-gray-700"
+                        : "bg-black text-white"
                     }`}
                   >
                     {property.status.replace("_", " ").toLowerCase()}
