@@ -465,65 +465,67 @@ export function OldHomepage() {
               <div className="w-8 h-8 border-2 border-primary-200 border-t-primary-600 rounded-full animate-spin" />
             </div>
           ) : (
-            <Swiper
-              modules={[Navigation, Pagination, Autoplay]}
-              spaceBetween={30}
-              slidesPerView={1}
-              navigation={{
-                prevEl: '.swiper-prev',
-                nextEl: '.swiper-next',
-              }}
-              pagination={{
-                clickable: true,
-                el: '.swiper-pagination',
-              }}
-              autoplay={{
-                delay: 3000,
-                disableOnInteraction: false,
-              }}
-              breakpoints={{
-                640: {
-                  slidesPerView: 2,
-                  spaceBetween: 20,
-                },
-                768: {
-                  slidesPerView: 2,
-                  spaceBetween: 25,
-                },
-                1024: {
-                  slidesPerView: 3,
-                  spaceBetween: 30,
-                },
-              }}
-              className="new-launch-swiper"
-            >
-              {featuredProperties.map((property) => {
-              // Convert API property to PropertyCard expected format
-              const cardProperty = {
-                ...property,
-                type: property.type as any,
-                status: property.status as any,
-                createdAt: property.createdAt ? new Date(property.createdAt) : new Date(),
-                updatedAt: property.updatedAt ? new Date(property.updatedAt) : new Date(),
-              };
-              return (
-                <SwiperSlide key={property.id}>
-                  <PropertyCard property={cardProperty} />
-                </SwiperSlide>
-              );
-            })}
-            </Swiper>
-            
-            {/* Custom Navigation Buttons */}
-            <div className="flex justify-center items-center mt-6 space-x-4">
-              <button className="swiper-prev bg-white border border-gray-300 rounded-full w-10 h-10 flex items-center justify-center hover:bg-gray-50 transition-colors shadow-md">
-                <i className="fa-solid fa-chevron-left text-gray-700"></i>
-              </button>
-              <div className="swiper-pagination flex space-x-2"></div>
-              <button className="swiper-next bg-white border border-gray-300 rounded-full w-10 h-10 flex items-center justify-center hover:bg-gray-50 transition-colors shadow-md">
-                <i className="fa-solid fa-chevron-right text-gray-700"></i>
-              </button>
-            </div>
+            <>
+              <Swiper
+                modules={[Navigation, Pagination, Autoplay]}
+                spaceBetween={30}
+                slidesPerView={1}
+                navigation={{
+                  prevEl: '.swiper-prev',
+                  nextEl: '.swiper-next',
+                }}
+                pagination={{
+                  clickable: true,
+                  el: '.swiper-pagination',
+                }}
+                autoplay={{
+                  delay: 3000,
+                  disableOnInteraction: false,
+                }}
+                breakpoints={{
+                  640: {
+                    slidesPerView: 2,
+                    spaceBetween: 20,
+                  },
+                  768: {
+                    slidesPerView: 2,
+                    spaceBetween: 25,
+                  },
+                  1024: {
+                    slidesPerView: 3,
+                    spaceBetween: 30,
+                  },
+                }}
+                className="new-launch-swiper"
+              >
+                {featuredProperties.map((property) => {
+                // Convert API property to PropertyCard expected format
+                const cardProperty = {
+                  ...property,
+                  type: property.type as any,
+                  status: property.status as any,
+                  createdAt: property.createdAt ? new Date(property.createdAt) : new Date(),
+                  updatedAt: property.updatedAt ? new Date(property.updatedAt) : new Date(),
+                };
+                return (
+                  <SwiperSlide key={property.id}>
+                    <PropertyCard property={cardProperty} />
+                  </SwiperSlide>
+                );
+              })}
+              </Swiper>
+              
+              {/* Custom Navigation Buttons */}
+              <div className="flex justify-center items-center mt-6 space-x-4">
+                <button className="swiper-prev bg-white border border-gray-300 rounded-full w-10 h-10 flex items-center justify-center hover:bg-gray-50 transition-colors shadow-md">
+                  <i className="fa-solid fa-chevron-left text-gray-700"></i>
+                </button>
+                <div className="swiper-pagination flex space-x-2"></div>
+                <button className="swiper-next bg-white border border-gray-300 rounded-full w-10 h-10 flex items-center justify-center hover:bg-gray-50 transition-colors shadow-md">
+                  <i className="fa-solid fa-chevron-right text-gray-700"></i>
+                </button>
+              </div>
+            </>
           )}
 
           <div className="text-center mt-12">
