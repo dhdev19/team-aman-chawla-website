@@ -106,7 +106,7 @@ export function PropertyCard({ property, className }: PropertyCardProps) {
             <span className="text-sm text-neutral-600">
               {property.configurations && property.configurations.length > 0 && (
                 <span className="font-normal">
-                  {property.configurations.map(c => c.configType.toUpperCase()).join(", ")}
+                  {[...new Set(property.configurations.map(c => c.configType.toUpperCase()))].join(", ")}
                 </span>
               )}
             </span>
