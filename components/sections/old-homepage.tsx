@@ -470,6 +470,7 @@ export function OldHomepage() {
                 modules={[Navigation, Pagination, Autoplay]}
                 spaceBetween={30}
                 slidesPerView={1}
+                loop={true}
                 navigation={{
                   prevEl: '.swiper-prev',
                   nextEl: '.swiper-next',
