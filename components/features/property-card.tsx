@@ -5,6 +5,22 @@ import { formatCurrency } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
+// Currency converter for Lakhs and Crores
+const formatIndianCurrency = (price: number) => {
+  if (price >= 10000000) {
+    // Crores
+    const cr = price / 10000000;
+    return `${cr.toFixed(2)} Cr`;
+  } else if (price >= 100000) {
+    // Lakhs
+    const lac = price / 100000;
+    return `${lac.toFixed(2)} Lacs`;
+  } else {
+    // Regular format for smaller amounts
+    return formatCurrency(price);
+  }
+};
+
 interface Property {
   id: string;
   name: string;
@@ -111,7 +127,7 @@ export function PropertyCard({ property, className }: PropertyCardProps) {
               )}
             </span>
             <span className="text-sm font-medium text-primary-700">
-              {formatCurrency(property.price)}
+              {property.price ? formatIndianCurrency(property.price) : "Price on Request"}*
             </span>
           </div>
           
