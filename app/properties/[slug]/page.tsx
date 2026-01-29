@@ -15,6 +15,22 @@ import { PropertyStatus } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 
+// Currency converter for Lakhs and Crores
+const formatIndianCurrency = (price: number) => {
+  if (price >= 10000000) {
+    // Crores
+    const cr = price / 10000000;
+    return `${cr.toFixed(2)} Cr`;
+  } else if (price >= 100000) {
+    // Lakhs
+    const lac = price / 100000;
+    return `${lac.toFixed(2)} Lacs`;
+  } else {
+    // Regular format for smaller amounts
+    return formatCurrency(price);
+  }
+};
+
 async function getPropertyBySlug(slug: string) {
   try {
     const property = await prisma.property.findUnique({
@@ -191,7 +207,7 @@ export default async function PropertyDetailPage({
                     <div>
                       <p className="text-sm text-neutral-600 mb-1">Price</p>
                       <p className="font-semibold text-primary-700 text-xl">
-                        {formatCurrency(property.price)}
+                        {formatIndianCurrency(property.price)}
                       </p>
                     </div>
                   )}
@@ -293,7 +309,7 @@ export default async function PropertyDetailPage({
                             <div>
                               <p className="text-sm text-neutral-600 mb-1">Price</p>
                               <p className="font-semibold text-primary-700 text-lg">
-                                {config.price === 0 ? "On Request" : formatCurrency(config.price)}
+                                {config.price === 0 ? "On Request" : formatIndianCurrency(config.price)}
                               </p>
                             </div>
                           )}
