@@ -86,6 +86,13 @@ body {
   text-transform: uppercase;
 }
 
+
+.new-launch-swiper h3{
+  font-size:15px;
+}
+
+
+
 /* Make all button text uppercase */
 button {
   text-transform: uppercase;
@@ -1958,9 +1965,6 @@ h4.googlerev {
 }
 
 
-.new-launch-swiper h3{
-  font-size:15px;
-}
 
 
 
