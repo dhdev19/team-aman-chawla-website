@@ -4,13 +4,12 @@ WORKDIR /app
 RUN apk add --no-cache libc6-compat openssl
 
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm install
 
 COPY . .
 RUN cp .env.example .env
 
-RUN npm install -g prisma
-RUN prisma generate
+RUN npx prisma generate
 
 ENV NODE_ENV=development
 ENV PORT=3000
