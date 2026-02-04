@@ -44,3 +44,8 @@ next-env.d.ts
 /lib/generated/prisma
 
 /public/uploads/
+
+aman-complete-transfer
+aman-complete-transfer.zip
+aman-app-image.tar
+postgres-image.tar

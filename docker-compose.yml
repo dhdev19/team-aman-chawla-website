@@ -1,7 +1,7 @@
 services:
   db:
     image: postgres:16-alpine
-    container_name: aman-db
+    container_name: aman
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: root
@@ -13,13 +13,25 @@ services:
 
   app:
     build: .
-    container_name: aman-app
+    container_name: aman-application
     depends_on:
       - db
     ports:
       - "3000:3000"
     environment:
       DATABASE_URL: "postgresql://postgres:root@db:5432/teamamanchawla?schema=public"
+      WATCHPACK_POLLING: "true"
+      CHOKIDAR_USEPOLLING: "true"
+      NEXT_DISABLE_TURBOPACK: "1"
+      NEXT_WEBPACK_USE_POLLING: "1"
+    command: >
+      sh -c "npm run db:generate &&
+             npm run db:migrate &&
+             npm run db:seed &&
+             npm run dev -- --webpack"
+    volumes:
+      - .:/app
+      - /app/node_modules
     # Optional: override values from .env.example at runtime
     # env_file:
     #   - .env
