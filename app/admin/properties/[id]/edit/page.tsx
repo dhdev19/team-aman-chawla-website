@@ -4,7 +4,11 @@ import * as React from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { propertySchema, type PropertyFormData } from "@/lib/validations/property";
+import {
+  propertySchema,
+  type PropertyConfigurationData,
+  type PropertyFormInput,
+} from "@/lib/validations/property";
 import { propertyApi, uploadApi } from "@/lib/api-client";
 import { PropertyType, PropertyStatus, PropertyFormat } from "@prisma/client";
 import { generateSlug } from "@/lib/utils";
@@ -74,7 +78,7 @@ export default function EditPropertyPage() {
     reset,
     watch,
     control,
-  } = useForm<PropertyFormData>({
+  } = useForm<PropertyFormInput>({
     resolver: zodResolver(propertySchema),
   });
 
@@ -124,7 +128,8 @@ export default function EditPropertyPage() {
           : null,
         builderReraQrCode: propertyData.builderReraQrCode || null,
         possession: propertyData.possession || "",
-        configurations: (propertyData.configurations || []).map(config => {
+        configurations: (propertyData.configurations || []).map(
+          (config: PropertyConfigurationData) => {
           const standardTypes = ["1BHK", "2BHK", "2.5BHK", "3BHK", "4BHK", "5BHK", "1RK", "Studio", "Penthouse", "Villa", "Duplex"];
           const isCustomType = !standardTypes.includes(config.configType);
           return {
@@ -132,7 +137,8 @@ export default function EditPropertyPage() {
             configType: isCustomType ? "other" : config.configType,
             customConfigType: isCustomType ? config.configType : null,
           };
-        }),
+        }
+        ),
         metaTitle: propertyData.metaTitle || "",
         metaKeywords: propertyData.metaKeywords || "",
         metaDescription: propertyData.metaDescription || "",
@@ -382,7 +388,7 @@ export default function EditPropertyPage() {
     }
   };
 
-  const onSubmit = async (formData: PropertyFormData) => {
+  const onSubmit = async (formData: PropertyFormInput) => {
     setIsSubmitting(true);
 
     try {
@@ -962,7 +968,7 @@ export default function EditPropertyPage() {
                           {watch(`configurations.${index}.floorPlanImage`) && (
                             <div className="mt-2 relative h-32 w-full rounded overflow-hidden bg-neutral-200 border border-neutral-300">
                               <img
-                                src={watch(`configurations.${index}.floorPlanImage`)}
+                                src={watch(`configurations.${index}.floorPlanImage`) || ""}
                                 alt="Floor plan"
                                 className="w-full h-full object-cover"
                               />

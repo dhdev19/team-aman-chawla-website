@@ -9,17 +9,20 @@ import { Card } from "@/components/ui/card";
 import { LoadingSpinner } from "@/components/ui/loading";
 import { formatDate, formatRelativeTime } from "@/lib/utils";
 import Link from "next/link";
+import type { ApiResponse, EnquiryWithProperty, PaginatedResponse } from "@/types";
 
 export default function EnquiryViewPage() {
   const router = useRouter();
   const params = useParams();
   const enquiryId = params.id as string;
 
-  const { data: enquiry, isLoading, error, refetch } = useQuery({
+  const { data: enquiry, isLoading, error, refetch } = useQuery<EnquiryWithProperty>({
     queryKey: ["admin-enquiry", enquiryId],
     queryFn: async () => {
-      const response = await enquiryApi.getAll();
-      const enquiry = response.data?.data?.find((e: any) => e.id === enquiryId);
+      const response = (await enquiryApi.getAll()) as ApiResponse<
+        PaginatedResponse<EnquiryWithProperty>
+      >;
+      const enquiry = response.data?.data?.find((e) => e.id === enquiryId);
       if (!enquiry) {
         throw new Error("Enquiry not found");
       }
@@ -55,7 +58,7 @@ export default function EnquiryViewPage() {
     );
   }
 
-  const enquiryData = enquiry as any;
+  const enquiryData = enquiry;
 
   return (
     <div>

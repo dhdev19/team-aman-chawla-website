@@ -9,16 +9,17 @@ import { Card } from "@/components/ui/card";
 import { LoadingSpinner } from "@/components/ui/loading";
 import { ReferralSource } from "@/lib/validations/career";
 import { formatDate } from "date-fns";
+import type { ApiResponse, CareerApplication } from "@/types";
 
 export default function CareerApplicationDetailPage() {
   const router = useRouter();
   const params = useParams();
   const applicationId = params.id as string;
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error } = useQuery<CareerApplication | undefined>({
     queryKey: ["admin-career-application", applicationId],
     queryFn: async () => {
-      const response = await careerApi.getById(applicationId);
+      const response = (await careerApi.getById(applicationId)) as ApiResponse<CareerApplication>;
       return response.data;
     },
   });

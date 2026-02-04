@@ -17,4 +17,5 @@ export const enquirySchema = z.object({
   propertyId: z.string().optional().nullable(),
 });
 
-export type EnquiryFormData = z.infer<typeof enquirySchema>;
+export type EnquiryFormInput = z.input<typeof enquirySchema>;
+export type EnquiryFormData = z.output<typeof enquirySchema>;

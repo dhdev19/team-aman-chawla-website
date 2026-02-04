@@ -12,6 +12,7 @@ import { LoadingSpinner } from "@/components/ui/loading";
 import { Pagination } from "@/components/features/pagination";
 import { ReferralSource } from "@/lib/validations/career";
 import { formatDate } from "date-fns";
+import type { ApiResponse, CareerApplication, PaginatedResponse } from "@/types";
 
 export default function CareerApplicationsPage() {
   const [search, setSearch] = React.useState("");
@@ -30,7 +31,9 @@ export default function CareerApplicationsPage() {
     setCurrentPage(1);
   }, [debouncedSearch, referralSource]);
 
-  const { data, isLoading, error, refetch } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery<
+    ApiResponse<PaginatedResponse<CareerApplication>>
+  >({
     queryKey: ["admin-career-applications", debouncedSearch, referralSource, currentPage],
     queryFn: async () => {
       const params: Record<string, string> = {
@@ -40,7 +43,9 @@ export default function CareerApplicationsPage() {
       if (debouncedSearch) params.search = debouncedSearch;
       if (referralSource) params.referralSource = referralSource;
 
-      const response = await careerApi.getAll(params);
+      const response = (await careerApi.getAll(
+        params
+      )) as ApiResponse<PaginatedResponse<CareerApplication>>;
       return response;
     },
   });
@@ -138,7 +143,7 @@ export default function CareerApplicationsPage() {
         <div className="text-center py-12">
           <LoadingSpinner size="lg" />
         </div>
-      ) : !data?.data || data.data.length === 0 ? (
+      ) : !data?.data?.data || data.data.data.length === 0 ? (
         <Card className="text-center py-12">
           <p className="text-neutral-500 mb-4">No career applications found</p>
           {(debouncedSearch || referralSource) && (
@@ -157,7 +162,7 @@ export default function CareerApplicationsPage() {
       ) : (
         <>
           <div className="grid gap-6">
-            {data.data.map((application: any) => (
+            {data.data.data.map((application: CareerApplication) => (
               <Card key={application.id} className="p-6">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -231,11 +236,11 @@ export default function CareerApplicationsPage() {
           </div>
 
           {/* Pagination */}
-          {data.pagination && (
+          {data.data?.pagination && (
             <div className="mt-8">
               <Pagination
                 currentPage={currentPage}
-                totalPages={data.pagination.totalPages}
+                totalPages={data.data.pagination.totalPages}
                 onPageChange={setCurrentPage}
               />
             </div>

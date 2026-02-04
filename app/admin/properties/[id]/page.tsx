@@ -10,16 +10,17 @@ import { LoadingSpinner } from "@/components/ui/loading";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
+import type { AdminProperty, ApiResponse } from "@/types";
 
 export default function PropertyViewPage() {
   const router = useRouter();
   const params = useParams();
   const propertyId = params.id as string;
 
-  const { data: property, isLoading, error, refetch } = useQuery({
+  const { data: property, isLoading, error, refetch } = useQuery<AdminProperty | undefined>({
     queryKey: ["admin-property", propertyId],
     queryFn: async () => {
-      const response = await propertyApi.getById(propertyId);
+      const response = (await propertyApi.getById(propertyId)) as ApiResponse<AdminProperty>;
       return response.data;
     },
   });

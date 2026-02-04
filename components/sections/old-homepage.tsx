@@ -7,6 +7,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { GoogleReviews } from "@/components/features/google-reviews";
 import { propertyApi, enquiryApi, videoApi, blogApi } from "@/lib/api-client";
+import type { AdminPropertyWithConfig } from "@/types";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
@@ -499,12 +500,37 @@ export function OldHomepage() {
                 }}
                 className="new-launch-swiper"
               >
-                {featuredProperties.map((property) => {
+              {featuredProperties.map((property) => {
                 // Convert API property to PropertyCard expected format
-                const cardProperty = {
-                  ...property,
+                const cardProperty: AdminPropertyWithConfig = {
+                  id: property.id,
+                  name: property.name,
+                  slug: property.slug,
                   type: property.type as any,
+                  format: null,
+                  builder: property.builder,
+                  builderReraNumber: null,
+                  description: property.description,
+                  price: property.price,
+                  location: property.location,
+                  locationAdvantages: [],
                   status: property.status as any,
+                  mainImage: property.mainImage,
+                  images: property.images,
+                  amenities: [],
+                  mapImage: null,
+                  projectLaunchDate: null,
+                  builderReraQrCode: null,
+                  possession: null,
+                  metaTitle: null,
+                  metaKeywords: null,
+                  metaDescription: null,
+                  bankAccountName: null,
+                  bankName: null,
+                  bankAccountNumber: null,
+                  bankIfsc: null,
+                  bankBranch: null,
+                  configurations: [],
                   createdAt: property.createdAt ? new Date(property.createdAt) : new Date(),
                   updatedAt: property.updatedAt ? new Date(property.updatedAt) : new Date(),
                 };

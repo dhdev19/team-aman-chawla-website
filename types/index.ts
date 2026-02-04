@@ -1,4 +1,5 @@
 import { PropertyType, PropertyStatus } from "@/constants";
+import type { Prisma, Property as PrismaProperty } from "@prisma/client";
 
 /**
  * Database Types (will be generated from Prisma later)
@@ -19,6 +20,11 @@ export interface Property {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export type AdminProperty = PrismaProperty;
+export type AdminPropertyWithConfig = Prisma.PropertyGetPayload<{
+  include: { configurations: true };
+}>;
 
 export interface Video {
   id: string;
@@ -43,12 +49,32 @@ export interface Enquiry {
   updatedAt: Date;
 }
 
+export interface EnquiryWithProperty extends Enquiry {
+  property?: {
+    id: string;
+    name: string;
+  } | null;
+}
+
 export interface TACRegistration {
   id: string;
   name: string;
   email: string;
   phone: string;
   address: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface CareerApplication {
+  id: string;
+  name: string;
+  email: string;
+  whatsappNumber: string;
+  city: string;
+  referralSource: string;
+  referralOther: string | null;
+  resumeLink: string;
   createdAt: Date;
   updatedAt: Date;
 }

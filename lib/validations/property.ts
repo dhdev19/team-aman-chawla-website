@@ -53,10 +53,10 @@ export const propertySchema = z.object({
     .optional()
     .nullable(),
   type: z.nativeEnum(PropertyType, {
-    errorMap: () => ({ message: "Invalid property type" }),
+    message: "Invalid property type",
   }),
   format: z.nativeEnum(PropertyFormat, {
-    errorMap: () => ({ message: "Invalid property format" }),
+    message: "Invalid property format",
   }).optional().nullable(),
   builder: z.string().min(1, "Builder name is required").max(200, "Builder name is too long"),
   builderReraNumber: z.string().max(100, "RERA number is too long").optional().nullable(),
@@ -70,7 +70,7 @@ export const propertySchema = z.object({
   location: z.string().max(200, "Location is too long").optional().nullable(),
   locationAdvantages: z.array(z.string()).default([]),
   status: z.nativeEnum(PropertyStatus, {
-    errorMap: () => ({ message: "Invalid property status" }),
+    message: "Invalid property status",
   }),
   // Allow relative URLs from the upload endpoint as well as absolute URLs
   mainImage: imageUrlSchema.optional().nullable(),
@@ -91,7 +91,8 @@ export const propertySchema = z.object({
   configurations: z.array(propertyConfigurationSchema).default([]),
 });
 
-export type PropertyFormData = z.infer<typeof propertySchema>;
+export type PropertyFormInput = z.input<typeof propertySchema>;
+export type PropertyFormData = z.output<typeof propertySchema>;
 
 /**
  * Property filter schema

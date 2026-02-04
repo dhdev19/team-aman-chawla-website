@@ -8,12 +8,15 @@ import { Button } from "@/components/ui/button";
 import { LoadingSpinner } from "@/components/ui/loading";
 import { formatDate, formatRelativeTime } from "@/lib/utils";
 import Link from "next/link";
+import type { ApiResponse, PaginatedResponse, TACRegistration } from "@/types";
 
 export default function TACRegistrationsListPage() {
   const [currentPage, setCurrentPage] = React.useState(1);
   const limit = 25;
 
-  const { data, isLoading, error, refetch } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery<
+    PaginatedResponse<TACRegistration> | undefined
+  >({
     queryKey: ["admin-tac-registrations", currentPage],
     queryFn: async () => {
       const params: Record<string, string> = {
@@ -21,7 +24,9 @@ export default function TACRegistrationsListPage() {
         limit: limit.toString(),
       };
 
-      const response = await tacApi.getAll();
+      const response = (await tacApi.getAll(
+        params
+      )) as ApiResponse<PaginatedResponse<TACRegistration>>;
       return response.data;
     },
   });

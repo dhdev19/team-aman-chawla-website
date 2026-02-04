@@ -4,7 +4,7 @@ import * as React from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { blogSchema, type BlogFormData } from "@/lib/validations/blog";
+import { blogSchema, type BlogFormInput } from "@/lib/validations/blog";
 import { blogApi, uploadApi } from "@/lib/api-client";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -49,7 +49,7 @@ export default function EditBlogPage() {
     reset,
     setValue,
     watch,
-  } = useForm<BlogFormData>({
+  } = useForm<BlogFormInput>({
     resolver: zodResolver(blogSchema),
   });
 
@@ -167,7 +167,7 @@ export default function EditBlogPage() {
     }
   };
 
-  const onSubmit = async (formData: BlogFormData) => {
+  const onSubmit = async (formData: BlogFormInput) => {
     setIsSubmitting(true);
 
     try {

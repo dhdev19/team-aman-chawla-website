@@ -7,17 +7,18 @@ import { Card } from "@/components/ui/card";
 import { LoadingSpinner } from "@/components/ui/loading";
 import { formatDate } from "@/lib/utils";
 import { FadeIn } from "@/components/animations";
+import type { ApiResponse, PageStat } from "@/types";
 
 export default function PageStatsPage() {
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error } = useQuery<PageStat[] | undefined>({
     queryKey: ["admin-stats"],
     queryFn: async () => {
-      const response = await statsApi.getAll();
+      const response = (await statsApi.getAll()) as ApiResponse<PageStat[]>;
       return response.data;
     },
   });
 
-  const stats = (data || []) as any[];
+  const stats = data || [];
 
   // Sort by click count descending
   const sortedStats = [...stats].sort((a, b) => b.clickCount - a.clickCount);

@@ -15,6 +15,7 @@ import { propertyApi } from "@/lib/api-client";
 import { useQuery } from "@tanstack/react-query";
 import { generatePageMetadata } from "@/lib/metadata";
 import { Metadata } from "next";
+import type { AdminProperty, ApiResponse, PaginatedResponse } from "@/types";
 
 const propertyTypeOptions = [
   { value: "", label: "All Types" },
@@ -31,7 +32,7 @@ const propertyStatusOptions = [
   { value: "RESERVED", label: "Reserved" },
 ];
 
-export default function PropertiesPage() {
+function PropertiesContent() {
   const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = React.useState("");
   const [selectedType, setSelectedType] = React.useState<PropertyType | "">(
@@ -43,7 +44,9 @@ export default function PropertiesPage() {
   const [currentPage, setCurrentPage] = React.useState(1);
   const limit = 25;
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error } = useQuery<
+    PaginatedResponse<AdminProperty> | undefined
+  >({
     queryKey: ["properties", searchQuery, selectedType, selectedStatus, currentPage],
     queryFn: async () => {
       const params: Record<string, string> = {
@@ -54,7 +57,9 @@ export default function PropertiesPage() {
       if (selectedType) params.type = selectedType;
       if (selectedStatus) params.status = selectedStatus;
 
-      const response = await propertyApi.getAll(params);
+      const response = (await propertyApi.getAll(
+        params
+      )) as ApiResponse<PaginatedResponse<AdminProperty>>;
       return response.data;
     },
   });
@@ -62,6 +67,79 @@ export default function PropertiesPage() {
   const properties = data?.data || [];
   const pagination = data?.pagination;
 
+  return (
+    <Container className="py-12">
+      {/* Filters */}
+      <div className="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="md:col-span-2">
+          <SearchBar
+            placeholder="Search properties by name, builder, or location..."
+            onSearch={(query) => {
+              setSearchQuery(query);
+              setCurrentPage(1);
+            }}
+          />
+        </div>
+        <FilterDropdown
+          label="Property Type"
+          options={propertyTypeOptions}
+          value={selectedType}
+          onChange={(value) => {
+            setSelectedType(value as PropertyType | "");
+            setCurrentPage(1);
+          }}
+          placeholder="All Types"
+        />
+        <FilterDropdown
+          label="Status"
+          options={propertyStatusOptions}
+          value={selectedStatus}
+          onChange={(value) => {
+            setSelectedStatus(value);
+            setCurrentPage(1);
+          }}
+          placeholder="All Status"
+        />
+      </div>
+
+      {/* Properties Grid */}
+      {isLoading ? (
+        <LoadingSpinner size="lg" />
+      ) : error ? (
+        <div className="text-center py-12 text-red-600">
+          Failed to load properties. Please try again later.
+        </div>
+      ) : properties.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-xl text-neutral-600 mb-4">
+            No properties found
+          </p>
+          <p className="text-neutral-500">
+            Try adjusting your search criteria or filters
+          </p>
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {properties.map((property: any) => (
+              <PropertyCard key={property.id} property={property} />
+            ))}
+          </div>
+
+          {pagination && pagination.totalPages > 1 && (
+            <Pagination
+              currentPage={pagination.page}
+              totalPages={pagination.totalPages}
+              onPageChange={setCurrentPage}
+            />
+          )}
+        </>
+      )}
+    </Container>
+  );
+}
+
+export default function PropertiesPage() {
   return (
     <>
       <Navbar />
@@ -74,75 +152,9 @@ export default function PropertiesPage() {
             </p>
           </Container>
         </div>
-
-        <Container className="py-12">
-          {/* Filters */}
-          <div className="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="md:col-span-2">
-              <SearchBar
-                placeholder="Search properties by name, builder, or location..."
-                onSearch={(query) => {
-                  setSearchQuery(query);
-                  setCurrentPage(1);
-                }}
-              />
-            </div>
-            <FilterDropdown
-              label="Property Type"
-              options={propertyTypeOptions}
-              value={selectedType}
-              onChange={(value) => {
-                setSelectedType(value as PropertyType | "");
-                setCurrentPage(1);
-              }}
-              placeholder="All Types"
-            />
-            <FilterDropdown
-              label="Status"
-              options={propertyStatusOptions}
-              value={selectedStatus}
-              onChange={(value) => {
-                setSelectedStatus(value);
-                setCurrentPage(1);
-              }}
-              placeholder="All Status"
-            />
-          </div>
-
-          {/* Properties Grid */}
-          {isLoading ? (
-            <LoadingSpinner size="lg" />
-          ) : error ? (
-            <div className="text-center py-12 text-red-600">
-              Failed to load properties. Please try again later.
-            </div>
-          ) : properties.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-xl text-neutral-600 mb-4">
-                No properties found
-              </p>
-              <p className="text-neutral-500">
-                Try adjusting your search criteria or filters
-              </p>
-            </div>
-          ) : (
-            <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                {properties.map((property: any) => (
-                  <PropertyCard key={property.id} property={property} />
-                ))}
-              </div>
-
-              {pagination && pagination.totalPages > 1 && (
-                <Pagination
-                  currentPage={pagination.page}
-                  totalPages={pagination.totalPages}
-                  onPageChange={setCurrentPage}
-                />
-              )}
-            </>
-          )}
-        </Container>
+        <React.Suspense fallback={<div className="py-12 text-center">Loading...</div>}>
+          <PropertiesContent />
+        </React.Suspense>
       </main>
       <Footer />
     </>

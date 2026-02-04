@@ -11,6 +11,7 @@ import { FadeIn } from "@/components/animations/fade-in";
 import { LoadingSpinner } from "@/components/ui/loading";
 import { propertyApi } from "@/lib/api-client";
 import { useQuery } from "@tanstack/react-query";
+import type { AdminProperty, ApiResponse, PaginatedResponse } from "@/types";
 
 const propertyTypeOptions = [
   { value: "", label: "All Types" },
@@ -26,7 +27,9 @@ export function NewProjects() {
   const [currentPage, setCurrentPage] = React.useState(1);
   const limit = 12;
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error } = useQuery<
+    PaginatedResponse<AdminProperty> | undefined
+  >({
     queryKey: ["properties", searchQuery, selectedType, currentPage],
     queryFn: async () => {
       const params: Record<string, string> = {
@@ -36,7 +39,9 @@ export function NewProjects() {
       if (searchQuery) params.search = searchQuery;
       if (selectedType) params.type = selectedType;
 
-      const response = await propertyApi.getAll(params);
+      const response = (await propertyApi.getAll(
+        params
+      )) as ApiResponse<PaginatedResponse<AdminProperty>>;
       return response.data;
     },
   });

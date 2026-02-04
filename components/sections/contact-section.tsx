@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { FadeIn } from "@/components/animations/fade-in";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { enquirySchema, type EnquiryFormData } from "@/lib/validations";
+import { enquirySchema, type EnquiryFormInput } from "@/lib/validations";
 import { enquiryApi } from "@/lib/api-client";
 
 export function ContactSection() {
@@ -26,11 +26,11 @@ export function ContactSection() {
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<EnquiryFormData>({
+  } = useForm<EnquiryFormInput>({
     resolver: zodResolver(enquirySchema),
   });
 
-  const onSubmit = async (data: EnquiryFormData) => {
+  const onSubmit = async (data: EnquiryFormInput) => {
     setIsSubmitting(true);
     setSubmitStatus({ type: null, message: "" });
 

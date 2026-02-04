@@ -11,6 +11,7 @@ import { LoadingSpinner } from "@/components/ui/loading";
 import { formatDate } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
+import type { ApiResponse, PaginatedResponse, Video } from "@/types";
 
 export default function VideosListPage() {
   const router = useRouter();
@@ -18,10 +19,10 @@ export default function VideosListPage() {
   const [currentPage, setCurrentPage] = React.useState(1);
   const limit = 10;
 
-  const { data, isLoading, error, refetch } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery<PaginatedResponse<Video>>({
     queryKey: ["admin-videos", searchQuery, currentPage],
     queryFn: async () => {
-      const response = await videoApi.getAll();
+      const response = (await videoApi.getAll()) as ApiResponse<Video[]>;
       let videos = response.data || [];
 
       // Client-side search and pagination

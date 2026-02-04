@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { enquirySchema, type EnquiryFormData } from "@/lib/validations";
+import { enquirySchema, type EnquiryFormInput } from "@/lib/validations";
 import { enquiryApi } from "@/lib/api-client";
 
 export function BlogContactForm() {
@@ -26,8 +26,8 @@ export function BlogContactForm() {
     reset,
     setValue,
     watch,
-  } = useForm<EnquiryFormData>({
-    resolver: zodResolver(enquirySchema) as any,
+  } = useForm<EnquiryFormInput>({
+    resolver: zodResolver(enquirySchema),
   });
 
   const emailValue = watch("email");
@@ -43,12 +43,12 @@ export function BlogContactForm() {
     }
   }, [emailValue, messageValue, setValue]);
 
-  const onSubmit = async (data: EnquiryFormData) => {
+  const onSubmit = async (data: EnquiryFormInput) => {
     setIsSubmitting(true);
     setSubmitStatus({ type: null, message: "" });
 
     // Apply defaults if fields are empty or not provided
-    const formData: EnquiryFormData = {
+    const formData: EnquiryFormInput = {
       name: data.name,
       email: data.email?.trim() || "johndoe@example.com",
       phone: data.phone || null,

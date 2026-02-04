@@ -7,11 +7,20 @@ const BlogType = {
 } as const;
 
 /**
+ * Convert empty string inputs to null while keeping types predictable.
+ */
+const emptyStringToNull = <T extends z.ZodTypeAny>(schema: T) =>
+  z
+    .union([schema, z.literal("")])
+    .transform((value) => (value === "" ? null : value))
+    .optional()
+    .nullable();
+
+/**
  * Shared image URL schema that supports both absolute and app-relative URLs.
  * This is needed because uploaded images are served from `/uploads/...`.
  */
-const imageUrlSchema = z.preprocess(
-  (val) => (val === "" ? null : val),
+const imageUrlSchema = emptyStringToNull(
   z
     .string()
     .refine(
@@ -24,26 +33,24 @@ const imageUrlSchema = z.preprocess(
       },
       { message: "Invalid image URL" }
     )
-    .optional()
-    .nullable()
 );
 
 /**
  * YouTube URL validation schema
  */
-const youtubeUrlSchema = z
-  .string()
-  .url("Invalid YouTube URL")
-  .refine(
-    (value) => {
-      // Check if it's a valid YouTube URL
-      const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+/;
-      return youtubeRegex.test(value);
-    },
-    { message: "Must be a valid YouTube URL" }
-  )
-  .optional()
-  .nullable();
+const youtubeUrlSchema = emptyStringToNull(
+  z
+    .string()
+    .url("Invalid YouTube URL")
+    .refine(
+      (value) => {
+        // Check if it's a valid YouTube URL
+        const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+/;
+        return youtubeRegex.test(value);
+      },
+      { message: "Must be a valid YouTube URL" }
+    )
+);
 
 /**
  * Blog creation/update validation schema
@@ -82,7 +89,8 @@ export const blogSchema = z
     }
   );
 
-export type BlogFormData = z.infer<typeof blogSchema>;
+export type BlogFormInput = z.input<typeof blogSchema>;
+export type BlogFormData = z.output<typeof blogSchema>;
 
 /**
  * Blog filter schema

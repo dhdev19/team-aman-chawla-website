@@ -4,7 +4,7 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { propertySchema, type PropertyFormData } from "@/lib/validations/property";
+import { propertySchema, type PropertyFormInput } from "@/lib/validations/property";
 import { propertyApi, uploadApi } from "@/lib/api-client";
 import { PropertyType, PropertyStatus, PropertyFormat } from "@prisma/client";
 import { generateSlug } from "@/lib/utils";
@@ -62,7 +62,7 @@ export default function AddPropertyPage() {
     setValue,
     watch,
     control,
-  } = useForm<PropertyFormData>({
+  } = useForm<PropertyFormInput>({
     resolver: zodResolver(propertySchema),
     defaultValues: {
       status: PropertyStatus.AVAILABLE,
@@ -321,7 +321,7 @@ export default function AddPropertyPage() {
     }
   };
 
-  const onSubmit = async (data: PropertyFormData) => {
+  const onSubmit = async (data: PropertyFormInput) => {
     setIsSubmitting(true);
 
     try {
@@ -1031,7 +1031,7 @@ export default function AddPropertyPage() {
                       {watch(`configurations.${index}.floorPlanImage`) && (
                         <div className="mt-2 relative h-32 w-full rounded overflow-hidden bg-neutral-200 border border-neutral-300">
                           <img
-                            src={watch(`configurations.${index}.floorPlanImage`)}
+                            src={watch(`configurations.${index}.floorPlanImage`) || ""}
                             alt="Floor plan"
                             className="w-full h-full object-cover"
                           />

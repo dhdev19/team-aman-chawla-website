@@ -46,7 +46,10 @@ export const videoApi = {
  */
 export const enquiryApi = {
   create: (data: any) => apiPost("/api/enquiries", data),
-  getAll: () => apiGet("/api/admin/enquiries"),
+  getAll: (params?: Record<string, any>) => {
+    const queryString = params ? `?${new URLSearchParams(params).toString()}` : "";
+    return apiGet(`/api/admin/enquiries${queryString}`);
+  },
   markAsRead: (id: string) => apiPatch(`/api/admin/enquiries/${id}`, { read: true }),
   delete: (id: string) => apiDelete(`/api/admin/enquiries/${id}`),
 };
@@ -56,7 +59,10 @@ export const enquiryApi = {
  */
 export const tacApi = {
   create: (data: any) => apiPost("/api/tac-registration", data),
-  getAll: () => apiGet("/api/admin/tac-registrations"),
+  getAll: (params?: Record<string, any>) => {
+    const queryString = params ? `?${new URLSearchParams(params).toString()}` : "";
+    return apiGet(`/api/admin/tac-registrations${queryString}`);
+  },
 };
 
 /**

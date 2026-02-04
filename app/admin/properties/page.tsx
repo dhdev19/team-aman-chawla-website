@@ -13,6 +13,7 @@ import { LoadingSpinner } from "@/components/ui/loading";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
+import type { AdminProperty, ApiResponse, PaginatedResponse } from "@/types";
 
 const propertyTypeOptions = [
   { value: "", label: "All Types" },
@@ -37,7 +38,9 @@ export default function PropertiesListPage() {
   const [currentPage, setCurrentPage] = React.useState(1);
   const limit = 25;
 
-  const { data, isLoading, error, refetch } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery<
+    PaginatedResponse<AdminProperty> | undefined
+  >({
     queryKey: ["admin-properties", searchQuery, selectedType, selectedStatus, currentPage],
     queryFn: async () => {
       const params: Record<string, string> = {
@@ -48,7 +51,9 @@ export default function PropertiesListPage() {
       if (selectedType) params.type = selectedType;
       if (selectedStatus) params.status = selectedStatus;
 
-      const response = await propertyApi.getAll(params);
+      const response = (await propertyApi.getAll(
+        params
+      )) as ApiResponse<PaginatedResponse<AdminProperty>>;
       return response.data;
     },
   });

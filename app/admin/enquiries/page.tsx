@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { LoadingSpinner } from "@/components/ui/loading";
 import { formatDate, formatRelativeTime } from "@/lib/utils";
 import Link from "next/link";
+import type { ApiResponse, EnquiryWithProperty, PaginatedResponse } from "@/types";
 
 const enquiryTypeOptions = [
   { value: "", label: "All Types" },
@@ -21,7 +22,9 @@ export default function EnquiriesListPage() {
   const [currentPage, setCurrentPage] = React.useState(1);
   const limit = 25;
 
-  const { data, isLoading, error, refetch } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery<
+    PaginatedResponse<EnquiryWithProperty> | undefined
+  >({
     queryKey: ["admin-enquiries", selectedType, currentPage],
     queryFn: async () => {
       const params: Record<string, string> = {
@@ -30,7 +33,9 @@ export default function EnquiriesListPage() {
       };
       if (selectedType) params.type = selectedType;
 
-      const response = await enquiryApi.getAll();
+      const response = (await enquiryApi.getAll(
+        params
+      )) as ApiResponse<PaginatedResponse<EnquiryWithProperty>>;
       return response.data;
     },
   });

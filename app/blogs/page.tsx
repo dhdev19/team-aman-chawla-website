@@ -14,13 +14,14 @@ import { formatDate, truncate } from "@/lib/utils";
 import { FadeIn } from "@/components/animations";
 import Link from "next/link";
 import Image from "next/image";
+import type { ApiResponse, Blog, PaginatedResponse } from "@/types";
 
 export default function BlogsPage() {
   const [searchQuery, setSearchQuery] = React.useState("");
   const [currentPage, setCurrentPage] = React.useState(1);
   const limit = 12;
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error } = useQuery<PaginatedResponse<Blog> | undefined>({
     queryKey: ["blogs", searchQuery, currentPage],
     queryFn: async () => {
       const params: Record<string, string> = {
@@ -30,7 +31,7 @@ export default function BlogsPage() {
       };
       if (searchQuery) params.search = searchQuery;
 
-      const response = await blogApi.getAll(params);
+      const response = (await blogApi.getAll(params)) as ApiResponse<PaginatedResponse<Blog>>;
       return response.data;
     },
   });

@@ -4,6 +4,7 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import { blogApi } from "@/lib/api-client";
 import { useQuery } from "@tanstack/react-query";
+import type { ApiResponse, Blog, PaginatedResponse } from "@/types";
 import { SearchBar } from "@/components/features/search-bar";
 import { FilterDropdown } from "@/components/features/filter-dropdown";
 import { Pagination } from "@/components/features/pagination";
@@ -26,7 +27,7 @@ export default function BlogsListPage() {
   const [currentPage, setCurrentPage] = React.useState(1);
   const limit = 12;
 
-  const { data, isLoading, error, refetch } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery<PaginatedResponse<Blog> | undefined>({
     queryKey: ["admin-blogs", searchQuery, publishedFilter, currentPage],
     queryFn: async () => {
       const params: Record<string, string> = {
@@ -36,7 +37,7 @@ export default function BlogsListPage() {
       if (searchQuery) params.search = searchQuery;
       if (publishedFilter) params.published = publishedFilter;
 
-      const response = await blogApi.getAll(params);
+      const response = (await blogApi.getAll(params)) as ApiResponse<PaginatedResponse<Blog>>;
       return response.data;
     },
   });

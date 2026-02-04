@@ -8,19 +8,20 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { LoadingSpinner } from "@/components/ui/loading";
 import { formatDate, formatRelativeTime } from "@/lib/utils";
+import type { ApiResponse, PaginatedResponse, TACRegistration } from "@/types";
 
 export default function TACRegistrationViewPage() {
   const router = useRouter();
   const params = useParams();
   const registrationId = params.id as string;
 
-  const { data: registration, isLoading, error } = useQuery({
+  const { data: registration, isLoading, error } = useQuery<TACRegistration>({
     queryKey: ["admin-tac-registration", registrationId],
     queryFn: async () => {
-      const response = await tacApi.getAll();
-      const registration = response.data?.data?.find(
-        (r: any) => r.id === registrationId
-      );
+      const response = (await tacApi.getAll()) as ApiResponse<
+        PaginatedResponse<TACRegistration>
+      >;
+      const registration = response.data?.data?.find((r) => r.id === registrationId);
       if (!registration) {
         throw new Error("Registration not found");
       }
@@ -46,7 +47,7 @@ export default function TACRegistrationViewPage() {
     );
   }
 
-  const registrationData = registration as any;
+  const registrationData = registration;
 
   return (
     <div>

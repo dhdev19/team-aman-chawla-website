@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { enquirySchema, type EnquiryFormData } from "@/lib/validations";
+import { enquirySchema, type EnquiryFormInput } from "@/lib/validations";
 import { enquiryApi } from "@/lib/api-client";
 
 interface PropertyContactFormProps {
@@ -32,7 +32,7 @@ export function PropertyContactForm({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<EnquiryFormData>({
+  } = useForm<EnquiryFormInput>({
     resolver: zodResolver(enquirySchema),
     defaultValues: {
       propertyId: propertyId,
@@ -40,7 +40,7 @@ export function PropertyContactForm({
     },
   });
 
-  const onSubmit = async (data: EnquiryFormData) => {
+  const onSubmit = async (data: EnquiryFormInput) => {
     setIsSubmitting(true);
     setSubmitStatus({ type: null, message: "" });
 
