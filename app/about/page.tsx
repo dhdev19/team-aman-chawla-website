@@ -6,154 +6,272 @@ import { Card } from "@/components/ui/card";
 import { generatePageMetadata } from "@/lib/metadata";
 import { FadeIn, SlideIn } from "@/components/animations";
 
+/* Inline SVG icons for about page (no extra dependency) */
+const IconBuilding = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+    <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z" />
+    <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2" />
+    <path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2" />
+    <path d="M10 6h4" />
+    <path d="M10 10h4" />
+    <path d="M10 14h4" />
+  </svg>
+);
+const IconTarget = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+    <circle cx="12" cy="12" r="10" />
+    <circle cx="12" cy="12" r="6" />
+    <circle cx="12" cy="12" r="2" />
+  </svg>
+);
+const IconShield = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+  </svg>
+);
+const IconAward = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+    <circle cx="12" cy="8" r="6" />
+    <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11" />
+  </svg>
+);
+const IconHeart = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+  </svg>
+);
+const IconBriefcase = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+    <path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+    <rect width="20" height="14" x="2" y="6" rx="2" />
+  </svg>
+);
+const IconLayoutGrid = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+    <rect width="7" height="7" x="3" y="3" rx="1" />
+    <rect width="7" height="7" x="14" y="3" rx="1" />
+    <rect width="7" height="7" x="14" y="14" rx="1" />
+    <rect width="7" height="7" x="3" y="14" rx="1" />
+  </svg>
+);
+const IconUserCheck = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+    <circle cx="9" cy="7" r="4" />
+    <path d="m19 8 2 2 4-4" />
+  </svg>
+);
+const IconUsers = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+    <circle cx="9" cy="7" r="4" />
+    <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+  </svg>
+);
+const IconArrowRight = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+    <path d="M5 12h14" />
+    <path d="m12 5 7 7-7 7" />
+  </svg>
+);
+const IconMail = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+    <rect width="20" height="16" x="2" y="4" rx="2" />
+    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+  </svg>
+);
+
 export const metadata: Metadata = generatePageMetadata(
   "About Us - Team Aman Chawla",
   "Learn more about Team Aman Chawla, your trusted real estate partner. Discover our mission, values, and commitment to helping you find your perfect property."
 );
 
+const values = [
+  {
+    title: "Integrity",
+    description:
+      "We conduct business with honesty, transparency, and ethical practices. Your trust is our most valuable asset.",
+    icon: IconShield,
+  },
+  {
+    title: "Excellence",
+    description:
+      "We strive for excellence in every interaction, ensuring you receive the highest quality service and support.",
+    icon: IconAward,
+  },
+  {
+    title: "Client-Centric",
+    description:
+      "Your needs and goals are at the center of everything we do. We're here to serve you, not just sell properties.",
+    icon: IconHeart,
+  },
+];
+
+const whyChooseUs = [
+  {
+    title: "Extensive Experience",
+    description:
+      "With years of experience in the real estate industry, we have the knowledge and expertise to guide you through every step of your property journey.",
+    icon: IconBriefcase,
+  },
+  {
+    title: "Wide Selection",
+    description:
+      "From residential homes to commercial spaces, plots, and offices, we offer a diverse portfolio of properties to meet your unique needs.",
+    icon: IconLayoutGrid,
+  },
+  {
+    title: "Personalized Service",
+    description:
+      "We understand that every client is unique. That's why we provide personalized service tailored to your specific requirements and preferences.",
+    icon: IconUserCheck,
+  },
+  {
+    title: "Trusted Network",
+    description:
+      "Our strong network of builders, developers, and industry professionals ensures you have access to the best opportunities in the market.",
+    icon: IconUsers,
+  },
+];
+
 export default function AboutPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen">
-        <div className="bg-primary-700 text-white py-12">
-          <Container>
-            <FadeIn>
-              <h1 className="text-4xl font-bold mb-4">About Team Aman Chawla</h1>
-              <p className="text-lg text-primary-100">
+      <main className="min-h-screen bg-neutral-50">
+        {/* Hero */}
+        <div className="relative bg-primary-700 text-white overflow-hidden breadcrumb-section">
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full -translate-x-1/2 -translate-y-1/2" />
+            <div className="absolute bottom-0 right-0 w-80 h-80 bg-white rounded-full translate-x-1/2 translate-y-1/2" />
+          </div>
+          <Container className="relative">
+            <FadeIn className="flex flex-col items-center text-center max-w-3xl mx-auto">
+              <span className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/20 text-white mb-6" aria-hidden>
+                <IconBuilding />
+              </span>
+              <h1 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
+                About Team Aman Chawla
+              </h1>
+              <p className="text-lg md:text-xl text-primary-100">
                 Your trusted partner in real estate
               </p>
             </FadeIn>
           </Container>
         </div>
 
-        <Container className="py-12">
-          <div className="space-y-12">
+        <Container className="py-14 md:py-16">
+          <div className="space-y-16 md:space-y-20 about-inner-section">
             {/* Mission Section */}
             <SlideIn direction="up">
-              <Card>
-                <h2 className="text-3xl font-bold text-neutral-900 mb-6">
-                  Our Mission
-                </h2>
-                <p className="text-lg text-neutral-700 mb-4">
-                  At Team Aman Chawla, our mission is to help individuals and
-                  businesses find their perfect property. We believe that finding
-                  the right property is not just about location and price—it's
-                  about finding a place that aligns with your dreams, goals, and
-                  lifestyle.
-                </p>
-                <p className="text-lg text-neutral-700">
-                  We are committed to providing exceptional service, transparent
-                  communication, and expert guidance throughout your property
-                  journey.
-                </p>
+              <Card className="overflow-hidden border-0 shadow-md hover:shadow-lg transition-shadow duration-300 our-mission">
+                <div className="flex flex-col sm:flex-row gap-6 sm:gap-8">
+                  <div className="flex items-center justify-center sm:justify-start sm:w-14 shrink-0">
+                    <span className="flex items-center justify-center w-14 h-14 rounded-xl bg-primary-100 text-primary-700" aria-hidden>
+                      <IconTarget />
+                    </span>
+                  </div>
+                  <div className="flex-1">
+                    <h2 className="text-2xl md:text-3xl font-bold text-neutral-900 mb-4">
+                      Our Mission
+                    </h2>
+                    <p>
+                      At Team Aman Chawla, our mission is to help individuals and
+                      businesses find their perfect property. We believe that finding
+                      the right property is not just about location and price—it's
+                      about finding a place that aligns with your dreams, goals, and
+                      lifestyle.
+                    </p>
+                    <p>
+                      We are committed to providing exceptional service, transparent
+                      communication, and expert guidance throughout your property
+                      journey.
+                    </p>
+                  </div>
+                </div>
               </Card>
             </SlideIn>
 
             {/* Values Section */}
-            <div>
-              <h2 className="text-3xl font-bold text-neutral-900 mb-8 text-center">
+            <section>
+              <h2 className="text-2xl md:text-3xl font-bold text-neutral-900 mb-10 text-center">
                 Our Values
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {[
-                  {
-                    title: "Integrity",
-                    description:
-                      "We conduct business with honesty, transparency, and ethical practices. Your trust is our most valuable asset.",
-                  },
-                  {
-                    title: "Excellence",
-                    description:
-                      "We strive for excellence in every interaction, ensuring you receive the highest quality service and support.",
-                  },
-                  {
-                    title: "Client-Centric",
-                    description:
-                      "Your needs and goals are at the center of everything we do. We're here to serve you, not just sell properties.",
-                  },
-                ].map((value, index) => (
-                  <SlideIn key={value.title} direction="up" delay={index * 0.1}>
-                    <Card variant="outlined" className="h-full">
-                      <h3 className="text-xl font-semibold text-neutral-900 mb-3">
-                        {value.title}
-                      </h3>
-                      <p className="text-neutral-700">{value.description}</p>
-                    </Card>
-                  </SlideIn>
-                ))}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+                {values.map((value, index) => {
+                  const IconComponent = value.icon;
+                  return (
+                    <SlideIn key={value.title} direction="up" delay={index * 0.1}>
+                      <Card variant="outlined" className="h-full flex flex-col border-2 border-neutral-200 hover:border-primary-300 hover:shadow-md transition-all duration-300 group">
+                        <span className="flex items-center justify-center w-12 h-12 rounded-lg bg-primary-100 text-primary-700 mb-4 group-hover:bg-primary-200 transition-colors" aria-hidden>
+                          <IconComponent />
+                        </span>
+                        <h3 className="text-xl font-semibold text-neutral-900 mb-3">
+                          {value.title}
+                        </h3>
+                        <p className="text-neutral-700 flex-1 leading-relaxed">
+                          {value.description}
+                        </p>
+                      </Card>
+                    </SlideIn>
+                  );
+                })}
               </div>
-            </div>
+            </section>
 
             {/* Why Choose Us Section */}
-            <SlideIn direction="up" delay={0.3}>
-              <Card>
-                <h2 className="text-3xl font-bold text-neutral-900 mb-6">
+            <SlideIn direction="up" delay={0.2}>
+              <Card className="border-0 shadow-md overflow-hidden">
+                <h2 className="text-2xl md:text-3xl font-bold text-neutral-900 mb-8">
                   Why Choose Team Aman Chawla?
                 </h2>
-                <div className="space-y-4 text-neutral-700">
-                  <div>
-                    <h3 className="font-semibold text-neutral-900 mb-2">
-                      Extensive Experience
-                    </h3>
-                    <p>
-                      With years of experience in the real estate industry, we
-                      have the knowledge and expertise to guide you through every
-                      step of your property journey.
-                    </p>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-neutral-900 mb-2">
-                      Wide Selection
-                    </h3>
-                    <p>
-                      From residential homes to commercial spaces, plots, and
-                      offices, we offer a diverse portfolio of properties to meet
-                      your unique needs.
-                    </p>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-neutral-900 mb-2">
-                      Personalized Service
-                    </h3>
-                    <p>
-                      We understand that every client is unique. That's why we
-                      provide personalized service tailored to your specific
-                      requirements and preferences.
-                    </p>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-neutral-900 mb-2">
-                      Trusted Network
-                    </h3>
-                    <p>
-                      Our strong network of builders, developers, and industry
-                      professionals ensures you have access to the best
-                      opportunities in the market.
-                    </p>
-                  </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 lg:gap-8">
+                  {whyChooseUs.map((item) => {
+                    const IconComponent = item.icon;
+                    return (
+                      <div
+                        key={item.title}
+                        className="flex gap-4 p-4 rounded-lg bg-neutral-50/80 hover:bg-primary-50/50 transition-colors duration-200"
+                      >
+                        <span className="flex items-center justify-center w-11 h-11 rounded-lg bg-primary-700 text-white shrink-0" aria-hidden>
+                          <IconComponent />
+                        </span>
+                        <div>
+                          <h3 className="font-semibold text-neutral-900 mb-1.5">
+                            {item.title}
+                          </h3>
+                          <p className="text-neutral-700 text-sm leading-relaxed">
+                            {item.description}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </Card>
             </SlideIn>
 
             {/* CTA Section */}
-            <SlideIn direction="up" delay={0.4}>
-              <Card variant="elevated" className="bg-primary-50 border-primary-200">
-                <div className="text-center">
-                  <h2 className="text-3xl font-bold text-neutral-900 mb-4">
-                    Ready to Find Your Perfect Property?
-                  </h2>
-                  <p className="text-lg text-neutral-700 mb-6">
-                    Let's start your property journey together. Contact us today
-                    to discuss your needs.
-                  </p>
-                  <a
-                    href="/contact"
-                    className="inline-block px-8 py-3 bg-primary-700 text-white rounded-md hover:bg-primary-800 transition-colors font-semibold"
-                  >
-                    Get In Touch
-                  </a>
-                </div>
+            <SlideIn direction="up" delay={0.3}>
+              <Card variant="elevated" className="bg-primary-50 border-2 border-primary-200 overflow-hidden text-center">
+                <span className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-primary-700 text-white mx-auto mb-5" aria-hidden>
+                  <IconMail />
+                </span>
+                <h2 className="text-2xl md:text-3xl font-bold text-neutral-900 mb-3">
+                  Ready to Find Your Perfect Property?
+                </h2>
+                <p className="text-lg text-neutral-700 mb-6 max-w-xl mx-auto">
+                  Let's start your property journey together. Contact us today
+                  to discuss your needs.
+                </p>
+                <a
+                  href="/contact"
+                  className="inline-flex items-center gap-2 px-8 py-3.5 bg-primary-700 text-white rounded-md hover:bg-primary-800 transition-colors font-semibold shadow-md hover:shadow-lg"
+                >
+                  Get In Touch
+                  <IconArrowRight />
+                </a>
               </Card>
             </SlideIn>
           </div>
