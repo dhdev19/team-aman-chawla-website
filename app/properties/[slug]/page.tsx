@@ -199,7 +199,7 @@ export default async function PropertyDetailPage({
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <Button className="w-full bg-green-600 hover:bg-green-700">
+                    <Button className="w-full bg-[#005ba1] hover:bg-[#004c88]">
                       Enquire Now
                     </Button>
                   </a>
@@ -213,7 +213,7 @@ export default async function PropertyDetailPage({
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <Button variant="secondary" className="w-full">
+                    <Button className="w-full bg-[#005ba1] hover:bg-[#004c88]">
                       Download Brochure
                     </Button>
                   </a>
