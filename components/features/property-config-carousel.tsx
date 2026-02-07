@@ -40,11 +40,8 @@ export function PropertyConfigCarousel({
       modules={[Navigation, Pagination, Autoplay]}
       spaceBetween={6}
       slidesPerView={2}
-      navigation={false}
-      pagination={{
-        clickable: true,
-        dynamicBullets: true,
-      }}
+      navigation={configurations.length > 1}
+      pagination={false}
       autoplay={{
         delay: 3000,
         disableOnInteraction: false,

@@ -137,157 +137,79 @@ export default async function PropertyDetailPage({
             <span className="text-neutral-900">{property.name}</span>
           </nav>
 
+          {/* Image Banner */}
+          <div className="mb-8">
+            <PropertyImageSlider
+              mainImage={property.mainImage}
+              images={property.images || []}
+              propertyName={property.name}
+              builderReraNumber={property.builderReraNumber}
+              builderReraQrCode={property.builderReraQrCode}
+              bankAccountName={property.bankAccountName}
+              bankName={property.bankName}
+              bankAccountNumber={property.bankAccountNumber}
+              bankIfsc={property.bankIfsc}
+              bankBranch={property.bankBranch}
+            />
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-8">
-              {/* Image Slider */}
-              <PropertyImageSlider
-                mainImage={property.mainImage}
-                images={property.images || []}
-                propertyName={property.name}
-                builderReraNumber={property.builderReraNumber}
-                builderReraQrCode={property.builderReraQrCode}
-                bankAccountName={property.bankAccountName}
-                bankName={property.bankName}
-                bankAccountNumber={property.bankAccountNumber}
-                bankIfsc={property.bankIfsc}
-                bankBranch={property.bankBranch}
-              />
-
-              {/* Property Details */}
-              <Card>
-                <h1 className="text-3xl font-bold text-neutral-900 mb-4">
-                  {property.name}
-                </h1>
-                <div className="flex flex-wrap gap-4 mb-6">
-                  <span className="px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm font-medium capitalize">
-                    {property.type.replace("_", " ").toLowerCase()}
-                  </span>
-                  <span
-                    className={`px-3 py-1 rounded-full text-sm font-medium capitalize ${
-                      property.status === PropertyStatus.AVAILABLE
-                        ? "bg-green-100 text-green-700"
-                        : property.status === PropertyStatus.SOLD
-                        ? "bg-red-100 text-red-700"
-                        : property.status === PropertyStatus.RESERVED
-                        ? "bg-yellow-100 text-yellow-700"
-                        : (property.status as string) === "NEW_LAUNCH"
-                        ? "bg-blue-100 text-blue-700"
-                        : "bg-black text-white"
-                    }`}
-                  >
-                    {property.status.replace("_", " ").toLowerCase()}
-                  </span>
-                </div>
-
-                {property.description && (
-                  <div className="mb-6">
-                    <h2 className="text-xl font-semibold mb-3">Description</h2>
-                    <p className="text-neutral-700 whitespace-pre-line">
-                      {property.description}
-                    </p>
-                  </div>
-                )}
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-6 border-t border-neutral-200">
-                  <div>
-                    <p className="text-sm text-neutral-600 mb-1">Builder</p>
-                    <p className="font-semibold text-neutral-900">
-                      {property.builder}
-                    </p>
-                  </div>
-                  {property.builderReraNumber && (
-                    <div>
-                      <p className="text-sm text-neutral-600 mb-1">
-                        Builder RERA Number
-                      </p>
-                      <p className="font-semibold text-neutral-900">
-                        {property.builderReraNumber}
-                      </p>
-                    </div>
-                  )}
-                  {property.location && (
-                    <div>
-                      <p className="text-sm text-neutral-600 mb-1">Location</p>
-                      <p className="font-semibold text-neutral-900">
-                        {property.location}
-                      </p>
-                    </div>
-                  )}
-                  {property.price && (
-                    <div>
-                      <p className="text-sm text-neutral-600 mb-1">Price</p>
-                      <p className="font-semibold text-primary-700 text-xl">
-                        {formatIndianCurrency(property.price)}
-                      </p>
-                    </div>
-                  )}
-                  <div>
-                    <p className="text-sm text-neutral-600 mb-1">Listed On</p>
-                    <p className="font-semibold text-neutral-900">
-                      {formatDate(property.createdAt)}
-                    </p>
-                  </div>
-                </div>
-              </Card>
-
-              {/* Property Format & Project Details */}
-              {(property.format || property.projectLaunchDate || property.possession || property.mapImage || property.builderReraQrCode) && (
+              {property.description && (
                 <Card>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {property.format && (
-                      <div>
-                        <p className="text-sm text-neutral-600 mb-1">Property Format</p>
-                        <p className="font-semibold text-neutral-900 capitalize">
-                          {property.format.replace("_", " ").toLowerCase()}
-                        </p>
-                      </div>
-                    )}
-                    {property.projectLaunchDate && (
-                      <div>
-                        <p className="text-sm text-neutral-600 mb-1">Project Launch Date</p>
-                        <p className="font-semibold text-neutral-900">
-                          {formatDate(new Date(property.projectLaunchDate))}
-                        </p>
-                      </div>
-                    )}
-                    {property.possession && (
-                      <div className="md:col-span-2">
-                        <p className="text-sm text-neutral-600 mb-1">Possession Details</p>
-                        <p className="font-semibold text-neutral-900">
-                          {property.possession}
-                        </p>
-                      </div>
-                    )}
-                    {property.mapImage && (
-                      <div className="md:col-span-2">
-                        <p className="text-sm text-neutral-600 mb-2">Location Map</p>
-                        <div className="relative h-48 w-full rounded overflow-hidden bg-neutral-200 border border-neutral-300">
-                          <Image
-                            src={property.mapImage}
-                            alt="Location Map"
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                      </div>
-                    )}
-                    {property.builderReraQrCode && (
-                      <div>
-                        <p className="text-sm text-neutral-600 mb-2">Builder RERA QR Code</p>
-                        <div className="relative h-40 w-40 rounded overflow-hidden bg-neutral-200 border border-neutral-300">
-                          <Image
-                            src={property.builderReraQrCode}
-                            alt="Builder RERA QR Code"
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                  <h2 className="text-xl font-semibold mb-3">Description</h2>
+                  <p className="text-neutral-700 whitespace-pre-line">
+                    {property.description}
+                  </p>
                 </Card>
               )}
+
+              {property.amenities && property.amenities.length > 0 && (
+                <Card>
+                  <h2 className="text-xl font-semibold text-neutral-900 mb-3">
+                    Amenities
+                  </h2>
+                  <ul className="list-disc list-inside space-y-1 text-neutral-700">
+                    {property.amenities.map((amenity, index) => (
+                      <li key={index}>{amenity}</li>
+                    ))}
+                  </ul>
+                </Card>
+              )}
+
+              <Card>
+                <div className="flex flex-col gap-3">
+                  <a
+                    href={`https://wa.me/${(process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "").replace(
+                      /[^0-9]/g,
+                      ""
+                    )}?text=${encodeURIComponent(
+                      `I want to know more about ${property.name}`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Button className="w-full bg-green-600 hover:bg-green-700">
+                      Enquire Now
+                    </Button>
+                  </a>
+                  <a
+                    href={`https://wa.me/${(process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "").replace(
+                      /[^0-9]/g,
+                      ""
+                    )}?text=${encodeURIComponent(
+                      `I want to know more about ${property.name}`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Button variant="secondary" className="w-full">
+                      Download Brochure
+                    </Button>
+                  </a>
+                </div>
+              </Card>
 
               {/* Pricing & Configurations */}
               {property.configurations && property.configurations.length > 0 && (
@@ -303,36 +225,37 @@ export default async function PropertyDetailPage({
                 </Card>
               )}
 
-              {/* Location Advantages & Amenities */}
-              {(property.locationAdvantages?.length || property.amenities?.length) && (
-                <Card>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {property.locationAdvantages &&
-                      property.locationAdvantages.length > 0 && (
-                        <div>
-                          <h2 className="text-xl font-semibold text-neutral-900 mb-3">
-                            Location Advantages
-                          </h2>
-                          <ul className="list-disc list-inside space-y-1 text-neutral-700">
-                            {property.locationAdvantages.map((advantage, index) => (
-                              <li key={index}>{advantage}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
+              {property.locationAdvantages &&
+                property.locationAdvantages.length > 0 && (
+                  <Card>
+                    <h2 className="text-xl font-semibold text-neutral-900 mb-3">
+                      Location Advantages
+                    </h2>
+                    <ul className="space-y-2 text-neutral-700">
+                      {property.locationAdvantages.map((advantage, index) => (
+                        <li key={index} className="flex items-start gap-2">
+                          <span className="text-primary-700 mt-0.5">
+                            <i className="fa-solid fa-location-dot"></i>
+                          </span>
+                          <span>{advantage}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </Card>
+                )}
 
-                    {property.amenities && property.amenities.length > 0 && (
-                      <div>
-                        <h2 className="text-xl font-semibold text-neutral-900 mb-3">
-                          Amenities
-                        </h2>
-                        <ul className="list-disc list-inside space-y-1 text-neutral-700">
-                          {property.amenities.map((amenity, index) => (
-                            <li key={index}>{amenity}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
+              {property.mapImage && (
+                <Card>
+                  <h2 className="text-xl font-semibold text-neutral-900 mb-3">
+                    Location Map
+                  </h2>
+                  <div className="relative h-48 w-full rounded overflow-hidden bg-neutral-200 border border-neutral-300">
+                    <Image
+                      src={property.mapImage}
+                      alt="Location Map"
+                      fill
+                      className="object-cover"
+                    />
                   </div>
                 </Card>
               )}
@@ -399,6 +322,105 @@ export default async function PropertyDetailPage({
 
             {/* Sidebar */}
             <div className="space-y-6">
+              <Card>
+                <div className="space-y-2">
+                  <div className="flex items-start gap-3">
+                    <div className="relative h-20 w-20 flex-shrink-0 rounded overflow-hidden bg-neutral-200 border border-neutral-300">
+                      {property.builderReraQrCode ? (
+                        <Image
+                          src={property.builderReraQrCode}
+                          alt="Builder RERA QR Code"
+                          fill
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center text-[10px] text-neutral-500">
+                          RERA QR
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-lg font-semibold text-neutral-900">
+                        {property.name}
+                      </div>
+                      <div className="text-sm text-neutral-600">
+                        by {property.builder}
+                      </div>
+                      <div className="pt-1 text-sm text-neutral-600">
+                        Price:{" "}
+                        <span className="font-semibold text-neutral-900">
+                          {property.price
+                            ? formatIndianCurrency(property.price) + "* onwards"
+                            : "Price on Request"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1 text-sm text-neutral-700">
+                    <div className="text-sm text-neutral-600">Project RERA</div>
+                    <div className="font-semibold text-neutral-900">
+                      {property.builderReraNumber || "-"}
+                    </div>
+                    <div className="text-sm text-neutral-600">
+                      Channel Partner RERA
+                    </div>
+                    <div className="font-semibold text-neutral-900">
+                      <span className="font-semibold text-neutral-900">
+                        UPRERAAGT11258
+                      </span>
+                    </div>
+                    {property.location && (
+                      <div className="text-sm text-neutral-600 flex items-center gap-1">
+                        <span className="text-neutral-600">
+                          <i className="fa-solid fa-location-dot"></i>
+                        </span>
+                        <span className="font-semibold text-neutral-900">
+                          {property.location}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </Card>
+              <Card>
+                <div className="space-y-3">
+                  <div className="text-sm text-neutral-600">Property Details</div>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm font-medium capitalize">
+                      {property.type.replace("_", " ").toLowerCase()}
+                    </span>
+                    {property.format && (
+                      <span className="px-3 py-1 bg-neutral-100 text-neutral-700 rounded-full text-sm font-medium capitalize">
+                        {property.format.replace("_", " ").toLowerCase()}
+                      </span>
+                    )}
+                    <span
+                      className={`px-3 py-1 rounded-full text-sm font-medium capitalize ${
+                        property.status === PropertyStatus.AVAILABLE
+                          ? "bg-green-100 text-green-700"
+                          : property.status === PropertyStatus.SOLD
+                          ? "bg-red-100 text-red-700"
+                          : property.status === PropertyStatus.RESERVED
+                          ? "bg-yellow-100 text-yellow-700"
+                          : (property.status as string) === "NEW_LAUNCH"
+                          ? "bg-blue-100 text-blue-700"
+                          : "bg-black text-white"
+                      }`}
+                    >
+                      {property.status.replace("_", " ").toLowerCase()}
+                    </span>
+                  </div>
+                  {property.possession && (
+                    <div className="text-sm text-neutral-600">
+                      Possession:{" "}
+                      <span className="font-semibold text-neutral-900">
+                        {property.possession}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </Card>
               {/* Contact Form Card */}
               <Card>
                 <PropertyContactForm
