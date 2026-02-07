@@ -170,9 +170,14 @@ export default async function PropertyDetailPage({
                   <h2 className="text-xl font-semibold text-neutral-900 mb-3">
                     Amenities
                   </h2>
-                  <ul className="list-disc list-inside space-y-1 text-neutral-700">
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-neutral-700">
                     {property.amenities.map((amenity, index) => (
-                      <li key={index}>{amenity}</li>
+                      <li key={index} className="flex items-start gap-2">
+                        <span className="mt-0.5" style={{ color: "#005ba1" }}>
+                          <i className="fa-solid fa-check"></i>
+                        </span>
+                        <span>{amenity}</span>
+                      </li>
                     ))}
                   </ul>
                 </Card>
