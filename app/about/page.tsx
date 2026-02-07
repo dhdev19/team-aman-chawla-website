@@ -75,6 +75,11 @@ const IconArrowRight = () => (
     <path d="m12 5 7 7-7 7" />
   </svg>
 );
+const IconYouTube = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor" className="shrink-0">
+    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+  </svg>
+);
 const IconMail = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
     <rect width="20" height="16" x="2" y="4" rx="2" />
@@ -110,27 +115,27 @@ const values = [
 
 const whyChooseUs = [
   {
-    title: "Extensive Experience",
+    title: "Client-First Approach",
     description:
-      "With years of experience in the real estate industry, we have the knowledge and expertise to guide you through every step of your property journey.",
+      "We assess your requirements through active listening, which allows us to present property options that precisely meet your budgetary constraints and future objectives.",
     icon: IconBriefcase,
   },
   {
-    title: "Wide Selection",
+    title: "Verified & Transparent Listings",
     description:
-      "From residential homes to commercial spaces, plots, and offices, we offer a diverse portfolio of properties to meet your unique needs.",
+      "The property needs full verification because our system delivers you genuine options that come without any concealed charges.",
     icon: IconLayoutGrid,
   },
   {
-    title: "Personalized Service",
+    title: "Strong Local Market Expertise",
     description:
-      "We understand that every client is unique. That's why we provide personalized service tailored to your specific requirements and preferences.",
+      "Our thorough knowledge of local real estate market patterns enables you to make secure and knowledgeable choices.",
     icon: IconUserCheck,
   },
   {
-    title: "Trusted Network",
+    title: "End-to-End Support",
     description:
-      "Our strong network of builders, developers, and industry professionals ensures you have access to the best opportunities in the market.",
+      "Our team delivers complete support starting from property selection and ending at final documentation which enables you to experience a smooth and stress-free process.",
     icon: IconUsers,
   },
 ];
@@ -152,7 +157,7 @@ export default function AboutPage() {
                 <IconBuilding />
               </span>
               <h1 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
-                About Team Aman Chawla
+                About Us 
               </h1>
               <p className="text-lg md:text-xl text-primary-100">
                 Your trusted partner in real estate
@@ -161,10 +166,54 @@ export default function AboutPage() {
           </Container>
         </div>
 
+        <div className="about-us-section">
+      <Container>
+        <div className="about-us-inner-section grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-6">
+          <div className="about-us-content md:col-span-8">
+           <p>Team Aman Chawla provides a property search service which enables clients to find properties through an easy-to-use process which enables them to track the information between them and the business. The real estate process needs our complete support because we deliver genuine property listings with straightforward testing techniques and professional guidance throughout every stage. Our team helps you achieve your property goals through our strong local expertise and dedicated support, whether you want to buy your first home or make a strategic investment.</p>
+          </div>
+          <div className="about-us-image md:col-span-4">
+          <img src="/about-aman-chawla.png" alt="icon" />
+          </div>
+        </div>
+      </Container>
+
+        </div>
+
         <Container className="py-14 md:py-16">
           <div className="space-y-16 md:space-y-20 about-inner-section">
-            {/* Mission Section */}
-            <SlideIn direction="up">
+           
+
+ {/* YouTube CTA Section */}
+  <SlideIn direction="up" delay={0.2}>
+              <a
+                href="https://www.youtube.com/@TeamAmanChawla"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block group"
+              >
+                <Card variant="elevated" className="bg-red-50 border-2 border-red-200 overflow-hidden text-center hover:border-red-400 hover:shadow-lg transition-all duration-300 group-hover:bg-red-100/80">
+                  <span className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-[#FF0000] text-white mx-auto mb-5 group-hover:scale-110 transition-transform" aria-hidden>
+                    <IconYouTube />
+                  </span>
+                  <h2 className="text-2xl md:text-3xl font-bold text-neutral-900 mb-3">
+                    Watch Us on YouTube
+                  </h2>
+                  <p className="text-lg text-neutral-700 mb-6 max-w-xl mx-auto">
+                    Property insights, market updates, and expert tips from Team Aman Chawla. Subscribe for the latest.
+                  </p>
+                  <span className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#FF0000] text-white rounded-md group-hover:bg-[#cc0000] transition-colors font-semibold shadow-md">
+                    Visit Our Channel
+                    <IconArrowRight />
+                  </span>
+                </Card>
+              </a>
+            </SlideIn>
+
+
+
+ {/* Mission Section */}
+ <SlideIn direction="up">
               <Card className="overflow-hidden border-0 shadow-md hover:shadow-lg transition-shadow duration-300 our-mission">
                 <div className="flex flex-col sm:flex-row gap-6 sm:gap-8">
                   <div className="flex items-center justify-center sm:justify-start sm:w-14 shrink-0">
@@ -177,24 +226,18 @@ export default function AboutPage() {
                       Our Mission
                     </h2>
                     <p>
-                      At Team Aman Chawla, our mission is to help individuals and
-                      businesses find their perfect property. We believe that finding
-                      the right property is not just about location and price—it's
-                      about finding a place that aligns with your dreams, goals, and
-                      lifestyle.
+                    Our mission is to transform the way people experience real estate by making every transaction clear, credible, and customized to the client’s needs. We aim to establish new benchmarks which define integrity and professional standards throughout the field of property consulting. The future will establish a system which supports homebuyers and investors throughout their entire real estate transaction process.
                     </p>
-                    <p>
-                      We are committed to providing exceptional service, transparent
-                      communication, and expert guidance throughout your property
-                      journey.
-                    </p>
+                     
                   </div>
                 </div>
               </Card>
             </SlideIn>
 
+
+
             {/* Values Section */}
-            <section>
+            <section className="our-values-section">
               <h2 className="text-2xl md:text-3xl font-bold text-neutral-900 mb-10 text-center">
                 Our Values
               </h2>
@@ -203,7 +246,7 @@ export default function AboutPage() {
                   const IconComponent = value.icon;
                   return (
                     <SlideIn key={value.title} direction="up" delay={index * 0.1}>
-                      <Card variant="outlined" className="h-full flex flex-col border-2 border-neutral-200 hover:border-primary-300 hover:shadow-md transition-all duration-300 group">
+                      <Card variant="outlined" className="value-box h-full flex flex-col border-2 border-neutral-200 hover:border-primary-300 hover:shadow-md transition-all duration-300 group">
                         <span className="flex items-center justify-center w-12 h-12 rounded-lg bg-primary-100 text-primary-700 mb-4 group-hover:bg-primary-200 transition-colors" aria-hidden>
                           <IconComponent />
                         </span>
@@ -252,6 +295,8 @@ export default function AboutPage() {
               </Card>
             </SlideIn>
 
+           
+
             {/* CTA Section */}
             <SlideIn direction="up" delay={0.3}>
               <Card variant="elevated" className="bg-primary-50 border-2 border-primary-200 overflow-hidden text-center">
@@ -274,6 +319,10 @@ export default function AboutPage() {
                 </a>
               </Card>
             </SlideIn>
+
+
+
+            
           </div>
         </Container>
       </main>
