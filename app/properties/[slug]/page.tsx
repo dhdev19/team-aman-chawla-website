@@ -11,6 +11,10 @@ import { PropertySchema } from "@/components/seo/schema-org";
 import { PropertyImageSlider } from "@/components/features/property-image-slider";
 import { PropertyContactForm } from "@/components/features/property-contact-form";
 import { LoanCalculator } from "@/components/features/loan-calculator";
+import {
+  PropertyConfigCarousel,
+  type PropertyConfiguration,
+} from "@/components/features/property-config-carousel";
 import { PropertyStatus } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
@@ -291,52 +295,11 @@ export default async function PropertyDetailPage({
                   <h2 className="text-xl font-semibold text-neutral-900 mb-4">
                     Pricing & Configurations
                   </h2>
-                  <div className="space-y-4">
-                    {property.configurations.map((config, index) => (
-                      <div
-                        key={config.id}
-                        className="border border-neutral-200 rounded-lg p-4 bg-neutral-50"
-                      >
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <p className="text-sm text-neutral-600 mb-1">Configuration</p>
-                            <p className="font-semibold text-neutral-900 capitalize">
-                              {config.configType}
-                            </p>
-                          </div>
-                          {config.carpetAreaSqft && (
-                            <div>
-                              <p className="text-sm text-neutral-600 mb-1">Carpet Area</p>
-                              <p className="font-semibold text-neutral-900">
-                                {config.carpetAreaSqft.toLocaleString()} sq ft
-                              </p>
-                            </div>
-                          )}
-                          {config.price !== null && config.price !== undefined && (
-                            <div>
-                              <p className="text-sm text-neutral-600 mb-1">Price</p>
-                              <p className="font-semibold text-primary-700 text-lg">
-                                {config.price === 0 ? "On Request" : formatIndianCurrency(config.price)}
-                              </p>
-                            </div>
-                          )}
-                          {config.floorPlanImage && (
-                            <div className="md:col-span-2">
-                              <p className="text-sm text-neutral-600 mb-2">Floor Plan</p>
-                              <div className="relative h-40 w-full rounded overflow-hidden bg-neutral-200 border border-neutral-300">
-                                <Image
-                                  src={config.floorPlanImage}
-                                  alt="Floor Plan"
-                                  fill
-                                  className="object-cover"
-                                />
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                  <PropertyConfigCarousel
+                    configurations={
+                      property.configurations as PropertyConfiguration[]
+                    }
+                  />
                 </Card>
               )}
 
