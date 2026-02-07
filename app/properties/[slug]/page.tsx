@@ -141,6 +141,13 @@ export default async function PropertyDetailPage({
                 mainImage={property.mainImage}
                 images={property.images || []}
                 propertyName={property.name}
+                builderReraNumber={property.builderReraNumber}
+                builderReraQrCode={property.builderReraQrCode}
+                bankAccountName={property.bankAccountName}
+                bankName={property.bankName}
+                bankAccountNumber={property.bankAccountNumber}
+                bankIfsc={property.bankIfsc}
+                bankBranch={property.bankBranch}
               />
 
               {/* Property Details */}

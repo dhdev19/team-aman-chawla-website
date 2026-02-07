@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { PropertyFormat } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -21,13 +22,26 @@ interface Property {
   name: string;
   slug: string | null;
   type: string;
+  format?: PropertyFormat | null;
   builder: string;
+  builderReraNumber?: string | null;
   description: string | null;
   price: number | null;
   location: string | null;
+  locationAdvantages?: string[];
   status: string;
   mainImage: string | null;
   images: string[];
+  amenities?: string[];
+  mapImage?: string | null;
+  projectLaunchDate?: string | null;
+  builderReraQrCode?: string | null;
+  possession?: string | null;
+  bankAccountName?: string | null;
+  bankName?: string | null;
+  bankAccountNumber?: string | null;
+  bankIfsc?: string | null;
+  bankBranch?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -507,29 +521,31 @@ export function OldHomepage() {
                   name: property.name,
                   slug: property.slug,
                   type: property.type as any,
-                  format: null,
+                  format: property.format ?? null,
                   builder: property.builder,
-                  builderReraNumber: null,
+                  builderReraNumber: property.builderReraNumber ?? null,
                   description: property.description,
                   price: property.price,
                   location: property.location,
-                  locationAdvantages: [],
+                  locationAdvantages: property.locationAdvantages ?? [],
                   status: property.status as any,
                   mainImage: property.mainImage,
                   images: property.images,
-                  amenities: [],
-                  mapImage: null,
-                  projectLaunchDate: null,
-                  builderReraQrCode: null,
-                  possession: null,
+                  amenities: property.amenities ?? [],
+                  mapImage: property.mapImage ?? null,
+                  projectLaunchDate: property.projectLaunchDate
+                    ? new Date(property.projectLaunchDate)
+                    : null,
+                  builderReraQrCode: property.builderReraQrCode ?? null,
+                  possession: property.possession ?? null,
                   metaTitle: null,
                   metaKeywords: null,
                   metaDescription: null,
-                  bankAccountName: null,
-                  bankName: null,
-                  bankAccountNumber: null,
-                  bankIfsc: null,
-                  bankBranch: null,
+                  bankAccountName: property.bankAccountName ?? null,
+                  bankName: property.bankName ?? null,
+                  bankAccountNumber: property.bankAccountNumber ?? null,
+                  bankIfsc: property.bankIfsc ?? null,
+                  bankBranch: property.bankBranch ?? null,
                   configurations: [],
                   createdAt: property.createdAt ? new Date(property.createdAt) : new Date(),
                   updatedAt: property.updatedAt ? new Date(property.updatedAt) : new Date(),

@@ -69,7 +69,7 @@ export function PropertyCard({ property, className }: PropertyCardProps) {
         )}
       >
         {/* Image */}
-        <div className="relative h-48 w-full overflow-hidden bg-neutral-200">
+        <div className="relative h-56 w-full overflow-hidden bg-neutral-200">
           {property.mainImage ? (
             <Image
               src={property.mainImage}
@@ -82,34 +82,62 @@ export function PropertyCard({ property, className }: PropertyCardProps) {
               No Image
             </div>
           )}
-          {/* Status Badge */}
-          <div className="absolute top-2 right-2">
-            <span
-              className={cn(
-                "px-2 py-1 rounded-full text-xs font-semibold capitalize",
-                property.status === "AVAILABLE" &&
-                  "bg-green-500 text-white",
-                property.status === "SOLD" && "bg-red-500 text-white",
-                property.status === "RESERVED" && "bg-yellow-500 text-white",
-                (property.status as string) === "NEW_LAUNCH" && "bg-blue-500 text-white"
+          {/* RERA details */}
+          <div className="absolute top-2 right-2 bg-white/90 text-neutral-900 rounded-md px-2 py-1 text-[10px] leading-tight shadow flex gap-2">
+            <div className="flex items-center">
+              {property.builderReraQrCode ? (
+                <Image
+                  src={property.builderReraQrCode}
+                  alt="RERA QR"
+                  width={48}
+                  height={48}
+                  className="rounded"
+                />
+              ) : (
+                <div className="w-12 h-12 rounded bg-neutral-200 text-neutral-500 flex items-center justify-center text-[9px]">
+                  RERA QR
+                </div>
               )}
-            >
-              {property.status.replace("_", " ").toLowerCase()}
-            </span>
+            </div>
+            <div className="rera-details-text rera-details-text-local text-[9px] normal-case">
+              {property.builderReraNumber && (
+                <div className="text-[10px] font-semibold">
+                  Project RERA: {property.builderReraNumber}
+                </div>
+              )}
+              <div className="text-[8px]">Rera website: www.up-rera.in</div>
+              <div className="text-[8px]">Authorised Channel Partner: Aman Chawla</div>
+              <div className="text-[8px]">RERA Number: UPRERAAGT11258</div>
+            </div>
           </div>
-          {/* Property Type Badge */}
-          <div className="absolute top-2 left-2">
-            <span
-              className="px-2 py-1 rounded-full text-xs font-semibold text-white"
-              style={{ backgroundColor: "#005ba1" }}
-            >
-              {property.type.replace("_", " ").charAt(0).toUpperCase() + property.type.replace("_", " ").slice(1).toLowerCase()}
-            </span>
-          </div>
+          {(property.bankAccountName ||
+            property.bankName ||
+            property.bankAccountNumber ||
+            property.bankIfsc ||
+            property.bankBranch) && (
+            <div className="absolute left-2 right-2 bottom-2 bg-white/90 text-neutral-900 rounded-md px-2 pt-0.5 pb-1 text-[9px] leading-tight shadow bank-details-text-local normal-case">
+              <div>
+                {[
+                  property.bankAccountName ? `Account Name: ${property.bankAccountName}` : null,
+                  property.bankAccountNumber
+                    ? `A/C No.: ${property.bankAccountNumber}`
+                    : null,
+                  property.bankName ? `Bank Name: ${property.bankName}` : null,
+                  property.bankIfsc ? `IFSC Code: ${property.bankIfsc}` : null,
+                  property.bankBranch ? `Branch: ${property.bankBranch}` : null,
+                ]
+                  .filter(Boolean)
+                  .join(" | ")}
+              </div>
+              <div className="text-[8px]">
+                That Money from customer must be deposited in Collection A/c only.
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Content */}
-        <div className="p-4">
+        <div className="px-4 pb-4 pt-2">
           <h3 className="text-lg font-semibold text-neutral-900 mb-2 group-hover:text-primary-700 transition-colors">
             {property.name}
           </h3>
@@ -119,17 +147,8 @@ export function PropertyCard({ property, className }: PropertyCardProps) {
             </p>
           )}
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-neutral-600">
-              {property.configurations && property.configurations.length > 0 && (
-                <span className="font-normal">
-                  {[...new Set(property.configurations.map(c => c.configType.toUpperCase()))].join(", ")}
-                  {property.format && ![...new Set(property.configurations.map(c => c.configType.toUpperCase()))].includes(property.format.toUpperCase()) && (
-                    <span style={{ textTransform: 'capitalize' }}>
-                      {` ${property.format.toLowerCase()}`}
-                    </span>
-                  )}
-                </span>
-              )}
+            <span className="text-sm font-semibold text-neutral-600 capitalize">
+              {property.type.replace("_", " ").toLowerCase()}
             </span>
             <span className="text-sm font-medium text-primary-700">
               {property.price ? formatIndianCurrency(property.price) : "Price on Request"}*
