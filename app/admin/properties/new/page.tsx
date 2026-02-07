@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { propertySchema, type PropertyFormInput } from "@/lib/validations/property";
-import { propertyApi, uploadApi } from "@/lib/api-client";
+import { builderApi, propertyApi, uploadApi } from "@/lib/api-client";
 import { PropertyType, PropertyStatus, PropertyFormat } from "@prisma/client";
 import { generateSlug } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
+import type { Builder } from "@/types";
 
 // Common amenities
 const COMMON_AMENITIES = [
@@ -46,6 +47,11 @@ export default function AddPropertyPage() {
   const [builderReraQrCode, setBuilderReraQrCode] = React.useState<string | null>(null);
   const [isUploadingMap, setIsUploadingMap] = React.useState(false);
   const [isUploadingQr, setIsUploadingQr] = React.useState(false);
+  const [builders, setBuilders] = React.useState<Builder[]>([]);
+  const [builderChoice, setBuilderChoice] = React.useState("");
+  const [customBuilderName, setCustomBuilderName] = React.useState("");
+  const [customBuilderAbout, setCustomBuilderAbout] = React.useState("");
+  const [isLoadingBuilders, setIsLoadingBuilders] = React.useState(false);
   const mainImageInputRef = React.useRef<HTMLInputElement>(null);
   const additionalImagesInputRef = React.useRef<HTMLInputElement>(null);
   const mapImageInputRef = React.useRef<HTMLInputElement>(null);
@@ -89,6 +95,24 @@ export default function AddPropertyPage() {
       setValue("slug", slug);
     }
   }, [propertyName, setValue]);
+
+  React.useEffect(() => {
+    const fetchBuilders = async () => {
+      setIsLoadingBuilders(true);
+      try {
+        const response = await builderApi.getAll();
+        if (response.success && response.data) {
+          setBuilders(response.data as Builder[]);
+        }
+      } catch (error) {
+        console.error("Failed to load builders:", error);
+      } finally {
+        setIsLoadingBuilders(false);
+      }
+    };
+
+    fetchBuilders();
+  }, []);
 
   const handleMainImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -325,8 +349,38 @@ export default function AddPropertyPage() {
     setIsSubmitting(true);
 
     try {
+      let builderName = data.builder?.trim();
+      if (builderChoice === "other") {
+        const customName = customBuilderName.trim();
+        if (!customName) {
+          alert("Builder name is required");
+          setIsSubmitting(false);
+          return;
+        }
+        const builderResponse = await builderApi.create({
+          name: customName,
+          about: customBuilderAbout || null,
+        });
+        if (!builderResponse.success) {
+          alert(builderResponse.error || "Failed to save builder");
+          setIsSubmitting(false);
+          return;
+        }
+        builderName = customName;
+      } else if (builderChoice) {
+        const selectedBuilder = builders.find((builder) => builder.id === builderChoice);
+        builderName = selectedBuilder?.name || builderName;
+      }
+
+      if (!builderName) {
+        alert("Builder name is required");
+        setIsSubmitting(false);
+        return;
+      }
+
       const response = await propertyApi.create({
         ...data,
+        builder: builderName,
         images,
         amenities: amenities || [],
         locationAdvantages: locationAdvantages || [],
@@ -409,14 +463,71 @@ export default function AddPropertyPage() {
                 <label className="block text-sm font-medium text-neutral-700 mb-2">
                   Builder *
                 </label>
-                <Input
-                  {...register("builder")}
+                <Select
+                  value={builderChoice}
+                  onChange={(event) => {
+                    const value = event.target.value;
+                    setBuilderChoice(value);
+                    if (value === "other") {
+                      setValue("builder", "");
+                    } else {
+                      const selectedBuilder = builders.find(
+                        (builder) => builder.id === value
+                      );
+                      setValue("builder", selectedBuilder?.name || "", {
+                        shouldValidate: true,
+                      });
+                    }
+                  }}
                   className={errors.builder ? "border-red-500" : ""}
-                />
+                >
+                  <option value="">Select Builder</option>
+                  {builders.map((builder) => (
+                    <option key={builder.id} value={builder.id}>
+                      {builder.name}
+                    </option>
+                  ))}
+                  <option value="other">Other</option>
+                </Select>
+                <Input type="hidden" {...register("builder")} />
                 {errors.builder && (
                   <p className="mt-1 text-sm text-red-600">
                     {errors.builder.message}
                   </p>
+                )}
+                {isLoadingBuilders && (
+                  <p className="mt-1 text-xs text-neutral-500">
+                    Loading builders...
+                  </p>
+                )}
+                {builderChoice === "other" && (
+                  <div className="mt-3 space-y-3">
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700 mb-2">
+                        Builder Name
+                      </label>
+                      <Input
+                        value={customBuilderName}
+                        onChange={(event) => {
+                          const value = event.target.value;
+                          setCustomBuilderName(value);
+                          setValue("builder", value, { shouldValidate: true });
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700 mb-2">
+                        Builder About
+                      </label>
+                      <Textarea
+                        value={customBuilderAbout}
+                        onChange={(event) =>
+                          setCustomBuilderAbout(event.target.value)
+                        }
+                        rows={4}
+                      />
+                    </div>
+                  </div>
                 )}
               </div>
 
@@ -1077,6 +1188,7 @@ export default function AddPropertyPage() {
                   className="hidden"
                   id="map-image-upload"
                   disabled={isUploadingMap}
+                  aria-label="Upload map image"
                 />
                 <div className="space-y-3">
                   <div className="flex gap-2">
@@ -1124,6 +1236,7 @@ export default function AddPropertyPage() {
                   className="hidden"
                   id="qr-code-upload"
                   disabled={isUploadingQr}
+                  aria-label="Upload builder RERA QR code"
                 />
                 <div className="space-y-3">
                   <div className="flex gap-2">

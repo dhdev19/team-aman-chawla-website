@@ -101,6 +101,10 @@ export default async function PropertyDetailPage({
     notFound();
   }
 
+  const builder = await prisma.builder.findUnique({
+    where: { name: property.builder },
+  });
+
   const relatedProperties = await getRelatedProperties(
     property.id,
     property.type,
@@ -254,12 +258,13 @@ export default async function PropertyDetailPage({
                   <h2 className="text-xl font-semibold text-neutral-900 mb-3">
                     Location Map
                   </h2>
-                  <div className="relative h-48 w-full rounded overflow-hidden bg-neutral-200 border border-neutral-300">
+                  <div className="relative w-full rounded bg-neutral-200 border border-neutral-300">
                     <Image
                       src={property.mapImage}
                       alt="Location Map"
-                      fill
-                      className="object-cover"
+                      width={1200}
+                      height={600}
+                      className="w-full h-auto"
                     />
                   </div>
                 </Card>
@@ -323,6 +328,16 @@ export default async function PropertyDetailPage({
                   </div>
                 </Card>
               )}
+              {builder?.about && (
+                <Card>
+                  <h2 className="text-xl font-semibold text-neutral-900 mb-3">
+                    About {builder.name}
+                  </h2>
+                  <p className="text-neutral-700 whitespace-pre-line">
+                    {builder.about}
+                  </p>
+                </Card>
+              )}
             </div>
 
             {/* Sidebar */}
@@ -352,14 +367,26 @@ export default async function PropertyDetailPage({
                         by {property.builder}
                       </div>
                       <div className="pt-1 text-sm text-neutral-600">
-                        Price:{" "}
                         <span className="font-semibold text-neutral-900">
                           {property.price
-                            ? formatIndianCurrency(property.price) + "* onwards"
+                            ? `₹ ${formatIndianCurrency(property.price)}* onwards`
                             : "Price on Request"}
                         </span>
                       </div>
                     </div>
+                  </div>
+
+                  <div className="space-y-1 text-sm text-neutral-700">
+                    {property.location && (
+                      <div className="text-sm text-neutral-600 flex items-center gap-1">
+                        <span className="text-neutral-600">
+                          <i className="fa-solid fa-location-dot"></i>
+                        </span>
+                        <span className="font-semibold text-neutral-900">
+                          {property.location}
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   <div className="space-y-1 text-sm text-neutral-700">
@@ -375,16 +402,6 @@ export default async function PropertyDetailPage({
                         UPRERAAGT11258
                       </span>
                     </div>
-                    {property.location && (
-                      <div className="text-sm text-neutral-600 flex items-center gap-1">
-                        <span className="text-neutral-600">
-                          <i className="fa-solid fa-location-dot"></i>
-                        </span>
-                        <span className="font-semibold text-neutral-900">
-                          {property.location}
-                        </span>
-                      </div>
-                    )}
                   </div>
                 </div>
               </Card>

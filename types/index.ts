@@ -37,6 +37,14 @@ export interface Video {
   updatedAt: Date;
 }
 
+export interface Builder {
+  id: string;
+  name: string;
+  about: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface Enquiry {
   id: string;
   name: string;

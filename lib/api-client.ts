@@ -31,6 +31,15 @@ export const propertyApi = {
 };
 
 /**
+ * Builder API endpoints
+ */
+export const builderApi = {
+  getAll: () => apiGet("/api/admin/builders"),
+  create: (data: { name: string; about?: string | null }) =>
+    apiPost("/api/admin/builders", data),
+};
+
+/**
  * Video API endpoints
  */
 export const videoApi = {
