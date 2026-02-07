@@ -38,6 +38,7 @@ interface Property {
   amenities: string[];
   mapImage: string | null;
   projectLaunchDate: Date | null;
+  builderReraNumber: string | null;
   builderReraQrCode: string | null;
   possession: string | null;
   metaTitle: string | null;
