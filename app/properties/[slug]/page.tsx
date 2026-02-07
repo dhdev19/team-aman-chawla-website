@@ -442,7 +442,9 @@ export default async function PropertyDetailPage({
                               {related.name}
                             </h3>
                             <p className="text-sm text-neutral-600">
-                              {formatCurrency(related.price)}
+                              {related.price
+                                ? formatIndianCurrency(related.price) + " onwards"
+                                : "Price on Request"}
                             </p>
                           </div>
                         </div>
