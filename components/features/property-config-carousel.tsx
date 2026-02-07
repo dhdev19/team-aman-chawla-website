@@ -39,26 +39,22 @@ export function PropertyConfigCarousel({
     <Swiper
       modules={[Navigation, Pagination, Autoplay]}
       spaceBetween={6}
-      slidesPerView="auto"
+      slidesPerView={2}
       navigation={false}
       pagination={{
         clickable: true,
         dynamicBullets: true,
       }}
-      autoplay={
-        shouldLoop
-          ? {
-              delay: 3000,
-              disableOnInteraction: false,
-              pauseOnMouseEnter: true,
-            }
-          : false
-      }
-      loop={shouldLoop}
+      autoplay={{
+        delay: 3000,
+        disableOnInteraction: false,
+        pauseOnMouseEnter: true,
+      }}
+      loop={configurations.length > 1}
       className="property-config-swiper"
     >
       {configurations.map((config) => (
-        <SwiperSlide key={config.id} className="!w-[320px]">
+        <SwiperSlide key={config.id}>
           <div className="border border-neutral-200 rounded-lg p-2.5 bg-neutral-50 h-full">
             <div className="grid grid-cols-1 gap-2">
               <div className="grid grid-cols-3 gap-1.5 text-[11px] text-neutral-600 leading-snug whitespace-nowrap">
